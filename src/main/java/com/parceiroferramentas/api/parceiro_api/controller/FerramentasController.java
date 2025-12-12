@@ -109,8 +109,8 @@ public class FerramentasController {
     @GetMapping(value = "/tipo", produces = "application/json")
     public ResponseEntity<Page<FerramentaDto>> findAllByType(
             @RequestParam String tipo, 
-            @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(999) Integer page, 
-            @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(999) Integer size, 
+            @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
+            @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
             @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort) {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAllByType(tipo, PageRequest.of(page, size, Sort.by(sortOption, "id")));

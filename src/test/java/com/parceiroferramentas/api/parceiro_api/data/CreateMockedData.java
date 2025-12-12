@@ -57,6 +57,7 @@ public class CreateMockedData {
         caracteristicas.put("Atributo C", "Caracteristica C");
         caracteristicas.put("Atributo D", "Caracteristica D");
         List<String> itens = Arrays.asList("Item A", "Item B", "Item C", "Item D", "Item E");
+        List<String> lista_imagens = Arrays.asList("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
         boolean disponibilidade = true;
         Double preco_aluguel = 99.99;
         Double preco_venda = 999.99;
@@ -71,6 +72,7 @@ public class CreateMockedData {
         ferramentaCriada.setDescricao(descricao);
         ferramentaCriada.setCaracteristicas(caracteristicas);
         ferramentaCriada.setItens_inclusos(itens);
+        ferramentaCriada.setLista_imagens(lista_imagens);
         ferramentaCriada.setDisponibilidade(disponibilidade);
         ferramentaCriada.setPreco_aluguel(preco_aluguel);
         ferramentaCriada.setPreco_venda(preco_venda);

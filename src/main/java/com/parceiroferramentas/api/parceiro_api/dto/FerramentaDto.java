@@ -4,8 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.Column;
 
 public class FerramentaDto {
 
@@ -24,8 +29,14 @@ public class FerramentaDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate criado_em;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate atualizado_em;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "lista_imagens", columnDefinition = "jsonb")
+    private List<String> lista_imagens;
 
     public FerramentaDto(){}
 
@@ -168,6 +179,7 @@ public class FerramentaDto {
         result = prime * result + ((preco_venda == null) ? 0 : preco_venda.hashCode());
         result = prime * result + ((criado_em == null) ? 0 : criado_em.hashCode());
         result = prime * result + ((atualizado_em == null) ? 0 : atualizado_em.hashCode());
+        result = prime * result + ((lista_imagens == null) ? 0 : lista_imagens.hashCode());
         return result;
     }
 
@@ -242,7 +254,20 @@ public class FerramentaDto {
                 return false;
         } else if (!atualizado_em.equals(other.atualizado_em))
             return false;
+        if (lista_imagens == null) {
+            if (other.lista_imagens != null)
+                return false;
+        } else if (!lista_imagens.equals(other.lista_imagens))
+            return false;
         return true;
+    }
+
+    public List<String> getLista_imagens() {
+        return lista_imagens;
+    }
+
+    public void setLista_imagens(List<String> lista_imagens) {
+        this.lista_imagens = lista_imagens;
     }
 
     

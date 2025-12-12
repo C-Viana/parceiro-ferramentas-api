@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,7 @@ public class FerramentaRepositoryTest {
 
     @Test
     @Order(1)
+    @DisplayName("Deve salvar novas ferramentas no repositório")
     void deveSalvarNovasFerramentas() {
         List<Ferramenta> ferramenta = CreateMockedData.getInstance().getFerramentas();
         ferramenta.stream().sorted(Comparator.comparing(x -> x.getId())).forEach(item -> {
@@ -61,6 +63,7 @@ public class FerramentaRepositoryTest {
 
     @Test
     @Order(2)
+    @DisplayName("Deve realizar busca bem sucedida pelo tipo de ferramenta ignorando maíusculas e minúsculas")
     void deveEncontrarPorTipoIgnoreCase() {
         String expectedTipe = "TIPOtestE";
 
@@ -76,6 +79,7 @@ public class FerramentaRepositoryTest {
 
     @Test
     @Order(3)
+    @DisplayName("Deve alterar com sucesso os dados de uma ferramenta já cadastrada")
     void deveAlterarDadosDeFerramentaCadastrada() {
         Ferramenta ferramenta = CreateMockedData.getInstance().getSingleEntity();
         ferramenta.setId(null);
@@ -100,6 +104,7 @@ public class FerramentaRepositoryTest {
 
     @Test
     @Order(4)
+    @DisplayName("Deve remover com sucesso o registro de uma ferramenta")
     void deveRemoverFerramentaCadastrada() {
         Ferramenta ferramenta = CreateMockedData.getInstance().getSingleEntity();
         ferramenta.setId(null);

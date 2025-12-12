@@ -38,6 +38,10 @@ public class Ferramenta {
     @Column(name = "itens_inclusos", columnDefinition = "jsonb")
     private List<String> itens_inclusos;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "lista_imagens", columnDefinition = "jsonb")
+    private List<String> lista_imagens;
+
     private boolean disponibilidade;
     private Double preco_aluguel;
     private Double preco_venda;
@@ -45,6 +49,8 @@ public class Ferramenta {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate criado_em;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate atualizado_em;
 
@@ -196,6 +202,7 @@ public class Ferramenta {
         result = prime * result + ((descricao == null) ? 0 : descricao.hashCode());
         result = prime * result + ((caracteristicas == null) ? 0 : caracteristicas.hashCode());
         result = prime * result + ((itens_inclusos == null) ? 0 : itens_inclusos.hashCode());
+        result = prime * result + ((lista_imagens == null) ? 0 : lista_imagens.hashCode());
         result = prime * result + (disponibilidade ? 1231 : 1237);
         result = prime * result + ((preco_aluguel == null) ? 0 : preco_aluguel.hashCode());
         result = prime * result + ((preco_venda == null) ? 0 : preco_venda.hashCode());
@@ -253,6 +260,11 @@ public class Ferramenta {
                 return false;
         } else if (!itens_inclusos.equals(other.itens_inclusos))
             return false;
+        if (lista_imagens == null) {
+            if (other.lista_imagens != null)
+                return false;
+        } else if (!lista_imagens.equals(other.lista_imagens))
+            return false;
         if (disponibilidade != other.disponibilidade)
             return false;
         if (preco_aluguel == null) {
@@ -285,6 +297,14 @@ public class Ferramenta {
                 + ", itens_inclusos=" + itens_inclusos + ", disponibilidade=" + disponibilidade + ", preco_aluguel="
                 + preco_aluguel + ", preco_venda=" + preco_venda + ", criado_em=" + criado_em + ", atualizado_em="
                 + atualizado_em + "]";
+    }
+
+    public List<String> getLista_imagens() {
+        return lista_imagens;
+    }
+
+    public void setLista_imagens(List<String> lista_imagens) {
+        this.lista_imagens = lista_imagens;
     }
     
 }
