@@ -61,6 +61,7 @@
             "Cão de corte",
             "Protetor de Sabre"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 45.9,
         "preco_venda": 608.78,
@@ -90,6 +91,7 @@
             "Óculos",
             "Protetor auditivo"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 38.0,
         "preco_venda": 789.9,
@@ -115,6 +117,7 @@
             "Limitador de profundidade",
             "Maleta"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 22.0,
         "preco_venda": 329.9,
@@ -139,6 +142,7 @@
             "3 brocas",
             "Maleta"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 65.0,
         "preco_venda": 1189.0,
@@ -162,6 +166,7 @@
             "Flange",
             "Protetor de disco"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 25.0,
         "preco_venda": 429.9,
@@ -185,6 +190,7 @@
             "Guia paralela",
             "Chave allen"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 35.0,
         "preco_venda": 589.9,
@@ -208,6 +214,7 @@
             "Corrente",
             "Capa protetora"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 42.0,
         "preco_venda": 989.9,
@@ -231,6 +238,7 @@
             "Manual",
             "Chave de vela"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 120.0,
         "preco_venda": 2490.0,
@@ -255,6 +263,7 @@
             "Mangueira 5m",
             "Bicos"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 55.0,
         "preco_venda": 1190.0,
@@ -277,6 +286,7 @@
             "Manual",
             "Chave de montagem"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 180.0,
         "preco_venda": 3890.0,
@@ -299,6 +309,7 @@
             "Guia paralela",
             "Saco coletor"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 28.0,
         "preco_venda": 689.9,
@@ -322,6 +333,7 @@
             "Pistola de pintura",
             "Calibrador"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 85.0,
         "preco_venda": 1690.0,
@@ -345,6 +357,7 @@
             "Chave",
             "Guia"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 32.0,
         "preco_venda": 489.9,
@@ -369,6 +382,7 @@
             "Maleta",
             "Ponteiras"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 58.0,
         "preco_venda": 1289.0,
@@ -393,6 +407,7 @@
             "Óculos",
             "Maleta"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 95.0,
         "preco_venda": 2290.0,
@@ -415,6 +430,7 @@
             "Disco de apoio",
             "Chave"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 40.0,
         "preco_venda": 789.9,
@@ -437,6 +453,7 @@
             "Talhadeira",
             "Maleta"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 180.0,
         "preco_venda": 3890.0,
@@ -459,6 +476,7 @@
             "Saco coletor",
             "Adaptador aspiração"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 18.0,
         "preco_venda": 329.9,
@@ -482,6 +500,7 @@
             "Máscara",
             "Escova"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 65.0,
         "preco_venda": 989.9,
@@ -504,6 +523,7 @@
             "Recolhedor",
             "Manual"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 38.0,
         "preco_venda": 689.9,
@@ -535,6 +555,7 @@
             "Bocal longo de 10mm",
             "Manual"
         ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
         "disponibilidade": true,
         "preco_aluguel": 67.7,
         "preco_venda": 669.0,
