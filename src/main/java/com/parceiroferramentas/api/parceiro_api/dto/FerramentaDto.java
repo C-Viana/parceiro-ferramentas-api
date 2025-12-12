@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FerramentaDto {
 
@@ -20,6 +21,7 @@ public class FerramentaDto {
     private Double preco_aluguel;
     private Double preco_venda;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate criado_em;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

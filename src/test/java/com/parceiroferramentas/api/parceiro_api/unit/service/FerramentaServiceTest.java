@@ -172,6 +172,7 @@ public class FerramentaServiceTest {
         Ferramenta ferramentaCriada = CreateMockedData.getInstance().getSingleEntity();
         String nome = "Ferramenta de teste";
         String modelo = "Unitários";
+        String tipo = "Tipo de teste";
         String fabricante = "Dev e Qualidade";
         String descricao = "Ferramenta fictícia para validação em teste unitário";
         Map<String, Object> caracteristicas = new HashMap<>();
@@ -189,7 +190,7 @@ public class FerramentaServiceTest {
         when(repository.save(ferramentaCriada)).thenReturn(ferramentaCriada);
         
         Ferramenta novaFerramenta = ferramentaCriada;
-
+        System.out.println( novaFerramenta.toString() );
         Ferramenta resultado = service.create(novaFerramenta);
 
         Assertions.assertThat(resultado).isNotNull();
@@ -198,6 +199,7 @@ public class FerramentaServiceTest {
         Assertions.assertThat(resultado.getModelo()).isEqualTo(modelo);
         Assertions.assertThat(resultado.getFabricante()).isEqualTo(fabricante);
         Assertions.assertThat(resultado.getDescricao()).isEqualTo(descricao);
+        Assertions.assertThat(resultado.getTipo()).isEqualTo(tipo);
         Assertions.assertThat(resultado.getCaracteristicas()).isEqualTo(caracteristicas);
         Assertions.assertThat(resultado.getItens_inclusos()).isEqualTo(itens);
         Assertions.assertThat(resultado.getDisponibilidade()).isEqualTo(disponibilidade);

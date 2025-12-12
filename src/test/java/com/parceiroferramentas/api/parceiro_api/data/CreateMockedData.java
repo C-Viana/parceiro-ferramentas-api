@@ -48,6 +48,7 @@ public class CreateMockedData {
         Ferramenta ferramentaCriada = new Ferramenta();
         String nome = "Ferramenta de teste";
         String modelo = "Unitários";
+        String tipo = "Tipo de teste";
         String fabricante = "Dev e Qualidade";
         String descricao = "Ferramenta fictícia para validação em teste unitário";
         Map<String, Object> caracteristicas = new HashMap<>();
@@ -60,11 +61,12 @@ public class CreateMockedData {
         Double preco_aluguel = 99.99;
         Double preco_venda = 999.99;
         LocalDate data_criacao = LocalDate.now();
-        LocalDate data_atualizacao = LocalDate.now();
+        LocalDate data_atualizacao = data_criacao;
 
         ferramentaCriada.setId(1L);
         ferramentaCriada.setNome(nome);
         ferramentaCriada.setModelo(modelo);
+        ferramentaCriada.setTipo(tipo);
         ferramentaCriada.setFabricante(fabricante);
         ferramentaCriada.setDescricao(descricao);
         ferramentaCriada.setCaracteristicas(caracteristicas);
@@ -77,4 +79,5 @@ public class CreateMockedData {
 
         return ferramentaCriada;
     }
+
 }

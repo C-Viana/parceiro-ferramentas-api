@@ -8,7 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +42,7 @@ public class Ferramenta {
     private Double preco_aluguel;
     private Double preco_venda;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate criado_em;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -276,6 +276,15 @@ public class Ferramenta {
         } else if (!atualizado_em.equals(other.atualizado_em))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Ferramenta [id=" + id + ", nome=" + nome + ", modelo=" + modelo + ", fabricante=" + fabricante
+                + ", tipo=" + tipo + ", descricao=" + descricao + ", caracteristicas=" + caracteristicas
+                + ", itens_inclusos=" + itens_inclusos + ", disponibilidade=" + disponibilidade + ", preco_aluguel="
+                + preco_aluguel + ", preco_venda=" + preco_venda + ", criado_em=" + criado_em + ", atualizado_em="
+                + atualizado_em + "]";
     }
     
 }
