@@ -8,6 +8,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -21,7 +23,7 @@ public class Ferramenta {
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String nome;
     private String modelo;
     private String fabricante;
@@ -40,6 +42,7 @@ public class Ferramenta {
     private Double preco_aluguel;
     private Double preco_venda;
 
+    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate criado_em;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -47,7 +50,7 @@ public class Ferramenta {
 
     public Ferramenta(){}
 
-    public Ferramenta(Integer id, String nome, String modelo, String fabricante, String tipo, String descricao,
+    public Ferramenta(Long id, String nome, String modelo, String fabricante, String tipo, String descricao,
             Map<String, Object> caracteristicas, List<String> itens_inclusos, boolean disponibilidade, Double preco_aluguel,
             Double preco_venda, LocalDate criado_em, LocalDate atualizado_em) {
         this.id = id;
@@ -77,11 +80,11 @@ public class Ferramenta {
         return true;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

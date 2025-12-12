@@ -62,7 +62,7 @@ public class CreateMockedData {
         LocalDate data_criacao = LocalDate.now();
         LocalDate data_atualizacao = LocalDate.now();
 
-        ferramentaCriada.setId(1);
+        ferramentaCriada.setId(1L);
         ferramentaCriada.setNome(nome);
         ferramentaCriada.setModelo(modelo);
         ferramentaCriada.setFabricante(fabricante);

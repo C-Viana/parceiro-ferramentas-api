@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
+import com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 
@@ -22,21 +22,21 @@ public class FerramentaService {
     @Autowired
     private FerramentaRepository repository;
 
-    public Ferramenta findById(Integer id) {
+    public Ferramenta findById(Long id) {
         logger.info("Busca pela ferramenta com ID {"+id+"}");
         return repository.findById(id).orElse(null);
     }
 
     public Ferramenta create(Ferramenta ferramenta) {
         logger.info("Criando nova ferramenta: " + ferramenta.getNome());
-        if(ferramenta.validateFields()==false) throw new BadRequestException(BAD_REQUEST_MESSAGE);
+        if(ferramenta.validateFields()==false) throw new InternalApplicationException(BAD_REQUEST_MESSAGE);
         LocalDate currenDate = LocalDate.now();
         ferramenta.setCriado_em(currenDate);
         ferramenta.setAtualizado_em(currenDate);
         return repository.save(ferramenta);
     }
 
-    public void delete(Integer id) {
+    public void delete(Long id) {
         logger.info("Deletando ferramenta com ID {"+id+"}");
         if(repository.findById(id)==null) return;
         repository.deleteById(id);
@@ -44,7 +44,7 @@ public class FerramentaService {
 
     public Ferramenta update(Ferramenta ferramenta) {
         logger.info("Atualizando ferramenta com ID {"+ferramenta.getId()+"}");
-        if(ferramenta.validateFields()==false) throw new BadRequestException(BAD_REQUEST_MESSAGE);
+        if(ferramenta.validateFields()==false) throw new InternalApplicationException(BAD_REQUEST_MESSAGE);
         LocalDate currenDate = LocalDate.now();
         ferramenta.setAtualizado_em(currenDate);
         return repository.save(ferramenta);

@@ -20,7 +20,13 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler(InternalApplicationException.class)
+    public final ResponseEntity<ExceptionResponseTemplate> InternalApplicationExceptions(Exception error, WebRequest request) {
+        ExceptionResponseTemplate response = new ExceptionResponseTemplate(LocalDate.now(), error.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InternalApplicationException.class)
     public final ResponseEntity<ExceptionResponseTemplate> handleBadRequestExceptions(Exception error, WebRequest request) {
         ExceptionResponseTemplate response = new ExceptionResponseTemplate(LocalDate.now(), error.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

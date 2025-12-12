@@ -26,7 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
-import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
+import com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 import com.parceiroferramentas.api.parceiro_api.service.FerramentaService;
@@ -140,7 +140,7 @@ public class FerramentaServiceTest {
     @Test
     @DisplayName("Deve retornar ferramenta quando buscar por ID válido")
     void buscarPorId_comIdValido_retornaFerramenta() {
-        Integer idBuscado = 1;
+        Long idBuscado = 1L;
         Ferramenta ferramentaBuscada = mockedFerramentas.stream().filter(item -> {return item.getId()==idBuscado;}).findFirst().orElse(null);
 
         when(repository.findById(idBuscado)).thenReturn(Optional.ofNullable(ferramentaBuscada));
@@ -156,7 +156,7 @@ public class FerramentaServiceTest {
     @Test
     @DisplayName("Deve retornar nulo quando buscar por ID inexistente")
     void buscarPorId_comIdInvalido_retornaNulo() {
-        Integer idBuscado = 9999;
+        Long idBuscado = 9999L;
 
         when(repository.findById(idBuscado)).thenReturn(Optional.empty());
 
@@ -222,7 +222,7 @@ public class FerramentaServiceTest {
 
         Assertions
             .assertThatThrownBy(() -> service.create(novaFerramenta))
-            .isInstanceOf(BadRequestException.class)
+            .isInstanceOf(InternalApplicationException.class)
             .hasMessage(BAD_REQUEST_MESSAGE);
         
         verify(repository, times(0)).save(any());
@@ -241,7 +241,7 @@ public class FerramentaServiceTest {
 
         Assertions
             .assertThatThrownBy(() -> service.create(novaFerramenta))
-            .isInstanceOf(BadRequestException.class)
+            .isInstanceOf(InternalApplicationException.class)
             .hasMessage(BAD_REQUEST_MESSAGE);
         
         verify(repository, times(0)).save(any());
@@ -256,7 +256,7 @@ public class FerramentaServiceTest {
 
         Assertions
             .assertThatThrownBy(() -> service.create(novaFerramenta))
-            .isInstanceOf(BadRequestException.class)
+            .isInstanceOf(InternalApplicationException.class)
             .hasMessage(BAD_REQUEST_MESSAGE);
         
         verify(repository, times(0)).save(any());
@@ -301,7 +301,7 @@ public class FerramentaServiceTest {
 
         Assertions
             .assertThatThrownBy(() -> service.update(ferramentaAtualizada))
-            .isInstanceOf(BadRequestException.class)
+            .isInstanceOf(InternalApplicationException.class)
             .hasMessage(BAD_REQUEST_MESSAGE);
         
         verify(repository, times(0)).save(any());
@@ -320,7 +320,7 @@ public class FerramentaServiceTest {
 
         Assertions
             .assertThatThrownBy(() -> service.update(ferramentaAtualizada))
-            .isInstanceOf(BadRequestException.class)
+            .isInstanceOf(InternalApplicationException.class)
             .hasMessage(BAD_REQUEST_MESSAGE);
         
         verify(repository, times(0)).save(any());
@@ -335,7 +335,7 @@ public class FerramentaServiceTest {
 
         Assertions
             .assertThatThrownBy(() -> service.update(ferramentaAtualizada))
-            .isInstanceOf(BadRequestException.class)
+            .isInstanceOf(InternalApplicationException.class)
             .hasMessage(BAD_REQUEST_MESSAGE);
         
         verify(repository, times(0)).save(any());
@@ -356,7 +356,7 @@ public class FerramentaServiceTest {
     @Test
     @DisplayName("Não deve chamar o método de deleção ao tentar remover uma ferramenta inexistente")
     void apagarFerramenta_comIdInexistente() {
-        Integer idInexistente = 9999;
+        Long idInexistente = 9999L;
         when(repository.findById(idInexistente)).thenReturn(null);
 
         service.delete(idInexistente);

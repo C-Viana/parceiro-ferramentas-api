@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,10 @@ import com.parceiroferramentas.api.parceiro_api.model.DataConverter;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.service.FerramentaService;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
+@Validated
 @RequestMapping("/api/v1/ferramentas")
 public class FerramentasController {
 
@@ -36,7 +42,7 @@ public class FerramentasController {
     private FerramentaService service;
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<FerramentaDto> findById(@PathVariable Integer id) {
+    public ResponseEntity<FerramentaDto> findById(@PathVariable @Min(0) Long id) {
         Ferramenta entity = service.findById(id);
         if (entity == null) {
             return ResponseEntity.notFound().build();
@@ -52,13 +58,13 @@ public class FerramentasController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/{id}",consumes = "application/json" , produces = "application/json")
-    public ResponseEntity<FerramentaDto> update(@PathVariable Integer id, @RequestBody FerramentaDto ferramenta) {
+    public ResponseEntity<FerramentaDto> update(@PathVariable Long id, @RequestBody FerramentaDto ferramenta) {
         FerramentaDto entity = findById(id).getBody();
 
         ferramenta.setId(id);
@@ -103,9 +109,9 @@ public class FerramentasController {
     @GetMapping(value = "/tipo", produces = "application/json")
     public ResponseEntity<Page<FerramentaDto>> findAllByType(
             @RequestParam String tipo, 
-            @RequestParam(value = "indice", defaultValue = "0") Integer page, 
-            @RequestParam(value = "quant", defaultValue = "12") Integer size, 
-            @RequestParam(value = "ordem", defaultValue = "asc") String sort) {
+            @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(999) Integer page, 
+            @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(999) Integer size, 
+            @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort) {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAllByType(tipo, PageRequest.of(page, size, Sort.by(sortOption, "id")));
         logger.info("Total de ferramentas do tipo " + tipo + " encontradas: " + ferramentas.getTotalElements());

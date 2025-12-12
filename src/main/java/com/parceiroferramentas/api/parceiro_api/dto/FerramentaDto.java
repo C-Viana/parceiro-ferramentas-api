@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class FerramentaDto {
 
-    private Integer id;
+    private Long id;
     private String nome;
     private String modelo;
     private String fabricante;
@@ -27,7 +27,7 @@ public class FerramentaDto {
 
     public FerramentaDto(){}
 
-    public FerramentaDto(Integer id, String nome, String modelo, String fabricante, String tipo, String descricao,
+    public FerramentaDto(Long id, String nome, String modelo, String fabricante, String tipo, String descricao,
             Map<String, Object> caracteristicas, List<String> itens_inclusos, boolean disponibilidade, Double preco_aluguel,
             Double preco_venda, LocalDate criado_em, LocalDate atualizado_em) {
         this.id = id;
@@ -45,11 +45,11 @@ public class FerramentaDto {
         this.atualizado_em = atualizado_em;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -79,7 +79,7 @@ public class FerramentaRepositoryTest {
     void deveAlterarDadosDeFerramentaCadastrada() {
         Ferramenta ferramenta = CreateMockedData.getInstance().getSingleEntity();
         ferramenta.setId(null);
-        Integer ID = repository.save(ferramenta).getId();
+        Long ID = repository.save(ferramenta).getId();
 
         Ferramenta resultadoOriginal = repository.findById(ID).orElse(null);
         ferramenta.setCriado_em(resultadoOriginal.getCriado_em());
@@ -103,7 +103,7 @@ public class FerramentaRepositoryTest {
     void deveRemoverFerramentaCadastrada() {
         Ferramenta ferramenta = CreateMockedData.getInstance().getSingleEntity();
         ferramenta.setId(null);
-        Integer ID = repository.save(ferramenta).getId();
+        Long ID = repository.save(ferramenta).getId();
         repository.deleteById(ID);
 
         Ferramenta resultadoAtualizado = repository.findById(ID).orElse(null);

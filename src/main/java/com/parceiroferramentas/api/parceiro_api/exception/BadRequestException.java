@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class BadRequestException extends RuntimeException {
     
     public BadRequestException() {
-        super("Unsupported data request");
+        super("A requisição conta com dados inválidos ou campos obrigatórios ausentes");
     }
 
 	public BadRequestException(String message) {
