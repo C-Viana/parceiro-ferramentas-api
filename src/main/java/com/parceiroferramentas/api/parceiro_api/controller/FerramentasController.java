@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.parceiroferramentas.api.parceiro_api.controller.openapi.FerramentasDocumentation;
 import com.parceiroferramentas.api.parceiro_api.dto.FerramentaDto;
 import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
@@ -34,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @Validated
 @RequestMapping("/api/v1/ferramentas")
-public class FerramentasController {
+public class FerramentasController implements FerramentasDocumentation {
 
     private Logger logger = LoggerFactory.getLogger(FerramentasController.class.getName());
 
@@ -44,30 +45,32 @@ public class FerramentasController {
     @Autowired
     private GlobalObjectMapper mapper;
 
+    @Override
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<FerramentaDto> findById(@PathVariable @Min(0) Long id) {
         Ferramenta entity = service.findById(id);
         if (entity == null) {
             return ResponseEntity.notFound().build();
         }
-        //return ResponseEntity.ok(DataConverter.convert(entity, FerramentaDto.class));
         return ResponseEntity.ok(mapper.convert(entity));
     }
 
+    @Override
     @PostMapping(consumes = "application/json")
     public ResponseEntity<FerramentaDto> create(@RequestBody FerramentaDto ferramenta) {
-        //Ferramenta entity = DataConverter.convert(ferramenta, Ferramenta.class);
         Ferramenta entity = mapper.convert(ferramenta);
         ferramenta.setId(service.create(entity).getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(ferramenta);
     }
 
+    @Override
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Override
     @PutMapping(value = "/{id}",consumes = "application/json" , produces = "application/json")
     public ResponseEntity<FerramentaDto> update(@PathVariable Long id, @RequestBody FerramentaDto ferramenta) {
         FerramentaDto entity = findById(id).getBody();
@@ -80,10 +83,6 @@ public class FerramentasController {
         }
         else {
             logger.info("Alterando dados da ferramenta ID ["+id+"]");
-            /*ferramenta = DataConverter.convert(
-                service.update(DataConverter.convert(ferramenta, Ferramenta.class)),
-                FerramentaDto.class
-            );*/
             ferramenta = mapper.convert(
                 service.update(mapper.convert(ferramenta))
             );
@@ -92,15 +91,7 @@ public class FerramentasController {
         return ResponseEntity.ok().body(ferramenta);
     }
 
-    /*
-    @GetMapping(produces = "application/json")
-    public ResponseEntity<List<FerramentaDto>> findAll() {
-        List<Ferramenta> ferramentas = service.findAll();
-        logger.info("Total de ferramentas encontradas: " + ferramentas.size());
-        return ResponseEntity.ok(DataConverter.convert(ferramentas, FerramentaDto.class));
-    }
-    */
-
+    @Override
     @GetMapping(produces = "application/json")
     public ResponseEntity<Page<FerramentaDto>> findAll(
             @RequestParam(value = "indice", defaultValue = "0") Integer page, 
@@ -110,10 +101,10 @@ public class FerramentasController {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAll(PageRequest.of(page, size, Sort.by(sortOption, "id")));
         logger.info("Total de ferramentas encontradas: " + ferramentas.getTotalElements());
-        //return ResponseEntity.ok(ferramentas.map(ferramenta -> DataConverter.convert(ferramenta, FerramentaDto.class)));
         return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.convert(ferramenta)));
     }
 
+    @Override
     @GetMapping(value = "/tipo", produces = "application/json")
     public ResponseEntity<Page<FerramentaDto>> findAllByType(
             @RequestParam String tipo, 
@@ -123,7 +114,6 @@ public class FerramentasController {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAllByType(tipo, PageRequest.of(page, size, Sort.by(sortOption, "id")));
         logger.info("Total de ferramentas do tipo " + tipo + " encontradas: " + ferramentas.getTotalElements());
-        //return ResponseEntity.ok(ferramentas.map(ferramenta -> DataConverter.convert(ferramenta, FerramentaDto.class)));
         return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.convert(ferramenta)));
     }
 
