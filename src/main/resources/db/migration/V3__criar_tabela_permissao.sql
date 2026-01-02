@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS permissao
+(
+    id SERIAL PRIMARY KEY,
+    descricao TEXT NOT NULL
+)

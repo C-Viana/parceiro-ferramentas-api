@@ -1,0 +1,10 @@
+{
+    "properties": [
+        {
+            "name": "api.security.token.secret",
+            "type": "java.lang.String",
+            "description": "JWT decoding secret key",
+            "sourceType": "com.parceiro.ferramentas.config.TokenServiceConfig"
+        }
+    ]
+}

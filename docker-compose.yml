@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:18
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: parceirodb
+    networks:
+      - default
+  app:
+    image: parceiro-api:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: parceirodb
+      DB_USER: ${DATABASE_USER}
+      DB_PASSWORD: ${DATABASE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge

@@ -1,0 +1,565 @@
+[
+    {
+        "id": 1,
+        "nome": "Motosserra à Gasolina",
+        "modelo": "FORTGPRO-FG9122",
+        "fabricante": "FortG",
+        "tipo": "Motosserra",
+        "descricao": "Motosserra à gasolina FG9122 com sabre de 20” com motor 2T de 63 cilindradas",
+        "caracteristicas": {
+            "especificacoes_tecnicas": {
+                "corte": {
+                    "sabre": {
+                        "tipo": "Dentado",
+                        "comprimento_mm": "500mm",
+                        "tamanho_polegadas": "20\""
+                    },
+                    "corrente": {
+                        "tipo": "21BP/K2",
+                        "roda_dentada": "7T x 0,325\""
+                    },
+                    "comprimento_maximo": "480mm"
+                },
+                "motor": {
+                    "tipo": "2 Tempos",
+                    "rotacao": {
+                        "maxima_alta": "10000 rpm",
+                        "maxima_baixa": "2800 rpm"
+                    },
+                    "potencia": "2.4kW / 3HP",
+                    "cilindrada": "63.3cc"
+                },
+                "peso_e_dimensoes": {
+                    "dimensoes": "480 x 260 x 300mm",
+                    "peso_com_sabre_e_corrente": "5.5kg"
+                },
+                "combustivel_e_oleo": {
+                    "combustivel": {
+                        "tipo": "Gasolina + Óleo 2T",
+                        "mistura": "25:1",
+                        "tanque_capacidade": "500ml"
+                    },
+                    "oleo_corrente": {
+                        "tipo": "2T API-TC Mineral - SAE 90",
+                        "alimentacao": "Bomba automática com ajuste",
+                        "tanque_capacidade": "260ml"
+                    }
+                },
+                "ignicao_e_carburacao": {
+                    "vela": "JBY 7D",
+                    "ignicao": "Bobina",
+                    "carburacao": "Diafragma"
+                }
+            }
+        },
+        "itens_inclusos": [
+            "Motosserra",
+            "Chave vela combinada",
+            "Chave de fenda",
+            "Chave Hexagonal",
+            "Medidor de combustível",
+            "Cão de corte",
+            "Protetor de Sabre"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 45.9,
+        "preco_venda": 608.78,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-09"
+    },
+    {
+        "id": 2,
+        "nome": "Roçadeira à Gasolina",
+        "modelo": "BC430B",
+        "fabricante": "Toyama",
+        "tipo": "Roçadeira",
+        "descricao": "Roçadeira lateral 43cc com eixo rígido e carretel de nylon",
+        "caracteristicas": {
+            "corte": {
+                "largura": "430mm"
+            },
+            "motor": {
+                "potencia": "1.7HP",
+                "cilindrada": "43cc"
+            }
+        },
+        "itens_inclusos": [
+            "Carretel nylon",
+            "Lâmina 3 pontas",
+            "Cinto dupla",
+            "Óculos",
+            "Protetor auditivo"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 38.0,
+        "preco_venda": 789.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 3,
+        "nome": "Furadeira de Impacto",
+        "modelo": "GSB 13 RE",
+        "fabricante": "Bosch",
+        "tipo": "Furadeira",
+        "descricao": "Furadeira profissional 650W com reversão e controle de velocidade",
+        "caracteristicas": {
+            "impacto": true,
+            "mandril": "13mm",
+            "potencia": "650W",
+            "voltagem": "220V"
+        },
+        "itens_inclusos": [
+            "Chave de mandril",
+            "Punho auxiliar",
+            "Limitador de profundidade",
+            "Maleta"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 22.0,
+        "preco_venda": 329.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 4,
+        "nome": "Martelete SDS-Plus",
+        "modelo": "GBH 2-24 D",
+        "fabricante": "Bosch",
+        "tipo": "Martelete",
+        "descricao": "Martelete 790W com 3 funções: furar, romper e talhar",
+        "caracteristicas": {
+            "potencia": "790W",
+            "sds_plus": true,
+            "energia_impacto": "2.7J"
+        },
+        "itens_inclusos": [
+            "Ponteiro",
+            "Talhadeira",
+            "3 brocas",
+            "Maleta"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 65.0,
+        "preco_venda": 1189.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 5,
+        "nome": "Esmerilhadeira",
+        "modelo": "GWS 9-125 S",
+        "fabricante": "Bosch",
+        "tipo": "Esmerilhadeira",
+        "descricao": "Esmerilhadeira 900W com controle de rotação e proteção",
+        "caracteristicas": {
+            "disco": "115mm",
+            "potencia": "900W",
+            "controle_velocidade": true
+        },
+        "itens_inclusos": [
+            "Chave de aperto",
+            "Flange",
+            "Protetor de disco"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 25.0,
+        "preco_venda": 429.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 6,
+        "nome": "Serra Circular",
+        "modelo": "GKS 190",
+        "fabricante": "Bosch",
+        "tipo": "Serra Circular",
+        "descricao": "Serra circular 1400W para cortes profundos em madeira",
+        "caracteristicas": {
+            "disco": "184mm",
+            "potencia": "1400W",
+            "profundidade_corte": "67mm"
+        },
+        "itens_inclusos": [
+            "Disco de serra",
+            "Guia paralela",
+            "Chave allen"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 35.0,
+        "preco_venda": 589.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 7,
+        "nome": "Motosserra Elétrica",
+        "modelo": "UC4051A",
+        "fabricante": "Makita",
+        "tipo": "Motosserra",
+        "descricao": "Motosserra elétrica 1800W com lubrificação automática",
+        "caracteristicas": {
+            "sabre": "40cm",
+            "tensao": "220V",
+            "potencia": "1800W"
+        },
+        "itens_inclusos": [
+            "Sabre",
+            "Corrente",
+            "Capa protetora"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 42.0,
+        "preco_venda": 989.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 8,
+        "nome": "Gerador a Gasolina",
+        "modelo": "TG3800CX",
+        "fabricante": "Toyama",
+        "tipo": "Gerador",
+        "descricao": "Gerador portátil 4 tempos com partida manual",
+        "caracteristicas": {
+            "motor": "4 tempos",
+            "tanque": "15L",
+            "potencia": "3000W"
+        },
+        "itens_inclusos": [
+            "Rodas",
+            "Manual",
+            "Chave de vela"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 120.0,
+        "preco_venda": 2490.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 9,
+        "nome": "Lavadora de Alta Pressão",
+        "modelo": "J7000",
+        "fabricante": "Jacto",
+        "tipo": "Lavadora",
+        "descricao": "Lavadora 2200W com 170 bar de pressão",
+        "caracteristicas": {
+            "vazao": "420 L/h",
+            "pressao": "170 bar",
+            "potencia": "2200W"
+        },
+        "itens_inclusos": [
+            "Pistola",
+            "Lança",
+            "Mangueira 5m",
+            "Bicos"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 55.0,
+        "preco_venda": 1190.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 10,
+        "nome": "Betoneira Elétrica",
+        "modelo": "CS400",
+        "fabricante": "Menegotti",
+        "tipo": "Betoneira",
+        "descricao": "Betoneira profissional com motor 2HP e cremalheira",
+        "caracteristicas": {
+            "motor": "2HP",
+            "voltagem": "220V",
+            "capacidade": "400L"
+        },
+        "itens_inclusos": [
+            "Manual",
+            "Chave de montagem"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 180.0,
+        "preco_venda": 3890.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 11,
+        "nome": "Plaina Desempenadeira",
+        "modelo": "KP0800",
+        "fabricante": "Makita",
+        "tipo": "Plaina",
+        "descricao": "Plaina 620W para acabamento fino em madeira",
+        "caracteristicas": {
+            "potencia": "620W",
+            "largura_corte": "82mm"
+        },
+        "itens_inclusos": [
+            "2 lâminas",
+            "Guia paralela",
+            "Saco coletor"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 28.0,
+        "preco_venda": 689.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 12,
+        "nome": "Compressor de Ar",
+        "modelo": "CSI 8.5/50",
+        "fabricante": "Schulz",
+        "tipo": "Compressor",
+        "descricao": "Compressor 2HP com tanque 50L e pressão máxima 10 bar",
+        "caracteristicas": {
+            "tanque": "50L",
+            "pressao": "10 bar",
+            "potencia": "2HP"
+        },
+        "itens_inclusos": [
+            "Mangueira",
+            "Pistola de pintura",
+            "Calibrador"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 85.0,
+        "preco_venda": 1690.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 13,
+        "nome": "Serra Mármore",
+        "modelo": "TC410",
+        "fabricante": "Makita",
+        "tipo": "Serra Mármore",
+        "descricao": "Serra mármore 1300W para corte de pisos e porcelanato",
+        "caracteristicas": {
+            "disco": "110mm",
+            "potencia": "1300W",
+            "refrigeracao": "água"
+        },
+        "itens_inclusos": [
+            "Disco diamantado",
+            "Chave",
+            "Guia"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 32.0,
+        "preco_venda": 489.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 14,
+        "nome": "Parafusadeira Impacto 18V",
+        "modelo": "DCD796",
+        "fabricante": "DeWalt",
+        "tipo": "Parafusadeira",
+        "descricao": "Parafusadeira à bateria 18V com impacto e LED",
+        "caracteristicas": {
+            "torque": "70Nm",
+            "bateria": "2.0Ah",
+            "voltagem": "18V"
+        },
+        "itens_inclusos": [
+            "2 baterias",
+            "Carregador",
+            "Maleta",
+            "Ponteiras"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 58.0,
+        "preco_venda": 1289.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 15,
+        "nome": "Nível a Laser Verde",
+        "modelo": "GLL 3-80",
+        "fabricante": "Bosch",
+        "tipo": "Nível Laser",
+        "descricao": "Nível a laser verde 360° com 80m de alcance",
+        "caracteristicas": {
+            "cor": "verde",
+            "linhas": "3x360°",
+            "alcance": "80m"
+        },
+        "itens_inclusos": [
+            "Suporte",
+            "Alvo",
+            "Óculos",
+            "Maleta"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 95.0,
+        "preco_venda": 2290.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 16,
+        "nome": "Politriz 7\"",
+        "modelo": "GPO 12 CE",
+        "fabricante": "Bosch",
+        "tipo": "Politriz",
+        "descricao": "Politriz profissional com controle de velocidade",
+        "caracteristicas": {
+            "disco": "180mm",
+            "potencia": "1250W"
+        },
+        "itens_inclusos": [
+            "Boina",
+            "Disco de apoio",
+            "Chave"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 40.0,
+        "preco_venda": 789.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 17,
+        "nome": "Rompedor Elétrico",
+        "modelo": "GSH 11 E",
+        "fabricante": "Bosch",
+        "tipo": "Rompedor",
+        "descricao": "Rompedor 1500W com 15kg de força",
+        "caracteristicas": {
+            "potencia": "1500W",
+            "energia_impacto": "25J"
+        },
+        "itens_inclusos": [
+            "Ponteiro",
+            "Talhadeira",
+            "Maleta"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 180.0,
+        "preco_venda": 3890.0,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 18,
+        "nome": "Lixadeira Orbital",
+        "modelo": "GSS 140",
+        "fabricante": "Bosch",
+        "tipo": "Lixadeira",
+        "descricao": "Lixadeira orbital 220W com sistema micro-filtro",
+        "caracteristicas": {
+            "potencia": "220W",
+            "tamanho_base": "114x140mm"
+        },
+        "itens_inclusos": [
+            "Lixa",
+            "Saco coletor",
+            "Adaptador aspiração"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 18.0,
+        "preco_venda": 329.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 19,
+        "nome": "Inversora de Solda",
+        "modelo": "RIV 222",
+        "fabricante": "Vonder",
+        "tipo": "Inversora",
+        "descricao": "Inversora 200A bivolt com display digital",
+        "caracteristicas": {
+            "corrente": "200A",
+            "eletrodo": "1.6 a 4.0mm"
+        },
+        "itens_inclusos": [
+            "Garra terra",
+            "Porta eletrodo",
+            "Máscara",
+            "Escova"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 65.0,
+        "preco_venda": 989.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 20,
+        "nome": "Cortador de Grama",
+        "modelo": "CE-200",
+        "fabricante": "Tramontina",
+        "tipo": "Cortador de Grama",
+        "descricao": "Cortador elétrico 2000W com recolhedor",
+        "caracteristicas": {
+            "corte": "40cm",
+            "potencia": "2000W",
+            "recolhedor": "35L"
+        },
+        "itens_inclusos": [
+            "Recolhedor",
+            "Manual"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 38.0,
+        "preco_venda": 689.9,
+        "criado_em": "2025-12-08",
+        "atualizado_em": "2025-12-08"
+    },
+    {
+        "id": 21,
+        "nome": "Soprador Térmico com Temperatura Digital 2000W",
+        "modelo": "DEWALT-D26414",
+        "fabricante": "DeWalt",
+        "tipo": "Soprador Térmico",
+        "descricao": "Soprador Térmico com Temperatura Digital 2000W 220V DEWALT-D26414",
+        "caracteristicas": {
+            "especificacoes_tecnicas": {
+                "peso": "0,6Kg",
+                "tensão": "220V",
+                "potência": "2000W",
+                "fluxo_de_ar": "250-500 (lt/min)",
+                "temperatura_max": "600º",
+                "temperatura_min": "50ºC",
+                "certificação_inmetro": "UL-BR 20.1094"
+            }
+        },
+        "itens_inclusos": [
+            "Soprador Térmico",
+            "Bocal de 20mm",
+            "Bocal largo",
+            "Bocal longo de 10mm",
+            "Manual"
+        ],
+        "lista_imagens": ["https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"],
+        "disponibilidade": true,
+        "preco_aluguel": 67.7,
+        "preco_venda": 669.0,
+        "criado_em": "2025-12-09",
+        "atualizado_em": "2025-12-09"
+    }
+]
