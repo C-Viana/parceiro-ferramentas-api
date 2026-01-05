@@ -1,7 +1,6 @@
 package com.parceiroferramentas.api.parceiro_api.unit.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +25,6 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
-import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
@@ -48,27 +46,11 @@ public class UsuarioServiceTest {
     private static AcessoUsuarioDto acessoDto;
     private static List<Usuario> mockedUsuarios;
     private static PageRequest pageRequest;
-    private static String senhaEncriptada = "$2a$10$AzCbojDDN5urYBKGcQk2Oewne3YiHMOOGsyndFejY2rpjldua2KzK";
     //private static final String MSG_SEM_PERMISSAO = "Acesso negado. Permissão de ADMINISTRADOR é necessária para essa operação";
 
     @BeforeAll
     static void setup() {
-        mockedUsuarios = new ArrayList<>();
-        mockedUsuarios.add(new Usuario(
-            1L, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.ADMIN))
-        ));
-        mockedUsuarios.add(new Usuario(
-            2L, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.GERENTE))
-        ));
-        mockedUsuarios.add(new Usuario(
-            3L, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.VENDEDOR))
-        ));
-        mockedUsuarios.add(new Usuario(
-            4L, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.CLIENTE))
-        ));
-        mockedUsuarios.add(new Usuario(
-            5L, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.CLIENTE))
-        ));
+        mockedUsuarios = CreateMockedData.getInstance().getUsuarios();
         pageRequest = PageRequest.of(0, 12, Sort.by(Direction.ASC, "id"));
     }
 

@@ -91,19 +91,19 @@ public class CreateMockedData {
         String senhaEncriptada = "$2a$10$AzCbojDDN5urYBKGcQk2Oewne3YiHMOOGsyndFejY2rpjldua2KzK";
 
         mockedUsuarios.add(new Usuario(
-            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.ADMIN))
+            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.ADMIN)), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PerfisAcesso.GERENTE))
+            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PerfisAcesso.GERENTE)), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PerfisAcesso.VENDEDOR))
+            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PerfisAcesso.VENDEDOR)), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE))
+            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE))
+            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of()
         ));
 
         return mockedUsuarios;

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS usuario
     username TEXT NOT NULL,
     nome TEXT NOT NULL,
     senha TEXT NOT NULL,
+    enderecos TEXT[],
     account_non_expired BOOLEAN DEFAULT FALSE,
     account_non_locked BOOLEAN DEFAULT FALSE,
     credentials_non_expired BOOLEAN DEFAULT FALSE,
