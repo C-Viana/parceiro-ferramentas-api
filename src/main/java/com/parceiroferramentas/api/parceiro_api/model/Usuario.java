@@ -48,7 +48,7 @@ public class Usuario implements UserDetails {
     private List<Permissao> authorities = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<EnderecoUsuario> enderecos = new ArrayList<>();
+    private List<Endereco> enderecos = new ArrayList<>();
 
     public Usuario(){}
 
@@ -60,7 +60,7 @@ public class Usuario implements UserDetails {
     }
 
     public Usuario(Long id, String username, String nome, String password, boolean account_non_expired,
-            boolean account_non_locked, boolean credentials_non_expired, boolean enabled, List<Permissao> permissoes, List<EnderecoUsuario> enderecos) {
+            boolean account_non_locked, boolean credentials_non_expired, boolean enabled, List<Permissao> permissoes, List<Endereco> enderecos) {
         this.id = id;
         this.username = username;
         this.nome = nome;
@@ -157,20 +157,20 @@ public class Usuario implements UserDetails {
         this.authorities = authorities;
     }
 
-    public List<EnderecoUsuario> getEnderecos() {
+    public List<Endereco> getEnderecos() {
         return enderecos;
     }
 
-    public void setEnderecos(List<EnderecoUsuario> enderecos) {
+    public void setEnderecos(List<Endereco> enderecos) {
         this.enderecos = enderecos;
     }
 
-    public void adicionarEndereco(EnderecoUsuario endereco) {
+    public void adicionarEndereco(Endereco endereco) {
         this.enderecos.add(endereco);
         endereco.setUsuario(this);
     }
 
-    public void removerEndereco(EnderecoUsuario endereco) {
+    public void removerEndereco(Endereco endereco) {
         this.enderecos.remove(endereco);
         endereco.setUsuario(null);
     }

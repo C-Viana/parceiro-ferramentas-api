@@ -58,12 +58,14 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString())
                 .requestMatchers(HttpMethod.PUT, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString(), PerfisAcesso.GERENTE.getString())
-                .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/**").hasAnyAuthority(PerfisAcesso.ADMIN.getString(), PerfisAcesso.GERENTE.getString())
+                .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/**", "/api/v1/endereco/todos").hasAnyAuthority(PerfisAcesso.ADMIN.getString(), PerfisAcesso.GERENTE.getString())
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString())
                 .requestMatchers(HttpMethod.GET, "/api/v1/ferramentas", "/api/v1/ferramentas/**").permitAll()
                 .requestMatchers(
                     "/api/v1/gerenciamento",
-                    "/api/v1/gerenciamento/**"
+                    "/api/v1/gerenciamento/**",
+                    "/api/v1/endereco",
+                    "/api/v1/endereco/**"
                 ).authenticated()
             )
             .cors(cors -> {})

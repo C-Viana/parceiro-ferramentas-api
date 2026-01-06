@@ -38,4 +38,10 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
         ExceptionResponseTemplate response = new ExceptionResponseTemplate(LocalDate.now(), error.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public final ResponseEntity<ExceptionResponseTemplate> handleNotFoundExceptionExceptions(Exception error, WebRequest request) {
+        ExceptionResponseTemplate response = new ExceptionResponseTemplate(LocalDate.now(), error.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

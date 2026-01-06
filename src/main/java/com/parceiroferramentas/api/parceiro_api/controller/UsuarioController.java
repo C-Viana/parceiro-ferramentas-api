@@ -66,14 +66,14 @@ public class UsuarioController implements UsuarioDocumentation {
     @PostMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioRequestDto usuario) {
         logger.info("Realizando cadastro de novo usuário");
-        Usuario res = service.signup(mapper.toEntity(usuario));
+        Usuario res = service.signup(mapper.toUsuarioEntity(usuario));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(res.getId())
             .toUri();
         
-        return ResponseEntity.created(location).body(mapper.toResponse(res));
+        return ResponseEntity.created(location).body(mapper.toUsuarioResponseDto(res));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class UsuarioController implements UsuarioDocumentation {
         ) {
         logger.info("Realizando busca de lista de usuários");
         Page<Usuario> response = service.findAllUsuarios(token.substring("Bearer ".length()), PageRequest.of(page, size, Sort.by(Direction.ASC, "id")));
-        Page<UsuarioResponseDto> dtoPage = response.map(user -> mapper.toResponse(user));
+        Page<UsuarioResponseDto> dtoPage = response.map(user -> mapper.toUsuarioResponseDto(user));
 
         return ResponseEntity.ok(dtoPage);
     }
@@ -100,7 +100,7 @@ public class UsuarioController implements UsuarioDocumentation {
         ) {
         logger.info("Realizando busca de usuários com o perfil: {}", perfil);
         Page<Usuario> response = service.findByAuthoritiesContains(token.substring("Bearer ".length()), perfil, PageRequest.of(page, size, Sort.by(Direction.ASC, "id")));
-        Page<UsuarioResponseDto> dtoPage = response.map(user -> mapper.toResponse(user));
+        Page<UsuarioResponseDto> dtoPage = response.map(user -> mapper.toUsuarioResponseDto(user));
 
         return ResponseEntity.ok(dtoPage);
     }

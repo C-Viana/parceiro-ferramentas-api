@@ -20,7 +20,7 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
-import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
+import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 import com.parceiroferramentas.api.parceiro_api.model.Acesso;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
@@ -105,10 +105,10 @@ public class UsuarioService implements UserDetailsService {
             usuario.getPassword() == null || usuario.getPassword().isBlank() || 
             usuario.getUsername() == null || usuario.getUsername().isBlank() || 
             usuario.getNome() == null || usuario.getNome().isBlank())
-                throw new BadRequestException("Informações incompletas. Certifique-se que os campos USUÁRIO, NOME e SENHA foram informados");
+                throw new NotFoundException("Informações incompletas. Certifique-se que os campos USUÁRIO, NOME e SENHA foram informados");
         
         if(usuarioRepo.findUsuarioByUsername(usuario.getUsername()) != null)
-            throw new BadRequestException("Esse nome de usuário já existe. É necessário usar um nome diferente");
+            throw new NotFoundException("Esse nome de usuário já existe. É necessário usar um nome diferente");
         
         usuario.setAccount_non_expired(true);
         usuario.setAccount_non_locked(true);
@@ -125,7 +125,7 @@ public class UsuarioService implements UserDetailsService {
             perms = usuario.getAuthorities().stream().map(role -> {
                 Permissao p = permissaoRepo.findPermissaoByAuthority(PerfisAcesso.valueOf(role.getAuthority()));
                 if(p == null)
-                    throw new BadRequestException("O perfil de acesso ["+role.getAuthority()+"] é inválido ou não existe");
+                    throw new NotFoundException("O perfil de acesso ["+role.getAuthority()+"] é inválido ou não existe");
                 return p;
             }).toList();
             usuario.setAuthorities(perms);
@@ -153,7 +153,7 @@ public class UsuarioService implements UserDetailsService {
     public Page<Usuario> findByAuthoritiesContains(String token, String nomePermissao, Pageable pageable) {
         Permissao p = permissaoRepo.findPermissaoByAuthority(PerfisAcesso.valueOf(nomePermissao.toUpperCase()));
         if(p == null)
-            throw new BadRequestException("O perfil de acesso informado é inválido ou não existe");
+            throw new NotFoundException("O perfil de acesso informado é inválido ou não existe");
         if(tokenService.tokenExpirado(token))
             throw new InvalidAuthorizationException("O token fornecido está expirado ou inválido");
         return usuarioRepo.findByAuthoritiesContains(p, pageable);

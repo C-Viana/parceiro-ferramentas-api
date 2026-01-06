@@ -55,20 +55,20 @@ public class FerramentasController implements FerramentasDocumentation {
         if (entity == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(mapper.toDto(entity));
+        return ResponseEntity.ok(mapper.toFerramentaDto(entity));
     }
 
     @Override
     @PostMapping(consumes = "application/json")
     public ResponseEntity<FerramentaDto> create(@RequestHeader("Authorization") String token, @RequestBody FerramentaDto ferramenta) {
-        Ferramenta entity = service.create(mapper.toEntity(ferramenta));
+        Ferramenta entity = service.create(mapper.toFerramentaEntity(ferramenta));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(entity.getId())
             .toUri();
         
-        return ResponseEntity.created(location).body(mapper.toDto(entity));
+        return ResponseEntity.created(location).body(mapper.toFerramentaDto(entity));
     }
 
     @Override
@@ -91,8 +91,8 @@ public class FerramentasController implements FerramentasDocumentation {
         }
         else {
             logger.info("Alterando dados da ferramenta ID ["+id+"]");
-            ferramenta = mapper.toDto(
-                service.update(mapper.toEntity(ferramenta))
+            ferramenta = mapper.toFerramentaDto(
+                service.update(mapper.toFerramentaEntity(ferramenta))
             );
         }
         
@@ -109,7 +109,7 @@ public class FerramentasController implements FerramentasDocumentation {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAll(PageRequest.of(page, size, Sort.by(sortOption, "id")));
         logger.info("Total de ferramentas encontradas: " + ferramentas.getTotalElements());
-        return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toDto(ferramenta)));
+        return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
     }
 
     @Override
@@ -122,7 +122,7 @@ public class FerramentasController implements FerramentasDocumentation {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAllByType(tipo, PageRequest.of(page, size, Sort.by(sortOption, "id")));
         logger.info("Total de ferramentas do tipo " + tipo + " encontradas: " + ferramentas.getTotalElements());
-        return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toDto(ferramenta)));
+        return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
     }
 
 }

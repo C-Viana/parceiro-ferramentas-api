@@ -16,11 +16,11 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "endereco_usuario")
-public class EnderecoUsuario {
+public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String logradouro;
     private Integer numero;
@@ -40,13 +40,13 @@ public class EnderecoUsuario {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    public EnderecoUsuario(){}
+    public Endereco(){}
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -84,6 +84,10 @@ public class EnderecoUsuario {
 
     public ESTADOS getEstado() {
         return estado;
+    }
+
+    public String getEstadoAsString() {
+        return estado.getString();
     }
 
     public void setEstado(ESTADOS estado) {
@@ -130,6 +134,16 @@ public class EnderecoUsuario {
         this.usuario = usuario;
     }
 
+    public boolean enderecoInvalido() {
+        return (logradouro == null || logradouro.isBlank() ||
+            numero == null || numero < 1 ||
+            bairro == null || bairro.isBlank() ||
+            cidade == null || cidade.isBlank() ||
+            estado == null || uf == null ||
+            cep == null || cep.isBlank()
+        );
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -156,7 +170,7 @@ public class EnderecoUsuario {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        EnderecoUsuario other = (EnderecoUsuario) obj;
+        Endereco other = (Endereco) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
