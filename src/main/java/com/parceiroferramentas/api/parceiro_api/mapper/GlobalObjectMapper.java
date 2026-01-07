@@ -9,7 +9,6 @@ import com.parceiroferramentas.api.parceiro_api.dto.PermissaoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoResponseDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioResponseDto;
-import com.parceiroferramentas.api.parceiro_api.enums.ESTADOS;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;

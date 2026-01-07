@@ -16,7 +16,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.parceiroferramentas.api.parceiro_api.enums.ESTADOS;
 import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.UF;
+import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
@@ -117,6 +120,17 @@ public class CreateMockedData {
         permissoes.add(new Permissao(null, PerfisAcesso.CLIENTE));
 
         return permissoes;
+    }
+
+    public List<Endereco> getEnderecos(List<Usuario> mockedUsuarios) {
+        List<Endereco> mockedEnderecos = new ArrayList<>();
+
+        mockedEnderecos.add(new Endereco(null, "Rua José Eugênio da Silva", 122, "Parque Santa Teresa", "Carapicuíba", ESTADOS.SAO_PAULO, UF.SP, "06340400", null, true, mockedUsuarios.get(0)));
+        mockedEnderecos.add(new Endereco(null, "Rua Aline", 74, "Parque dos Camargos", "Barueri", ESTADOS.SAO_PAULO, UF.SP, "06436110", "Portão amarelo após a adega do Jurandir", true, mockedUsuarios.get(1)));
+        mockedEnderecos.add(new Endereco(null, "Rua Serra Leoa", 328, "Rochdale", "Osasco", ESTADOS.SAO_PAULO, UF.SP, "06220059", "Próximo da praça", true, mockedUsuarios.get(2)));
+        mockedEnderecos.add(new Endereco(null, "Rua Florindo Redivo", 14, "Vila Esperança", "Maringá", ESTADOS.PARANA, UF.PR, "87020520", null, true, mockedUsuarios.get(3)));
+
+        return mockedEnderecos;
     }
 
 }

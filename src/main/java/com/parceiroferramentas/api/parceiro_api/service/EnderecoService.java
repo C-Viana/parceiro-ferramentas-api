@@ -11,14 +11,14 @@ import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
-import com.parceiroferramentas.api.parceiro_api.repository.EnderecoUsuarioRepository;
+import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 @Service
 public class EnderecoService {
 
     @Autowired
-    private EnderecoUsuarioRepository repository;
+    private EnderecoRepository repository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
