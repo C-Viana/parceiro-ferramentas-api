@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "endereco_usuario")
+@Table(name = "endereco")
 public class Endereco {
 
     @Id
@@ -37,7 +37,7 @@ public class Endereco {
     private boolean principal = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     public Endereco(){}

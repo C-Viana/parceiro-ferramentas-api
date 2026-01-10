@@ -5,12 +5,14 @@ import org.mapstruct.Mapping;
 
 import com.parceiroferramentas.api.parceiro_api.dto.EnderecoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.FerramentaDto;
+import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoResponseDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioResponseDto;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
+import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 
@@ -58,5 +60,10 @@ public interface GlobalObjectMapper {
 
     @Mapping(target = "estado", expression = "java(entity.getEstadoAsString())")
     EnderecoDto toEnderecoDto(Endereco entity);
+
+    @Mapping(target = "id", ignore = true)
+    ItemCarrinho toItemCarrinho(ItemCarrinhoDto dto);
+
+    ItemCarrinhoDto toItemCarrinhoDto(ItemCarrinho entidade);
 
 }

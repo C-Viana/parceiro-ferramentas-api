@@ -54,7 +54,14 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(
                 reqs -> reqs.requestMatchers(
-                    "/usuarios/signin", "/usuarios/signup", "/usuarios/refresh/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+                    "/usuarios/signin", 
+                    "/usuarios/signup", 
+                    "/usuarios/refresh/**", 
+                    "/swagger-ui/**", 
+                    "/swagger-ui.html", 
+                    "/v3/api-docs/**", 
+                    "/api/v1/carrinho",
+                    "/api/v1/carrinho/**"
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString())
                 .requestMatchers(HttpMethod.PUT, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString(), PerfisAcesso.GERENTE.getString())

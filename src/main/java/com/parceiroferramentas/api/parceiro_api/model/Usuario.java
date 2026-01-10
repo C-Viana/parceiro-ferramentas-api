@@ -1,8 +1,10 @@
 package com.parceiroferramentas.api.parceiro_api.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,6 +52,9 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Endereco> enderecos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ItemCarrinho> carrinhoItens = new ArrayList<>();
+
     public Usuario(){}
 
     public Usuario(String username, String nome, String password, List<Permissao> permissoes) {
@@ -60,7 +65,7 @@ public class Usuario implements UserDetails {
     }
 
     public Usuario(Long id, String username, String nome, String password, boolean account_non_expired,
-            boolean account_non_locked, boolean credentials_non_expired, boolean enabled, List<Permissao> permissoes, List<Endereco> enderecos) {
+            boolean account_non_locked, boolean credentials_non_expired, boolean enabled, List<Permissao> permissoes, List<Endereco> enderecos, List<ItemCarrinho> carrinhoItens) {
         this.id = id;
         this.username = username;
         this.nome = nome;
@@ -71,6 +76,7 @@ public class Usuario implements UserDetails {
         this.enabled = enabled;
         this.authorities = permissoes;
         this.enderecos = enderecos;
+        this.carrinhoItens = carrinhoItens;
     }
 
     @Override
@@ -81,6 +87,8 @@ public class Usuario implements UserDetails {
         // }
         return this.authorities;
     }
+
+    // ------------ AUTH ------------
 
     @Override
     public @Nullable String getPassword() {
@@ -174,6 +182,68 @@ public class Usuario implements UserDetails {
         this.enderecos.remove(endereco);
         endereco.setUsuario(null);
     }
+
+    public List<ItemCarrinho> getCarrinhoItens() {
+        return carrinhoItens;
+    }
+
+    public void setCarrinhoItens(List<ItemCarrinho> carrinhoItens) {
+        this.carrinhoItens = carrinhoItens;
+    }
+
+    public void adicionarAoCarrinho(Ferramenta ferramenta, Integer quantidade) {
+        if (ferramenta == null) {
+            throw new IllegalArgumentException("Ferramenta não pode ser nula");
+        }
+        if (quantidade == null || quantidade <= 0) {
+            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+        }
+        Optional<ItemCarrinho> itemExistente = carrinhoItens.stream()
+                .filter(item -> item.getFerramenta().equals(ferramenta))
+                .findFirst();
+        
+        if (itemExistente.isPresent()) {
+            ItemCarrinho item = itemExistente.get();
+            item.setQuantidade(item.getQuantidade() + quantidade);
+        } else {
+            ItemCarrinho novoItem = new ItemCarrinho(this, ferramenta, quantidade);
+            carrinhoItens.add(novoItem);
+        }
+    }
+
+    public void removerDoCarrinho(Ferramenta ferramenta) {
+        if (ferramenta == null) {
+            throw new IllegalArgumentException("Ferramenta não pode ser nula");
+        }
+        carrinhoItens.removeIf(item -> item.getFerramenta().equals(ferramenta));
+    }
+
+    public void mudarQuantidade(ItemCarrinho item, Integer novaQuantidade) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item não pode ser nulo");
+        }
+        if (novaQuantidade <= 0) {
+            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+        }
+        if (!carrinhoItens.contains(item)) {
+            throw new IllegalArgumentException("Item não pertence ao carrinho deste usuário");
+        }
+
+        item.setQuantidade(novaQuantidade);
+    }
+
+    public void limparCarrinho() {
+        carrinhoItens.clear();
+    }
+
+    public BigDecimal calcularValorTotalCarrinho() {
+        return carrinhoItens
+            .stream()
+            .map( item -> item.getPrecoVendaMomento().multiply(BigDecimal.valueOf(item.getQuantidade())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // ------------ CARRINHO ------------
 
     @Override
     public int hashCode() {
