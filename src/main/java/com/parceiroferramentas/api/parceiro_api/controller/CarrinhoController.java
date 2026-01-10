@@ -19,11 +19,10 @@ import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.service.CarrinhoService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 
@@ -67,6 +66,26 @@ public class CarrinhoController {
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(itemSalvo.getId()).toUri();
         return ResponseEntity.created(uri).body(mapper.toItemCarrinhoDto(itemSalvo));
+    }
+
+    @PostMapping(value = "/todos")
+    public ResponseEntity<List<ItemCarrinhoDto>> adicionarItens(@RequestHeader("Authorization") String token, @RequestBody List<ItemCarrinhoRequestDto> itens) {
+        itens.forEach( item -> {
+            if(item == null 
+                || item.ferramenta_id() == null
+                || item.ferramenta_id() < 1L
+                || item.quantidade() == null
+                || item.quantidade() < 1
+            ) throw new BadRequestException("As informações da ferramenta não são válidas ["+item.toString()+"]");
+        });
+        
+        String username = tokenService.decodeToken(token.split(" ")[1]).getSubject();
+        logger.info("Salvando todos os itens no carrinho do usuário "+username);
+        logger.info("Quantidade de itens recebidos "+itens.size());
+        List<ItemCarrinho> itensSalvos = service.salvarTodos(username, itens);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(itensSalvos.get(0).getId()).toUri();
+        return ResponseEntity.created(uri).body(mapper.toListaItemCarrinhoDto(itensSalvos));
     }
     
 }

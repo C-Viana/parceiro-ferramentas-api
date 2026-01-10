@@ -1,5 +1,7 @@
 package com.parceiroferramentas.api.parceiro_api.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -65,5 +67,11 @@ public interface GlobalObjectMapper {
     ItemCarrinho toItemCarrinho(ItemCarrinhoDto dto);
 
     ItemCarrinhoDto toItemCarrinhoDto(ItemCarrinho entidade);
+    EnderecoDto toItemCarrinhoDto(Endereco entity);
+
+    @Mapping(target = "id", ignore = true)
+    List<ItemCarrinho> toListaItemCarrinho(List<ItemCarrinhoDto> dto);
+
+    List<ItemCarrinhoDto> toListaItemCarrinhoDto(List<ItemCarrinho> entidade);
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
@@ -42,11 +43,25 @@ public class CarrinhoService {
         item.setQuantidade(quantidade);
         item.setPrecoAluguelMomento(BigDecimal.valueOf(ferramenta.getPreco_aluguel()));
         item.setPrecoVendaMomento(BigDecimal.valueOf(ferramenta.getPreco_venda()));
+        item.setUrlImage(ferramenta.getLista_imagens().get(0));
         return repository.save(item);
     }
 
-    public List<ItemCarrinho> salvarTodos(List<ItemCarrinho> itens) {
-        return repository.saveAll(itens);
+    public List<ItemCarrinho> salvarTodos(String username, List<ItemCarrinhoRequestDto> itens) {
+        Usuario usuario = buscaUsuario(username);
+        List<ItemCarrinho> ferramentas = new ArrayList<>();
+        itens.forEach( itemDto -> {
+            Ferramenta f = buscaFerramenta(itemDto.ferramenta_id());
+            ItemCarrinho item = new ItemCarrinho();
+            item.setUsuario(usuario);
+            item.setFerramenta(f);
+            item.setQuantidade(itemDto.quantidade());
+            item.setPrecoAluguelMomento(BigDecimal.valueOf(f.getPreco_aluguel()));
+            item.setPrecoVendaMomento(BigDecimal.valueOf(f.getPreco_venda()));
+            item.setUrlImage(f.getLista_imagens().get(0));
+            ferramentas.add(item);
+        });
+        return repository.saveAll(ferramentas);
     }
 
     public void removerItem(ItemCarrinho item) {

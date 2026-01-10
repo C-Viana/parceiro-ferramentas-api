@@ -94,19 +94,19 @@ public class CreateMockedData {
         String senhaEncriptada = "$2a$10$AzCbojDDN5urYBKGcQk2Oewne3YiHMOOGsyndFejY2rpjldua2KzK";
 
         mockedUsuarios.add(new Usuario(
-            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.ADMIN)), List.of()
+            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.ADMIN)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PerfisAcesso.GERENTE)), List.of()
+            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PerfisAcesso.GERENTE)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PerfisAcesso.VENDEDOR)), List.of()
+            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PerfisAcesso.VENDEDOR)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of()
+            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of()
+            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of(), List.of()
         ));
 
         return mockedUsuarios;
