@@ -1,6 +1,9 @@
 package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,49 +67,59 @@ public class CarrinhoService {
         return repository.saveAll(ferramentas);
     }
 
-    public void removerItem(ItemCarrinho item) {
-        repository.delete(item);
+    public void removerItem(String username, Long itemCarrinhoId) {
+        Usuario usuario = buscaUsuario(username);
+        ItemCarrinho item = repository.findById(itemCarrinhoId).orElse(null);
+        if( usuario.getId() != item.getUsuario().getId() ) throw new RuntimeException("Operação não permitida");
+        if( item != null )
+            repository.delete(item);
+        usuario.removerDoCarrinho(buscaFerramenta(item.getFerramenta().getId()));
     }
 
-    public void removerTodos(List<ItemCarrinho> itens) {
-        repository.deleteAll(itens);
+    public void removerTodos(String username) {
+        Usuario usuario = buscaUsuario(username);
+        List<ItemCarrinho> itens = repository.findItemCarrinhoByUsuarioId(usuario.getId());
+        if( usuario.getId() != itens.get(0).getUsuario().getId() ) throw new RuntimeException("Operação não permitida");
+        if( itens != null )
+            repository.deleteAll(itens);
+        usuario.limparCarrinho();
     }
 
     public ItemCarrinho atualizarItem(ItemCarrinho itemAtual) {
-        if(!itemCarrinhoValido(itemAtual)) throw new BadRequestException("Algum dos dados informados está inválido");
+        if(itemAtual == null || itemAtual.getId() == null) throw new BadRequestException("Dados do item são inválidos ou estão ausentes");
         ItemCarrinho itemAtualizavel = repository.findById(itemAtual.getId()).orElse(null);
         if(itemAtualizavel == null) throw new NotFoundException("O item informado não foi encontrado");
         atualizaItemCarrinho(itemAtualizavel, itemAtual);
         return repository.save(itemAtualizavel);
     }
 
-    public List<ItemCarrinho> atualizarTodos(List<ItemCarrinho> itens) {
-        ItemCarrinho itemAtualizavel = null;
-        List<ItemCarrinho> itensAtualizados = new ArrayList<>();
-        for (int i = 0; i < itens.size(); i++) {
-            if(!itemCarrinhoValido(itens.get(i))) throw new BadRequestException("Os dados do item ID ["+itens.get(i).getId()+"] estão inválidos");
-            itemAtualizavel = repository.findById(itens.get(i).getId()).orElse(null);
-            if(itemAtualizavel == null) throw new NotFoundException("O item informado não foi encontrado");
-            atualizaItemCarrinho(itemAtualizavel, itens.get(i));
-            itensAtualizados.add(itemAtualizavel);
-        }
-        return repository.saveAll(itensAtualizados);
-    }
+    // public List<ItemCarrinho> atualizarTodos(List<ItemCarrinho> itens) {
+    //     ItemCarrinho itemAtualizavel = null;
+    //     List<ItemCarrinho> itensAtualizados = new ArrayList<>();
+    //     for (int i = 0; i < itens.size(); i++) {
+    //         if(!itemCarrinhoValido(itens.get(i))) throw new BadRequestException("Os dados do item ID ["+itens.get(i).getId()+"] estão inválidos");
+    //         itemAtualizavel = repository.findById(itens.get(i).getId()).orElse(null);
+    //         if(itemAtualizavel == null) throw new NotFoundException("O item informado não foi encontrado");
+    //         atualizaItemCarrinho(itemAtualizavel, itens.get(i));
+    //         itensAtualizados.add(itemAtualizavel);
+    //     }
+    //     return repository.saveAll(itensAtualizados);
+    // }
 
-    private boolean itemCarrinhoValido(ItemCarrinho item) {
-        boolean ferramentaNula = item.getFerramenta() != null;
-        boolean ferramentaExiste = ferramentaRepo.existsById(item.getFerramenta().getId());
-        boolean precoCompraValido = item.getPrecoVendaMomento() != null && item.getPrecoVendaMomento().compareTo(new BigDecimal("0.0")) > 0;
-        boolean precoAluguelValido = item.getPrecoAluguelMomento() != null && item.getPrecoAluguelMomento().compareTo(new BigDecimal("0.0")) > 0;
-        boolean dataValida = item.getDataAdicao() != null;
-        return (ferramentaNula && ferramentaExiste && precoCompraValido && precoAluguelValido && dataValida);
-    }
+    // private boolean itemCarrinhoValido(ItemCarrinho item) {
+    //     boolean ferramentaNula = item.getFerramenta() != null;
+    //     boolean ferramentaExiste = ferramentaRepo.existsById(item.getFerramenta().getId());
+    //     boolean precoCompraValido = item.getPrecoVendaMomento() != null && item.getPrecoVendaMomento().compareTo(new BigDecimal("0.0")) > 0;
+    //     boolean precoAluguelValido = item.getPrecoAluguelMomento() != null && item.getPrecoAluguelMomento().compareTo(new BigDecimal("0.0")) > 0;
+    //     boolean dataValida = item.getDataAdicao() != null;
+    //     return (ferramentaNula && ferramentaExiste && precoCompraValido && precoAluguelValido && dataValida);
+    // }
 
     private void atualizaItemCarrinho(ItemCarrinho anterior, ItemCarrinho atual) {
         anterior.setQuantidade(atual.getQuantidade());
         anterior.setPrecoVendaMomento(atual.getPrecoVendaMomento());
         anterior.setPrecoAluguelMomento(atual.getPrecoAluguelMomento());
-        anterior.setDataAdicao(atual.getDataAdicao());
+        anterior.setDataAdicao(Instant.now(Clock.system(ZoneId.of("America/Sao_Paulo"))));
     }
 
     private Usuario buscaUsuario(String username) {

@@ -63,15 +63,9 @@ public interface GlobalObjectMapper {
     @Mapping(target = "estado", expression = "java(entity.getEstadoAsString())")
     EnderecoDto toEnderecoDto(Endereco entity);
 
-    @Mapping(target = "id", ignore = true)
     ItemCarrinho toItemCarrinho(ItemCarrinhoDto dto);
-
     ItemCarrinhoDto toItemCarrinhoDto(ItemCarrinho entidade);
-    EnderecoDto toItemCarrinhoDto(Endereco entity);
-
-    @Mapping(target = "id", ignore = true)
     List<ItemCarrinho> toListaItemCarrinho(List<ItemCarrinhoDto> dto);
-
     List<ItemCarrinhoDto> toListaItemCarrinhoDto(List<ItemCarrinho> entidade);
 
 }
