@@ -1,18 +1,42 @@
-CREATE TABLE IF NOT EXISTS pedido
-(
-    id SERIAL PRIMARY KEY,
-    situacao TEXT NOT NULL,
-    preco_total NUMERIC(10,2) NOT NULL,
-    itens JSONB NOT NULL,
-    tipo TEXT NOT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    data_final TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    finalizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_usuario INTEGER REFERENCES usuario(id) NOT NULL
+CREATE TYPE STATUS_PEDIDO AS ENUM (
+    'PENDENTE', 
+    'APROVADO', 
+    'FINALIZADO', 
+    'CANCELADO', 
+    'DEVOLVIDO', 
+    'ESTRAVIADO', 
+    'ATRASADO',
+    'REEMBOLSADO', 
+    'EM_ROTA', 
+    'PAGAMENTO_RECUSADO', 
+    'RECUSADO_CLIENTE', 
+    'RETIDO', 
+    'RESERVADO', 
+    'ALUGADO', 
+    'BLOQUEADO', 
+    'PENDENCIA_CLIENTE'
 );
 
+CREATE TYPE TIPO_PEDIDO AS ENUM ('COMPRA', 'ALUGUEL');
+
+CREATE TABLE IF NOT EXISTS pedido
+(
+    id BIGSERIAL PRIMARY KEY,
+    usuario_id BIGINT REFERENCES usuario(id) ON DELETE RESTRICT,
+    endereco_id BIGINT REFERENCES endereco(id) ON DELETE SET NULL,
+    tipo TIPO_PEDIDO NOT NULL,
+    situacao STATUS_PEDIDO NOT NULL DEFAULT 'PENDENTE',
+    valor_total NUMERIC(10,2) NOT NULL CHECK (valor_total >= 0),
+    data_criacao TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_fim TIMESTAMPTZ,
+
+    CONSTRAINT chk_valor_positivo CHECK (valor_total > 0)
+);
+
+CREATE INDEX idx_pedido_usuario_id ON pedido(usuario_id);
 CREATE INDEX idx_pedido_situacao ON pedido(situacao);
 CREATE INDEX idx_pedido_tipo ON pedido(tipo);
-CREATE INDEX idx_pedido_criado_em ON pedido(criado_em);
-CREATE INDEX idx_pedido_data_final ON pedido(data_final);
-CREATE INDEX idx_pedido_finalizado_em ON pedido(finalizado_em);
+CREATE INDEX idx_pedido_data_criacao ON pedido(data_criacao);
+CREATE INDEX idx_pedido_data_atualizacao ON pedido(data_atualizacao);
+CREATE INDEX idx_pedido_data_fim ON pedido(data_fim);

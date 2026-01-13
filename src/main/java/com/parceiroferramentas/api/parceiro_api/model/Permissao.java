@@ -3,7 +3,7 @@ package com.parceiroferramentas.api.parceiro_api.model;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,13 +22,13 @@ public class Permissao implements GrantedAuthority {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "descricao")
-    private PerfisAcesso authority;
+    private PERFIL_ACESSO authority;
     
 
     public Permissao() {
     }
 
-    public Permissao(Long id, PerfisAcesso authority) {
+    public Permissao(Long id, PERFIL_ACESSO authority) {
         this.id = id;
         this.authority = authority;
     }
@@ -40,7 +40,7 @@ public class Permissao implements GrantedAuthority {
         this.id = id;
     }
     
-    public void setAuthority(PerfisAcesso authority) {
+    public void setAuthority(PERFIL_ACESSO authority) {
         this.authority = authority;
     }
 

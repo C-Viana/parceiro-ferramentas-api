@@ -1,6 +1,6 @@
 package com.parceiroferramentas.api.parceiro_api.enums;
 
-public enum PerfisAcesso {
+public enum PERFIL_ACESSO {
     ADMIN("ADMIN"),
     GERENTE("GERENTE"),
     VENDEDOR("VENDEDOR"),
@@ -8,11 +8,11 @@ public enum PerfisAcesso {
 
     private String role;
 
-    PerfisAcesso(String role) {
+    PERFIL_ACESSO(String role) {
         this.role = role;
     }
 
-    public PerfisAcesso getEnum() {
+    public PERFIL_ACESSO getEnum() {
         return this;
     }
 

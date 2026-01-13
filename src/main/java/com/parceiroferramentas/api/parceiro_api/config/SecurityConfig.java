@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.parceiroferramentas.api.parceiro_api.auth.JwtFilter;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 
 @Configuration
 @EnableWebSecurity
@@ -63,10 +63,10 @@ public class SecurityConfig {
                     "/api/v1/carrinho",
                     "/api/v1/carrinho/**"
                 ).permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString())
-                .requestMatchers(HttpMethod.PUT, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString(), PerfisAcesso.GERENTE.getString())
-                .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/**", "/api/v1/endereco/todos").hasAnyAuthority(PerfisAcesso.ADMIN.getString(), PerfisAcesso.GERENTE.getString())
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/ferramentas").hasAnyAuthority(PerfisAcesso.ADMIN.getString())
+                .requestMatchers(HttpMethod.POST, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString())
+                .requestMatchers(HttpMethod.PUT, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString(), PERFIL_ACESSO.GERENTE.getString())
+                .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/**", "/api/v1/endereco/todos").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString(), PERFIL_ACESSO.GERENTE.getString())
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString())
                 .requestMatchers(HttpMethod.GET, "/api/v1/ferramentas", "/api/v1/ferramentas/**").permitAll()
                 .requestMatchers(
                     "/api/v1/gerenciamento",

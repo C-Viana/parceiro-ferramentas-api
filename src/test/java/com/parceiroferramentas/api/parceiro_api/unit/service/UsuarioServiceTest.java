@@ -24,7 +24,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
@@ -156,10 +156,10 @@ public class UsuarioServiceTest {
         //Mockito.when(tokenService.decodeToken(acessoDto.acesso())).thenReturn(decodedJWT);
         //Mockito.when(decodedJWT.getClaim("roles")).thenReturn(claim);
         //Mockito.when(claim.asList(String.class)).thenReturn(Arrays.asList(PerfisAcesso.ADMIN.getString()));
-        Mockito.when(permissoesRepo.findPermissaoByAuthority(PerfisAcesso.GERENTE)).thenReturn(CreateMockedData.getInstance().getPermissoes().get(1));
+        Mockito.when(permissoesRepo.findPermissaoByAuthority(PERFIL_ACESSO.GERENTE)).thenReturn(CreateMockedData.getInstance().getPermissoes().get(1));
         Mockito.when(usuarioRepo.findByAuthoritiesContains(CreateMockedData.getInstance().getPermissoes().get(1), pageRequest)).thenReturn(pagina);
 
-        Page<Usuario> resultado = usuarioService.findByAuthoritiesContains(acessoDto.acesso(), PerfisAcesso.GERENTE.getString(), pageRequest);
+        Page<Usuario> resultado = usuarioService.findByAuthoritiesContains(acessoDto.acesso(), PERFIL_ACESSO.GERENTE.getString(), pageRequest);
         
         Assertions.assertThat(resultado).isNotNull();
         Assertions.assertThat(resultado.getTotalElements()).isEqualTo(1);
@@ -178,10 +178,10 @@ public class UsuarioServiceTest {
         // Mockito.when(tokenService.decodeToken(acessoDto.acesso())).thenReturn(decodedJWT);
         // Mockito.when(decodedJWT.getClaim("roles")).thenReturn(claim);
         // Mockito.when(claim.asList(String.class)).thenReturn(Arrays.asList(PerfisAcesso.GERENTE.getString()));
-        Mockito.when(permissoesRepo.findPermissaoByAuthority(PerfisAcesso.ADMIN)).thenReturn(CreateMockedData.getInstance().getPermissoes().get(0));
+        Mockito.when(permissoesRepo.findPermissaoByAuthority(PERFIL_ACESSO.ADMIN)).thenReturn(CreateMockedData.getInstance().getPermissoes().get(0));
         Mockito.when(usuarioRepo.findByAuthoritiesContains(CreateMockedData.getInstance().getPermissoes().get(0), pageRequest)).thenReturn(pagina);
 
-        Page<Usuario> resultado = usuarioService.findByAuthoritiesContains(acessoDto.acesso(), PerfisAcesso.ADMIN.getString(), pageRequest);
+        Page<Usuario> resultado = usuarioService.findByAuthoritiesContains(acessoDto.acesso(), PERFIL_ACESSO.ADMIN.getString(), pageRequest);
         
         Assertions.assertThat(resultado).isNotNull();
         Assertions.assertThat(resultado.getTotalElements()).isEqualTo(1);

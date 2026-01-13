@@ -17,7 +17,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.parceiroferramentas.api.parceiro_api.enums.ESTADOS;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.enums.UF;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
@@ -94,19 +94,19 @@ public class CreateMockedData {
         String senhaEncriptada = "$2a$10$AzCbojDDN5urYBKGcQk2Oewne3YiHMOOGsyndFejY2rpjldua2KzK";
 
         mockedUsuarios.add(new Usuario(
-            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PerfisAcesso.ADMIN)), List.of(), List.of()
+            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PERFIL_ACESSO.ADMIN)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PerfisAcesso.GERENTE)), List.of(), List.of()
+            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PERFIL_ACESSO.GERENTE)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PerfisAcesso.VENDEDOR)), List.of(), List.of()
+            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PERFIL_ACESSO.VENDEDOR)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of(), List.of()
+            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PERFIL_ACESSO.CLIENTE)), List.of(), List.of()
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PerfisAcesso.CLIENTE)), List.of(), List.of()
+            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PERFIL_ACESSO.CLIENTE)), List.of(), List.of()
         ));
 
         return mockedUsuarios;
@@ -114,10 +114,10 @@ public class CreateMockedData {
 
     public List<Permissao> getPermissoes() {
         List<Permissao> permissoes = new ArrayList<>();
-        permissoes.add(new Permissao(null, PerfisAcesso.ADMIN));
-        permissoes.add(new Permissao(null, PerfisAcesso.GERENTE));
-        permissoes.add(new Permissao(null, PerfisAcesso.VENDEDOR));
-        permissoes.add(new Permissao(null, PerfisAcesso.CLIENTE));
+        permissoes.add(new Permissao(null, PERFIL_ACESSO.ADMIN));
+        permissoes.add(new Permissao(null, PERFIL_ACESSO.GERENTE));
+        permissoes.add(new Permissao(null, PERFIL_ACESSO.VENDEDOR));
+        permissoes.add(new Permissao(null, PERFIL_ACESSO.CLIENTE));
 
         return permissoes;
     }

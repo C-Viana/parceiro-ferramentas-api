@@ -22,7 +22,7 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
@@ -70,7 +70,7 @@ public class AuthorizationServiceTest {
         Mockito.when(tokenService.gerarAcesso(
             mockedUsuarios.get(userIndex).getUsername(), 
             mockedUsuarios.get(userIndex).getAuthorities().stream()
-                .map(auth -> PerfisAcesso.valueOf(auth.getAuthority()))
+                .map(auth -> PERFIL_ACESSO.valueOf(auth.getAuthority()))
                 .toList()
         )).thenReturn(acessoDto);
 
@@ -96,7 +96,7 @@ public class AuthorizationServiceTest {
         Mockito.when(tokenService.gerarAcesso(
             mockedUsuarios.get(userIndex).getUsername(), 
             mockedUsuarios.get(userIndex).getAuthorities().stream()
-                .map(auth -> PerfisAcesso.valueOf(auth.getAuthority()))
+                .map(auth -> PERFIL_ACESSO.valueOf(auth.getAuthority()))
                 .toList()
         )).thenReturn(acessoDto);
 
@@ -122,7 +122,7 @@ public class AuthorizationServiceTest {
         Mockito.when(tokenService.gerarAcesso(
                 mockedUsuarios.get(userIndex).getUsername(), 
                 mockedUsuarios.get(userIndex).getAuthorities().stream()
-                    .map(auth -> PerfisAcesso.valueOf(auth.getAuthority()))
+                    .map(auth -> PERFIL_ACESSO.valueOf(auth.getAuthority()))
                     .toList()
         )).thenReturn(acessoDto);
 
@@ -148,7 +148,7 @@ public class AuthorizationServiceTest {
         Mockito.when(tokenService.gerarAcesso(
                 mockedUsuarios.get(userIndex).getUsername(), 
                 mockedUsuarios.get(userIndex).getAuthorities().stream()
-                    .map(auth -> PerfisAcesso.valueOf(auth.getAuthority()))
+                    .map(auth -> PERFIL_ACESSO.valueOf(auth.getAuthority()))
                     .toList()
         )).thenReturn(acessoDto);
 

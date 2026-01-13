@@ -20,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.parceiroferramentas.api.parceiro_api.config.DatabaseConfig;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
@@ -69,7 +69,7 @@ public class PermissaoRepositoryTest {
         
         Assertions.assertThatObject(response).isNotNull();
         Assertions.assertThatObject(response.get(userIndex).getId()).isEqualTo(1L);
-        Assertions.assertThatObject(response.get(userIndex).getAuthority()).isEqualTo(PerfisAcesso.ADMIN.toString());
+        Assertions.assertThatObject(response.get(userIndex).getAuthority()).isEqualTo(PERFIL_ACESSO.ADMIN.toString());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class PermissaoRepositoryTest {
         int userIndex = 0;
 
         permissaoRepository.save(permissoesMock.get(userIndex));
-        Permissao response = permissaoRepository.findPermissaoByAuthority(PerfisAcesso.valueOf(permissoesMock.get(userIndex).getAuthority()));
+        Permissao response = permissaoRepository.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(permissoesMock.get(userIndex).getAuthority()));
         
         Assertions.assertThatObject(response).isNotNull();
         Assertions.assertThatObject(response.getId()).isEqualTo(permissoesMock.get(userIndex).getId());

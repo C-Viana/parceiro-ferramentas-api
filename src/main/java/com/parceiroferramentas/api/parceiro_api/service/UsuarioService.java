@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 import com.parceiroferramentas.api.parceiro_api.model.Acesso;
@@ -65,7 +65,7 @@ public class UsuarioService implements UserDetailsService {
             credenciais.username(), 
             user.getAuthorities()
                 .stream()
-                .map(auth -> PerfisAcesso.valueOf(auth.getAuthority()))
+                .map(auth -> PERFIL_ACESSO.valueOf(auth.getAuthority()))
                 .toList()
         );
 
@@ -118,12 +118,12 @@ public class UsuarioService implements UserDetailsService {
 
         if(usuario.getAuthorities() == null || usuario.getAuthorities().isEmpty()) {
             logger.info("Nenhum acesso foi informado para o novo usuário. Definindo acesso padrão de CLIENTE");
-            Permissao p = permissaoRepo.findPermissaoByAuthority(PerfisAcesso.CLIENTE);
+            Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.CLIENTE);
             usuario.setAuthorities(List.of(p));
         }
         else {
             perms = usuario.getAuthorities().stream().map(role -> {
-                Permissao p = permissaoRepo.findPermissaoByAuthority(PerfisAcesso.valueOf(role.getAuthority()));
+                Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(role.getAuthority()));
                 if(p == null)
                     throw new NotFoundException("O perfil de acesso ["+role.getAuthority()+"] é inválido ou não existe");
                 return p;
@@ -151,7 +151,7 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public Page<Usuario> findByAuthoritiesContains(String token, String nomePermissao, Pageable pageable) {
-        Permissao p = permissaoRepo.findPermissaoByAuthority(PerfisAcesso.valueOf(nomePermissao.toUpperCase()));
+        Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(nomePermissao.toUpperCase()));
         if(p == null)
             throw new NotFoundException("O perfil de acesso informado é inválido ou não existe");
         if(tokenService.tokenExpirado(token))

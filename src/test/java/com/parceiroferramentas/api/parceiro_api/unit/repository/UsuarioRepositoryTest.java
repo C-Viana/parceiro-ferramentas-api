@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.parceiroferramentas.api.parceiro_api.config.DatabaseConfig;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
-import com.parceiroferramentas.api.parceiro_api.enums.PerfisAcesso;
+import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
@@ -79,7 +79,7 @@ public class UsuarioRepositoryTest {
         
         Assertions.assertThatObject(response).isNotNull();
         Assertions.assertThatObject(response.get(userIndex).getId()).isEqualTo(1L);
-        Assertions.assertThatObject(PerfisAcesso.valueOf(response.get(userIndex).getAuthority())).isEqualTo(PerfisAcesso.ADMIN);
+        Assertions.assertThatObject(PERFIL_ACESSO.valueOf(response.get(userIndex).getAuthority())).isEqualTo(PERFIL_ACESSO.ADMIN);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class UsuarioRepositoryTest {
     public void deveRetornarUsuariosFiltradosPorPerfil() {
         int userIndex = 2;
         setPermission();
-        Permissao perfil = permissaoRepository.findPermissaoByAuthority(PerfisAcesso.VENDEDOR);
+        Permissao perfil = permissaoRepository.findPermissaoByAuthority(PERFIL_ACESSO.VENDEDOR);
         
         System.out.println( "PERMISSAO: " + perfil );
         Usuario resUsuario = mockedUsuarios.get(userIndex);
