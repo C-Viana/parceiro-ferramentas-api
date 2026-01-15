@@ -74,8 +74,8 @@ public interface GlobalObjectMapper {
 
     PedidoResponseDto toPedidoResponseDto(Pedido pedido);
 
-    @Mapping(target = "formaPagamento", expression = "java(TIPO_PAGAMENTO.getByDisplayValue(formaPagamento()))")
-    @Mapping(target = "detalhes", expression = "java(detalhes().toString())")
-    Pagamento toPagamento(PagamentoRequestDto pagamentoDto);
+    // @Mapping(target = "detalhes", expression = "java(detalhes().toString())")
+    // @Mapping(target = "formaPagamento", expression = "java(TIPO_PAGAMENTO.getByDisplayValue(formaPagamento()))")
+    // Pagamento toPagamento(PagamentoRequestDto pagamentoDto);
 
 }

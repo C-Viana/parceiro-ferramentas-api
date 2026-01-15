@@ -71,7 +71,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
             || item.ferramenta_id() < 1L
             || item.quantidade() == null
             || item.quantidade() < 1
-        ) throw new BadRequestException("As informações da ferramenta não são válidas ["+item.toString()+"]");
+        ) throw new BadRequestException("As informações da ferramenta não são válidas");
         
         String username = extrairUsername(token);
         logger.info("Salvando item no carrinho do usuário "+username);
@@ -91,7 +91,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
                 || item.ferramenta_id() < 1L
                 || item.quantidade() == null
                 || item.quantidade() < 1
-            ) throw new BadRequestException("As informações da ferramenta não são válidas ["+item.toString()+"]");
+            ) throw new BadRequestException("As informações da ferramenta não são válidas");
         });
         
         String username = extrairUsername(token);
