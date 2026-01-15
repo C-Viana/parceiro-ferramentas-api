@@ -22,10 +22,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
+import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
+
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -115,6 +118,13 @@ public class JwtTokenService {
 
     public DecodedJWT decodeToken(String token) {
         JWTVerifier verifier = JWT.require(algorithm).build();
+
+        try {
+            verifier.verify(token);
+        } catch (TokenExpiredException e) {
+            throw new InvalidAuthorizationException("O TOKEN INFORMADO EXPIROU OU CONTEM ERROS");
+        }
+        
         return verifier.verify(token);
     }
 

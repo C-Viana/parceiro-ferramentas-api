@@ -32,8 +32,8 @@ public class CarrinhoService {
     @Autowired
     private FerramentaRepository ferramentaRepo;
 
-    public List<ItemCarrinho> recuperarCarrinho(Long usuarioId) {
-        Usuario usuario = buscaUsuario(usuarioId);
+    public List<ItemCarrinho> recuperarCarrinho(String usuarioUsername) {
+        Usuario usuario = buscaUsuario(usuarioUsername);
         return repository.findItemCarrinhoByUsuarioId(usuario.getId());
     }
 
@@ -128,11 +128,11 @@ public class CarrinhoService {
         return usuario;
     }
 
-    private Usuario buscaUsuario(Long usuarioId) {
-        Usuario usuario = usuarioRepo.findById(usuarioId).orElse(null);
-        if(usuario == null) throw new NotFoundException("O usuário informado [ID "+usuarioId+"] não foi encontrado");
-        return usuario;
-    }
+    // private Usuario buscaUsuario(Long usuarioId) {
+    //     Usuario usuario = usuarioRepo.findById(usuarioId).orElse(null);
+    //     if(usuario == null) throw new NotFoundException("O usuário informado [ID "+usuarioId+"] não foi encontrado");
+    //     return usuario;
+    // }
 
     private Ferramenta buscaFerramenta(Long ferramentaId) {
         Ferramenta resposta = ferramentaRepo.findById(ferramentaId).orElse(null);

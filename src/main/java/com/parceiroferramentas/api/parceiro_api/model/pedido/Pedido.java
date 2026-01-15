@@ -33,9 +33,11 @@ public class Pedido {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", columnDefinition = "tipo_pedido")
     private TIPO_PEDIDO tipo;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "situacao", columnDefinition = "status_pedido")
     private STATUS_PEDIDO situacao;
 
     @Column(name = "valor_total", nullable = false)
@@ -54,15 +56,14 @@ public class Pedido {
     private List<ItemPedido> itens = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
-    private Endereco enderecoEntrega;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pagamento_id")
-    private Pagamento pagamento;
+    private Endereco endereco;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Pagamento pagamento;
 
     public Pedido(){}
 
@@ -130,20 +131,12 @@ public class Pedido {
         this.itens = itens;
     }
 
-    public Endereco getEnderecoEntrega() {
-        return enderecoEntrega;
+    public Endereco getEndereco() {
+        return endereco;
     }
 
-    public void setEnderecoEntrega(Endereco enderecoEntrega) {
-        this.enderecoEntrega = enderecoEntrega;
-    }
-
-    public Pagamento getPagamento() {
-        return pagamento;
-    }
-
-    public void setPagamento(Pagamento pagamento) {
-        this.pagamento = pagamento;
+    public void setEndereco(Endereco enderecoEntrega) {
+        this.endereco = enderecoEntrega;
     }
 
     public Usuario getUsuario() {
@@ -152,6 +145,14 @@ public class Pedido {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
     }
 
     @Override
@@ -165,8 +166,7 @@ public class Pedido {
         result = prime * result + ((dataCriacao == null) ? 0 : dataCriacao.hashCode());
         result = prime * result + ((dataAtualizacao == null) ? 0 : dataAtualizacao.hashCode());
         result = prime * result + ((dataFim == null) ? 0 : dataFim.hashCode());
-        result = prime * result + ((enderecoEntrega == null) ? 0 : enderecoEntrega.hashCode());
-        result = prime * result + ((pagamento == null) ? 0 : pagamento.hashCode());
+        result = prime * result + ((endereco == null) ? 0 : endereco.hashCode());
         result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
         return result;
     }
@@ -209,15 +209,10 @@ public class Pedido {
                 return false;
         } else if (!dataFim.equals(other.dataFim))
             return false;
-        if (enderecoEntrega == null) {
-            if (other.enderecoEntrega != null)
+        if (endereco == null) {
+            if (other.endereco != null)
                 return false;
-        } else if (!enderecoEntrega.equals(other.enderecoEntrega))
-            return false;
-        if (pagamento == null) {
-            if (other.pagamento != null)
-                return false;
-        } else if (!pagamento.equals(other.pagamento))
+        } else if (!endereco.equals(other.endereco))
             return false;
         if (usuario == null) {
             if (other.usuario != null)

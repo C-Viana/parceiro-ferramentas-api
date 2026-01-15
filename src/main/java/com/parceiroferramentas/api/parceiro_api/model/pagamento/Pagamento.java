@@ -29,12 +29,13 @@ public class Pagamento {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pedido_id")
-    private Pedido pedidoId;
+    private Pedido pedido;
 
     private BigDecimal valor;
 
-    @Column(name = "forma_pagamento")
+    @Column(name = "forma_pagamento", columnDefinition = "forma_pagamento")
     private TIPO_PAGAMENTO formaPagamento;
+    
     private STATUS_PAGAMENTO situacao;
 
     @Column(name = "data_criacao")
@@ -43,6 +44,7 @@ public class Pagamento {
     @Column(name = "data_atualizacao", nullable = false)
     private Instant dataAtualizacao;
 
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "codigo_transacao")
     private UUID codigoTransacao;
 
@@ -59,12 +61,12 @@ public class Pagamento {
         this.id = id;
     }
 
-    public Pedido getPedidoId() {
-        return pedidoId;
+    public Pedido getPedido() {
+        return pedido;
     }
 
-    public void setPedidoId(Pedido pedidoId) {
-        this.pedidoId = pedidoId;
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 
     public BigDecimal getValor() {
@@ -115,6 +117,10 @@ public class Pagamento {
         this.codigoTransacao = codigoTransacao;
     }
 
+    public void setCodigoTransacao(String codigoTransacao) {
+        this.codigoTransacao = UUID.fromString(codigoTransacao);
+    }
+
     public String getDetalhes() {
         return detalhes;
     }
@@ -128,7 +134,7 @@ public class Pagamento {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((pedidoId == null) ? 0 : pedidoId.hashCode());
+        result = prime * result + ((pedido == null) ? 0 : pedido.hashCode());
         result = prime * result + ((valor == null) ? 0 : valor.hashCode());
         result = prime * result + ((formaPagamento == null) ? 0 : formaPagamento.hashCode());
         result = prime * result + ((situacao == null) ? 0 : situacao.hashCode());
@@ -153,10 +159,10 @@ public class Pagamento {
                 return false;
         } else if (!id.equals(other.id))
             return false;
-        if (pedidoId == null) {
-            if (other.pedidoId != null)
+        if (pedido == null) {
+            if (other.pedido != null)
                 return false;
-        } else if (!pedidoId.equals(other.pedidoId))
+        } else if (!pedido.equals(other.pedido))
             return false;
         if (valor == null) {
             if (other.valor != null)

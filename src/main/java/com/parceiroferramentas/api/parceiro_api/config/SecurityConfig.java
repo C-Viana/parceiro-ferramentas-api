@@ -59,9 +59,7 @@ public class SecurityConfig {
                     "/usuarios/refresh/**", 
                     "/swagger-ui/**", 
                     "/swagger-ui.html", 
-                    "/v3/api-docs/**", 
-                    "/api/v1/carrinho",
-                    "/api/v1/carrinho/**"
+                    "/v3/api-docs/**"
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString())
                 .requestMatchers(HttpMethod.PUT, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString(), PERFIL_ACESSO.GERENTE.getString())
@@ -72,7 +70,11 @@ public class SecurityConfig {
                     "/api/v1/gerenciamento",
                     "/api/v1/gerenciamento/**",
                     "/api/v1/endereco",
-                    "/api/v1/endereco/**"
+                    "/api/v1/endereco/**", 
+                    "/api/v1/carrinho",
+                    "/api/v1/carrinho/**",
+                    "/api/v1/pedido",
+                    "/api/v1/pedido/**"
                 ).authenticated()
             )
             .cors(cors -> {})

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
+import com.parceiroferramentas.api.parceiro_api.controller.openapi.CarrinhoDocumentation;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping(value = "/api/v1/carrinho")
-public class CarrinhoController {
+public class CarrinhoController implements CarrinhoDocumentation {
 
     @Autowired
     private CarrinhoService service;
@@ -51,15 +52,18 @@ public class CarrinhoController {
         return tokenService.decodeToken(jwtAccessToken.split(" ")[1]).getSubject();
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<ItemCarrinhoDto>> buscaCarrinhoUsuario(@PathVariable Long usuarioId) {
-        logger.info("Buscando o carrinho do usuário de ID "+usuarioId);
-        List<ItemCarrinho> carrinho = service.recuperarCarrinho(usuarioId);
+    @Override
+    @GetMapping("/usuario")
+    public ResponseEntity<List<ItemCarrinhoDto>> buscaCarrinhoUsuario(@RequestHeader("Authorization") String token) {
+        String extractedUsername = extrairUsername(token);
+        logger.info("Buscando o carrinho do usuário de ID "+extractedUsername);
+        List<ItemCarrinho> carrinho = service.recuperarCarrinho(extractedUsername);
         logger.info("Carrinho encontrado com total de " + carrinho.size() + " itens");
         List<ItemCarrinhoDto> carrinhoDto = carrinho.stream().map(item -> mapper.toItemCarrinhoDto(item)).toList();
         return ResponseEntity.ok(carrinhoDto);
     }
 
+    @Override
     @PostMapping
     public ResponseEntity<ItemCarrinhoDto> adicionarItem(@RequestHeader("Authorization") String token, @RequestBody ItemCarrinhoRequestDto item) {
         if(item == null 
@@ -78,6 +82,7 @@ public class CarrinhoController {
         return ResponseEntity.created(uri).body(mapper.toItemCarrinhoDto(itemSalvo));
     }
 
+    @Override
     @PostMapping(value = "/todos")
     public ResponseEntity<List<ItemCarrinhoDto>> adicionarItens(@RequestHeader("Authorization") String token, @RequestBody List<ItemCarrinhoRequestDto> itens) {
         itens.forEach( item -> {
@@ -98,6 +103,7 @@ public class CarrinhoController {
         return ResponseEntity.created(uri).body(mapper.toListaItemCarrinhoDto(itensSalvos));
     }
 
+    @Override
     @DeleteMapping(value = "/{itemCarrinhoId}")
     public ResponseEntity<Void> removerItem(@RequestHeader("Authorization") String token, @PathVariable Long itemCarrinhoId) {
         String username = extrairUsername(token);
@@ -105,6 +111,7 @@ public class CarrinhoController {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
     @DeleteMapping(value = "/limpar")
     public ResponseEntity<Void> limparCarrinho(@RequestHeader("Authorization") String token) {
         String username = extrairUsername(token);
@@ -112,6 +119,7 @@ public class CarrinhoController {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
     @PutMapping
     public ResponseEntity<ItemCarrinhoDto> atualizarItem(@RequestBody ItemCarrinhoDto itemAtualizado) {
         logger.info("ITEM DTO: " + itemAtualizado.toString());

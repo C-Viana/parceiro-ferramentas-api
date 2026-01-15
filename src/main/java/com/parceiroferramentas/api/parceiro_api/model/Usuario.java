@@ -1,6 +1,5 @@
 package com.parceiroferramentas.api.parceiro_api.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -234,13 +233,6 @@ public class Usuario implements UserDetails {
 
     public void limparCarrinho() {
         carrinhoItens.clear();
-    }
-
-    public BigDecimal calcularValorTotalCarrinho() {
-        return carrinhoItens
-            .stream()
-            .map( item -> item.getPrecoVendaMomento().multiply(BigDecimal.valueOf(item.getQuantidade())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // ------------ CARRINHO ------------

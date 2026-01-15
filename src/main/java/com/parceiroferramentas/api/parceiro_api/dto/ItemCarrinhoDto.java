@@ -17,6 +17,4 @@ public record ItemCarrinhoDto(
     String urlImage,
     @JsonProperty(value = "data_adicao")
     Instant dataAdicao
-) {
-    
-}
+) {}
