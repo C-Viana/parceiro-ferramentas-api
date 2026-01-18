@@ -11,6 +11,8 @@ import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,9 +35,11 @@ public class Pagamento {
 
     private BigDecimal valor;
 
-    @Column(name = "forma_pagamento", columnDefinition = "forma_pagamento")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forma_pagamento")
     private TIPO_PAGAMENTO formaPagamento;
     
+    @Enumerated(EnumType.STRING)
     private STATUS_PAGAMENTO situacao;
 
     @Column(name = "data_criacao")
@@ -83,6 +87,10 @@ public class Pagamento {
 
     public void setFormaPagamento(TIPO_PAGAMENTO formaPagamento) {
         this.formaPagamento = formaPagamento;
+    }
+
+    public void setFormaPagamento(String formaPagamento) {
+        this.formaPagamento = TIPO_PAGAMENTO.getByDisplayValue(formaPagamento);
     }
 
     public STATUS_PAGAMENTO getSituacao() {

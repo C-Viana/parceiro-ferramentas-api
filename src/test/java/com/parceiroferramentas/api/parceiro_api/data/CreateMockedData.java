@@ -2,6 +2,8 @@ package com.parceiroferramentas.api.parceiro_api.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,24 +11,30 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.enums.ESTADOS;
 import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.enums.UF;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
+import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.ItemPedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.TIPO_PEDIDO;
 
 public class CreateMockedData {
 
-    private File json = new File("src/test/resources/response_success.json");
+    private File jsonFerramentas = new File("src/test/resources/FerramentasMock.json");
+    private File jsonItemCarrinhoRequestDto = new File("src/test/resources/ItemCarrinhoRequestDto.json");
 
     public static CreateMockedData getInstance() {
         return new CreateMockedData();
@@ -41,7 +49,7 @@ public class CreateMockedData {
         mapper.registerModule(module);
 
         try {
-            return Arrays.asList(mapper.readValue(json, Ferramenta[].class));
+            return Arrays.asList(mapper.readValue(jsonFerramentas, Ferramenta[].class));
         } catch (StreamReadException e) {
             throw new RuntimeException("Erro na leitura do arquivo Json", e);
         } catch (DatabindException e) {
@@ -131,6 +139,93 @@ public class CreateMockedData {
         mockedEnderecos.add(new Endereco(null, "Rua Florindo Redivo", 14, "Vila Esperança", "Maringá", ESTADOS.PARANA, UF.PR, "87020520", null, true, mockedUsuarios.get(3)));
 
         return mockedEnderecos;
+    }
+
+    public List<ItemCarrinho> getCarrinho( int quantidadeItens, boolean comId, Usuario donoCarrinho, List<Ferramenta> ferramentas ) {
+        List<ItemCarrinho> carrinho = new ArrayList<>();
+
+        for (int i = 0; i < quantidadeItens; i++) {
+            ItemCarrinho item = new ItemCarrinho();
+            Ferramenta ferramenta = ferramentas.get(i);
+            item.setFerramenta(ferramenta);
+            item.setPrecoAluguelMomento( BigDecimal.valueOf(ferramenta.getPreco_aluguel()) );
+            item.setPrecoVendaMomento( BigDecimal.valueOf(ferramenta.getPreco_venda()) );
+            item.setDataAdicao(Instant.now());
+            item.setQuantidade((i+1));
+            item.setUrlImage(ferramenta.getLista_imagens().get(0));
+            item.setUsuario(donoCarrinho);
+            if(comId) item.setId(Integer.toUnsignedLong((i+1)));
+            carrinho.add(item);
+        }
+
+        return carrinho;
+    }
+
+    public List<ItemCarrinhoRequestDto> getItemCarrinhoRequest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JavaTimeModule module = new JavaTimeModule();
+        mapper.registerModule(module);
+
+        try {
+            return Arrays.asList(mapper.readValue(jsonItemCarrinhoRequestDto, ItemCarrinhoRequestDto[].class));
+        } catch (StreamReadException e) {
+            throw new RuntimeException("Erro na leitura do arquivo Json", e);
+        } catch (DatabindException e) {
+            throw new RuntimeException("Erro ao mapear o Json para o objeto Ferramenta", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro de I/O ao processar o arquivo Json", e);
+        }
+    }
+
+    public List<ItemPedido> getItensDoPedidoCompra(List<ItemCarrinho> carrinho) {
+        List<ItemPedido> pedido = new ArrayList<>();
+        for (int i = 0; i < carrinho.size(); i++) {
+            ItemPedido item = new ItemPedido();
+            item.setFerramenta(carrinho.get(i).getFerramenta());
+            item.setPrecoUnitario(carrinho.get(i).getPrecoVendaMomento());
+            item.setQuantidade(carrinho.get(i).getQuantidade());
+            pedido.add(item);
+        }
+        return pedido;
+    }
+
+    public List<ItemPedido> getItensDoPedidoAluguel(List<ItemCarrinho> carrinho) {
+        List<ItemPedido> pedido = new ArrayList<>();
+        for (int i = 0; i < carrinho.size(); i++) {
+            ItemPedido item = new ItemPedido();
+            item.setFerramenta(carrinho.get(i).getFerramenta());
+            item.setPrecoUnitario(carrinho.get(i).getPrecoAluguelMomento());
+            item.setQuantidade(carrinho.get(i).getQuantidade());
+            pedido.add(item);
+        }
+        return pedido;
+    }
+
+    public Pedido getPedido(TIPO_PEDIDO tipoPedido, int prazo, Usuario usuario, Endereco endereco, List<ItemPedido> itens) {
+        Pedido pedidoModel = new Pedido();
+        pedidoModel.setUsuario(usuario);
+        pedidoModel.setEndereco(endereco);
+        pedidoModel.setTipo(TIPO_PEDIDO.COMPRA);
+        pedidoModel.setSituacao(STATUS_PEDIDO.PENDENTE);
+        pedidoModel.setDataCriacao(Instant.now());
+        pedidoModel.setDataAtualizacao(Instant.now());
+        pedidoModel.setItens(itens);
+
+        if(tipoPedido == TIPO_PEDIDO.COMPRA)
+        pedidoModel.setValorTotal(
+            itens.stream()
+            .map( item -> item.getPrecoUnitario().multiply(BigDecimal.valueOf(item.getQuantidade())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
+        else{
+            BigDecimal somaTotal = itens.stream()
+                .map( item -> item.getPrecoUnitario().multiply(BigDecimal.valueOf(item.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            pedidoModel.setValorTotal(
+                somaTotal.multiply(BigDecimal.valueOf(prazo))
+            );
+        }
+        return pedidoModel;
     }
 
 }

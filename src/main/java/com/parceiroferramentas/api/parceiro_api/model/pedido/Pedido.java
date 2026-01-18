@@ -33,11 +33,11 @@ public class Pedido {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo", columnDefinition = "tipo_pedido")
+    @Column(name = "tipo")
     private TIPO_PEDIDO tipo;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "situacao", columnDefinition = "status_pedido")
+    @Column(name = "situacao")
     private STATUS_PEDIDO situacao;
 
     @Column(name = "valor_total", nullable = false)

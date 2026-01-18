@@ -141,7 +141,7 @@ public class PedidoService {
             usuario.getCarrinhoItens().clear();
         }
 
-        return pedido;
+        return pedidoCriado;
     }
 
     public Pedido criarPedidoAluguel(String token, Long prazo, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento) {
@@ -195,7 +195,7 @@ public class PedidoService {
             usuario.getCarrinhoItens().clear();
         }
 
-        return pedido;
+        return pedidoCriado;
     }
 
     public Pedido buscarPedido(Long pedidoId) {

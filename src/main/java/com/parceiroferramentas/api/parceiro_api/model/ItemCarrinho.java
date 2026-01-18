@@ -35,10 +35,10 @@ public class ItemCarrinho {
     private Integer quantidade;
 
     @Column(name = "preco_aluguel_momento", precision = 10, scale = 2)
-    private BigDecimal precoVendaMomento;
+    private BigDecimal precoAluguelMomento;
 
     @Column(name = "preco_venda_momento", precision = 10, scale = 2)
-    private BigDecimal precoAluguelMomento;
+    private BigDecimal precoVendaMomento;
 
     @Column(name = "url_imagem")
     private String urlImage;

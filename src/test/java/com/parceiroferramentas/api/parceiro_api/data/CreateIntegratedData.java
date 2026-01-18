@@ -7,7 +7,7 @@ import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
 
 public class CreateIntegratedData {
 
-    //private File json = new File("src/test/resources/response_success.json");
+    //private File json = new File("src/test/resources/FerramentasMock.json");
 
     public static CreateIntegratedData getInstance() {
         return new CreateIntegratedData();

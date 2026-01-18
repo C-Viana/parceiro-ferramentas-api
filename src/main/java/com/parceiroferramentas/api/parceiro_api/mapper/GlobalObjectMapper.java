@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 import com.parceiroferramentas.api.parceiro_api.dto.EnderecoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.FerramentaDto;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoDto;
-import com.parceiroferramentas.api.parceiro_api.dto.PagamentoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PedidoResponseDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoResponseDto;
@@ -19,7 +18,6 @@ import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
-import com.parceiroferramentas.api.parceiro_api.model.pagamento.Pagamento;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
 
 @Mapper(componentModel = "spring")
