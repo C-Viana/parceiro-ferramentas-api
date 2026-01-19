@@ -4,7 +4,7 @@
 
 API RESTful para locação e venda de ferramentas profissionais.
 
-Tecnologias:
+# Tecnologias:
 - Java 25
 - Spring Boot 4.0.0
 - PostgreSQL 18
@@ -30,6 +30,8 @@ parceiro-ferramentas-api/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── exception/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── mapper/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── model/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;├── pagamento/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;├── pedido/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── repository/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── service/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;└── Startup.java<br>
@@ -38,6 +40,16 @@ parceiro-ferramentas-api/<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;├── application.yml<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;├── application-dev.yml<br>
 │&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└── application-prod.yml<br>
+│&emsp;&emsp;└── test/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;├── java/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;└── br/com/parceiroferramentas/api/parceiro_api/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── config/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── data/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── integration/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;├── unit/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;├── repository/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;│&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;├── service/<br>
+│&emsp;&emsp;&emsp;&emsp;&emsp;└── resources/<br>
 ├── docker/<br>
 │&emsp;&emsp;&emsp;└── Dockerfile<br>
 ├── docker-compose.yml<br>

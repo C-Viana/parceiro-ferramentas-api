@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.parceiroferramentas.api</groupId>
 	<artifactId>parceiro_api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>parceiro_api</name>
 	<description>Serviços da loja Parceiro Ferramentas</description>
 	<url/>
