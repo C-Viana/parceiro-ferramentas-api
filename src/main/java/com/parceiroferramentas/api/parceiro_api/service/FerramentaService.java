@@ -71,4 +71,13 @@ public class FerramentaService {
         return repository.findByTipoEqualsIgnoreCase(tipo.trim(), pageable);
     }
 
+    public Page<Ferramenta> findAllByName(String nome, Pageable pageable) {
+        if (nome == null || nome.isBlank()) {
+            logger.info("O parâmetro \"nome\" está vazio. A busca será feita por todas as ferramentas.");
+            return findAll(pageable);
+        }
+        logger.info("Buscando ferramentas do nome: " + nome);
+        return repository.findByNomeContainsIgnoreCase(nome.trim(), pageable);
+    }
+
 }

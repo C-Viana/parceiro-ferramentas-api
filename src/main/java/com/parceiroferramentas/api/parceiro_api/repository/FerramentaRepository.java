@@ -10,4 +10,5 @@ import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 public interface FerramentaRepository extends JpaRepository<Ferramenta, Long> {
 
     public Page<Ferramenta> findByTipoEqualsIgnoreCase(String tipo, Pageable pageable);
+    public Page<Ferramenta> findByNomeContainsIgnoreCase(String nome, Pageable pageable);
 }

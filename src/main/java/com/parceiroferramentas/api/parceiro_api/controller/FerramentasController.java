@@ -125,4 +125,17 @@ public class FerramentasController implements FerramentasDocumentation {
         return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
     }
 
+    @Override
+    @GetMapping(value = "/nome", produces = "application/json")
+    public ResponseEntity<Page<FerramentaDto>> findAllByNome(
+            @RequestParam String nome, 
+            @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
+            @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
+            @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort) {
+        var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
+        Page<Ferramenta> ferramentas = service.findAllByName(nome, PageRequest.of(page, size, Sort.by(sortOption, "id")));
+        logger.info("Total de ferramentas do tipo " + nome + " encontradas: " + ferramentas.getTotalElements());
+        return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
+    }
+
 }

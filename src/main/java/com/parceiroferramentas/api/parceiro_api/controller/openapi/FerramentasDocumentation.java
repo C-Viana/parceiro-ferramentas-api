@@ -229,4 +229,43 @@ public interface FerramentasDocumentation {
         @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
         @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort
     );
+
+    @Operation(
+        summary = "Lista todas as ferramentas pelo nome",
+        description = "Retorna uma lista paginada de todas as ferramentas do banco de dados que contém no nome a informação enviada",
+        responses = {
+            @ApiResponse(
+                description = "Success",
+                responseCode = "200",
+                content = {
+                    @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        array = @ArraySchema(schema = @Schema(implementation = FerramentaDto.class))
+                    )
+                }
+            ),
+            @ApiResponse(
+                description = "Bad Request", 
+                responseCode = "400",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Not Found", 
+                responseCode = "404",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Internal Error", 
+                responseCode = "500",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Unauthorized", 
+                responseCode = "401",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
+        }
+    )
+    ResponseEntity<Page<FerramentaDto>> findAllByNome(
+        @RequestParam String nome, 
+        @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
+        @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
+        @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort
+    );
 }
