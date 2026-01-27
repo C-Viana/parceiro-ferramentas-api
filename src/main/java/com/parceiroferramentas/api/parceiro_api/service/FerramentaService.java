@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class FerramentaService {
 
     private Logger logger = LoggerFactory.getLogger(FerramentaService.class.getName());
@@ -27,6 +32,13 @@ public class FerramentaService {
         return repository.findById(id).orElse(null);
     }
 
+    public Ferramenta fallbackCreateFerramentaenta(Ferramenta ferramenta, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao criar nova ferramenta", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCreateFerramentaenta")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCreateFerramentaenta")
     public Ferramenta create(Ferramenta ferramenta) {
         logger.info("Criando nova ferramenta: " + ferramenta.getNome());
         if(ferramenta.validateFields()==false) throw new InternalApplicationException(BAD_REQUEST_MESSAGE);
@@ -42,6 +54,13 @@ public class FerramentaService {
         repository.deleteById(id);
     }
 
+    public Ferramenta fallbackUpdateFerramenta(Ferramenta ferramenta, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao atualizar nova ferramenta", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackUpdateFerramenta")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackUpdateFerramenta")
     public Ferramenta update(Ferramenta ferramenta) {
         logger.info("Atualizando ferramenta com ID {"+ferramenta.getId()+"}");
         if(ferramenta.validateFields()==false) throw new InternalApplicationException(BAD_REQUEST_MESSAGE);
@@ -49,13 +68,6 @@ public class FerramentaService {
         ferramenta.setAtualizado_em(currenDate);
         return repository.save(ferramenta);
     }
-
-    /*
-    public List<Ferramenta> findAll() {
-        logger.info("Buscando todas as ferramentas");
-        return repository.findAll();
-    }
-    */
 
     public Page<Ferramenta> findAll(Pageable pageable) {
         logger.info("Buscando todas as ferramentas");

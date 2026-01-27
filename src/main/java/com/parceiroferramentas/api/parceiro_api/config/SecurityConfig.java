@@ -63,7 +63,7 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString())
                 .requestMatchers(HttpMethod.PUT, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString(), PERFIL_ACESSO.GERENTE.getString())
-                .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/**", "/api/v1/endereco/todos").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString(), PERFIL_ACESSO.GERENTE.getString())
+                .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/**", "/api/v1/endereco/todos", "/api/v1/pedido/{pedidoId}").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString(), PERFIL_ACESSO.GERENTE.getString())
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/ferramentas").hasAnyAuthority(PERFIL_ACESSO.ADMIN.getString())
                 .requestMatchers(HttpMethod.GET, "/api/v1/ferramentas", "/api/v1/ferramentas/**").permitAll()
                 .requestMatchers(

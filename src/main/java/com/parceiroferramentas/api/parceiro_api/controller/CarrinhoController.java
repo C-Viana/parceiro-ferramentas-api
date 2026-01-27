@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -15,11 +16,14 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.controller.openapi.CarrinhoDocumentation;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
-import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.service.CarrinhoService;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
+@Validated
 @RequestMapping(value = "/api/v1/carrinho")
 public class CarrinhoController implements CarrinhoDocumentation {
 
@@ -54,7 +59,12 @@ public class CarrinhoController implements CarrinhoDocumentation {
 
     @Override
     @GetMapping("/usuario")
-    public ResponseEntity<List<ItemCarrinhoDto>> buscaCarrinhoUsuario(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ItemCarrinhoDto>> buscaCarrinhoUsuario(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token
+    ) {
         String extractedUsername = extrairUsername(token);
         logger.info("Buscando o carrinho do usuário de ID "+extractedUsername);
         List<ItemCarrinho> carrinho = service.recuperarCarrinho(extractedUsername);
@@ -65,14 +75,14 @@ public class CarrinhoController implements CarrinhoDocumentation {
 
     @Override
     @PostMapping
-    public ResponseEntity<ItemCarrinhoDto> adicionarItem(@RequestHeader("Authorization") String token, @RequestBody ItemCarrinhoRequestDto item) {
-        if(item == null 
-            || item.ferramenta_id() == null
-            || item.ferramenta_id() < 1L
-            || item.quantidade() == null
-            || item.quantidade() < 1
-        ) throw new BadRequestException("As informações da ferramenta não são válidas");
-        
+    public ResponseEntity<ItemCarrinhoDto> adicionarItem(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @Valid
+        @RequestBody ItemCarrinhoRequestDto item
+    ) {
         String username = extrairUsername(token);
         logger.info("Salvando item no carrinho do usuário "+username);
         
@@ -84,19 +94,16 @@ public class CarrinhoController implements CarrinhoDocumentation {
 
     @Override
     @PostMapping(value = "/todos")
-    public ResponseEntity<List<ItemCarrinhoDto>> adicionarItens(@RequestHeader("Authorization") String token, @RequestBody List<ItemCarrinhoRequestDto> itens) {
-        itens.forEach( item -> {
-            if(item == null 
-                || item.ferramenta_id() == null
-                || item.ferramenta_id() < 1L
-                || item.quantidade() == null
-                || item.quantidade() < 1
-            ) throw new BadRequestException("As informações da ferramenta não são válidas");
-        });
-        
+    public ResponseEntity<List<ItemCarrinhoDto>> adicionarItens(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @Valid
+        @RequestBody List<ItemCarrinhoRequestDto> itens
+    ) {
         String username = extrairUsername(token);
-        logger.info("Salvando todos os itens no carrinho do usuário "+username);
-        logger.info("Quantidade de itens recebidos "+itens.size());
+        logger.info("Salvando ["+itens.size()+"] itens no carrinho do usuário "+username);
         List<ItemCarrinho> itensSalvos = service.salvarTodos(username, itens);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(itensSalvos.get(0).getId()).toUri();
@@ -105,24 +112,40 @@ public class CarrinhoController implements CarrinhoDocumentation {
 
     @Override
     @DeleteMapping(value = "/{itemCarrinhoId}")
-    public ResponseEntity<Void> removerItem(@RequestHeader("Authorization") String token, @PathVariable Long itemCarrinhoId) {
+    public ResponseEntity<Void> removerItem(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @PathVariable Long itemCarrinhoId
+    ) {
         String username = extrairUsername(token);
+        logger.info("REMOVER ITEM DE CARRINHO DO USUARIO "+username);
         service.removerItem(username, itemCarrinhoId);
         return ResponseEntity.noContent().build();
     }
 
     @Override
     @DeleteMapping(value = "/limpar")
-    public ResponseEntity<Void> limparCarrinho(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Void> limparCarrinho(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token
+    ) {
         String username = extrairUsername(token);
+        logger.info("LIMPAR CARRINHO DO USUARIO "+username);
         service.removerTodos(username);
         return ResponseEntity.noContent().build();
     }
 
     @Override
     @PutMapping
-    public ResponseEntity<ItemCarrinhoDto> atualizarItem(@RequestBody ItemCarrinhoDto itemAtualizado) {
-        logger.info("ITEM DTO: " + itemAtualizado.toString());
+    public ResponseEntity<ItemCarrinhoDto> atualizarItem(
+        @Valid
+        @RequestBody ItemCarrinhoDto itemAtualizado
+    ) {
+        logger.info("ATUALIZAR ITEM DO CARRINHO");
         ItemCarrinho entidade = service.atualizarItem(mapper.toItemCarrinho(itemAtualizado));
         return ResponseEntity.ok(mapper.toItemCarrinhoDto(entidade));
     }

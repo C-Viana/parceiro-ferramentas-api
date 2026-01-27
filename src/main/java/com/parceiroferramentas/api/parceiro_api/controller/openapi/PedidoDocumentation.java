@@ -19,6 +19,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @Tag(name = "Pedido", description = "Recursos para recuperação, criação e atualização de pedidos")
 public interface PedidoDocumentation {
@@ -54,8 +59,12 @@ public interface PedidoDocumentation {
         }
     )
     ResponseEntity<PedidoResponseDto> criarPedidoDeCompra(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
         @RequestHeader("Authorization") String token, 
         @PathVariable Long enderecoId, 
+        @Valid
         @RequestBody PagamentoRequestDto pagamento) throws JsonProcessingException;
 
     @Operation(
@@ -89,9 +98,13 @@ public interface PedidoDocumentation {
         }
     )
     ResponseEntity<PedidoResponseDto> criarPedidoDeAluguel(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
         @RequestHeader("Authorization") String token, 
         @PathVariable Long diasPrazo, 
         @PathVariable Long enderecoId, 
+        @Valid
         @RequestBody PagamentoRequestDto pagamento) throws JsonProcessingException;
 
     @Operation(
@@ -124,7 +137,8 @@ public interface PedidoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<PedidoResponseDto> buscarPedidoPorId(@PathVariable Long pedidoId);
+    ResponseEntity<PedidoResponseDto> buscarPedidoPorId(
+        @PathVariable Long pedidoId);
 
     @Operation(
         summary = "Retorna os pedidos do usuário",
@@ -156,7 +170,12 @@ public interface PedidoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<List<PedidoResponseDto>> buscarPedidosDoUsuario(@RequestHeader("Authorization") String token);
+    ResponseEntity<List<PedidoResponseDto>> buscarPedidosDoUsuario(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token
+    );
 
     @Operation(
         summary = "Atualiza data de finalização",
@@ -189,7 +208,14 @@ public interface PedidoDocumentation {
         }
     )
     ResponseEntity<PedidoResponseDto> atualizarDataFimDoPedido(
+        @Valid
+        @NotNull(message = "O parâmetro de identificação do pedido está nulo")
+        @Min(value = 1, message = "O identificador do pedido não pode ser inferior a 1")
         @RequestParam(name = "pedido_id", required = true) Long pedido_id,
+        @Valid
+        @NotNull(message = "O parâmetro data (dd/mm/yyyy) não foi informado")
+        @NotBlank(message = "O parâmetro data (dd/mm/yyyy) foi enviado vazio")
+        @Pattern(regexp = "[0-9]{2}-[0-9]{2}-[0-9]{4}", message = "O formato da data deve seguir o padrão dd-MM-yyyy")
         @RequestParam(name = "nova_data", required = true) String nova_data
     );
 
@@ -224,7 +250,12 @@ public interface PedidoDocumentation {
         }
     )
     ResponseEntity<PedidoResponseDto> atualizarSituacaoDoPedido(
+        @Valid
+        @NotNull(message = "O parâmetro de identificação do pedido está nulo")
         @RequestParam(name = "pedido_id", required = true) Long pedido_id,
+        @Valid
+        @NotNull(message = "O parâmetro situação não foi informado")
+        @NotBlank(message = "O parâmetro situação foi enviado vazio")
         @RequestParam(name = "nova_situacao", required = true) String nova_situacao
     );
 }

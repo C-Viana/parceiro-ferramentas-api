@@ -24,8 +24,11 @@ import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.service.FerramentaService;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +53,7 @@ public class FerramentasController implements FerramentasDocumentation {
 
     @Override
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<FerramentaDto> findById(@PathVariable @Min(0) Long id) {
+    public ResponseEntity<FerramentaDto> findById(@PathVariable Long id) {
         Ferramenta entity = service.findById(id);
         if (entity == null) {
             return ResponseEntity.notFound().build();
@@ -60,7 +63,14 @@ public class FerramentasController implements FerramentasDocumentation {
 
     @Override
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<FerramentaDto> create(@RequestHeader("Authorization") String token, @RequestBody FerramentaDto ferramenta) {
+    public ResponseEntity<FerramentaDto> create(
+        @Valid
+        @NotBlank(message = "O nome de usuário não pode estar vazio")
+        @NotNull(message = "O nome de usuário não pode ser nulo")
+        @RequestHeader("Authorization") String token,
+        @Valid 
+        @RequestBody FerramentaDto ferramenta
+    ) {
         Ferramenta entity = service.create(mapper.toFerramentaEntity(ferramenta));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -80,11 +90,12 @@ public class FerramentasController implements FerramentasDocumentation {
 
     @Override
     @PutMapping(value = "/{id}",consumes = "application/json" , produces = "application/json")
-    public ResponseEntity<FerramentaDto> update(@PathVariable Long id, @RequestBody FerramentaDto ferramenta) {
+    public ResponseEntity<FerramentaDto> update(
+        @PathVariable Long id,
+        @Valid 
+        @RequestBody FerramentaDto ferramenta
+    ) {
         FerramentaDto entity = findById(id).getBody();
-
-        //ferramenta.setId(id);
-        //ferramenta.setCriado_em(entity.getCriado_em());
 
         if(entity.equals(ferramenta)){
             logger.info("Nenhum dado alterado para a ferramenta ID ["+id+"]. Objeto novo é igual ao existente");
@@ -115,6 +126,9 @@ public class FerramentasController implements FerramentasDocumentation {
     @Override
     @GetMapping(value = "/tipo", produces = "application/json")
     public ResponseEntity<Page<FerramentaDto>> findAllByType(
+            @Valid
+            @NotNull(message = "O parâmetro tipo deve ser informado")
+            @NotBlank(message = "O parâmetro tipo foi enviado vazio")
             @RequestParam String tipo, 
             @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
             @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
@@ -128,6 +142,9 @@ public class FerramentasController implements FerramentasDocumentation {
     @Override
     @GetMapping(value = "/nome", produces = "application/json")
     public ResponseEntity<Page<FerramentaDto>> findAllByNome(
+            @Valid
+            @NotNull(message = "O parâmetro nome deve ser informado")
+            @NotBlank(message = "O parâmetro nome foi enviado vazio")
             @RequestParam String nome, 
             @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
             @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 

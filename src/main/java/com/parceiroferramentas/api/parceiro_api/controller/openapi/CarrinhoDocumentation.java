@@ -18,6 +18,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Tag(name = "Carrinho", description = "CRUD para tratativa do recurso carrinho de compras")
 public interface CarrinhoDocumentation {
@@ -54,7 +57,12 @@ public interface CarrinhoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<List<ItemCarrinhoDto>> buscaCarrinhoUsuario(@RequestHeader("Authorization") String token);
+    ResponseEntity<List<ItemCarrinhoDto>> buscaCarrinhoUsuario(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token
+    );
 
     @Operation(
         summary = "Adicionar item",
@@ -88,7 +96,14 @@ public interface CarrinhoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<ItemCarrinhoDto> adicionarItem(@RequestHeader("Authorization") String token, @RequestBody ItemCarrinhoRequestDto item);
+    ResponseEntity<ItemCarrinhoDto> adicionarItem(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @Valid
+        @RequestBody ItemCarrinhoRequestDto item
+    );
 
     @Operation(
         summary = "Adicionar itens",
@@ -122,7 +137,14 @@ public interface CarrinhoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<List<ItemCarrinhoDto>> adicionarItens(@RequestHeader("Authorization") String token, @RequestBody List<ItemCarrinhoRequestDto> itens);
+    ResponseEntity<List<ItemCarrinhoDto>> adicionarItens(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @Valid
+        @RequestBody List<ItemCarrinhoRequestDto> itens
+    );
 
     @Operation(
         summary = "Remover item",
@@ -151,7 +173,13 @@ public interface CarrinhoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<Void> removerItem(@RequestHeader("Authorization") String token, @PathVariable Long itemCarrinhoId);
+    ResponseEntity<Void> removerItem(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @PathVariable Long itemCarrinhoId
+    );
 
     @Operation(
         summary = "Remover todos os itens",
@@ -180,7 +208,12 @@ public interface CarrinhoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<Void> limparCarrinho(@RequestHeader("Authorization") String token);
+    ResponseEntity<Void> limparCarrinho(
+        @Valid 
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token
+    );
 
     @Operation(
         summary = "Alterar item",
@@ -214,5 +247,5 @@ public interface CarrinhoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<ItemCarrinhoDto> atualizarItem(@RequestBody ItemCarrinhoDto itemAtualizado);
+    ResponseEntity<ItemCarrinhoDto> atualizarItem(@Valid @RequestBody ItemCarrinhoDto itemAtualizado);
 }

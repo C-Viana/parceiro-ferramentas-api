@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "Endereços", description = "CRUD para tratativa do recurso Endereços")
 public interface EnderecoDocumentation {
@@ -126,7 +127,7 @@ public interface EnderecoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long id);
+    ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long usuarioId);
 
     @Operation(
         summary = "Cadastra um novo endereço",
@@ -160,7 +161,11 @@ public interface EnderecoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<EnderecoDto> cadastrarEndereco(@PathVariable Long usuarioId, @RequestBody EnderecoDto dto);
+    ResponseEntity<EnderecoDto> cadastrarEndereco(
+        @PathVariable Long usuarioId, 
+        @Valid
+        @RequestBody EnderecoDto dto
+    );
 
     @Operation(
         summary = "Atualiza um endereço",
@@ -194,7 +199,11 @@ public interface EnderecoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<EnderecoDto> atualizarEndereco(@PathVariable Long id, @RequestBody EnderecoDto dto);
+    ResponseEntity<EnderecoDto> atualizarEndereco(
+        @PathVariable Long id, 
+        @Valid
+        @RequestBody EnderecoDto dto
+    );
 
     @Operation(
         summary = "Apaga um endereço",

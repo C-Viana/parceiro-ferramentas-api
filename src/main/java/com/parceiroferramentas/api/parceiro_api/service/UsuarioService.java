@@ -23,15 +23,16 @@ import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
-import com.parceiroferramentas.api.parceiro_api.model.Acesso;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
-import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class UsuarioService implements UserDetailsService {
 
     Logger logger = LoggerFactory.getLogger(UsuarioService.class);
@@ -47,16 +48,12 @@ public class UsuarioService implements UserDetailsService {
     @Autowired
     private PermissaoRepository permissaoRepo;
 
-    @Autowired
-    private AcessoRepository acessoRepo;
-
     public UsuarioService(@Lazy AuthenticationManager authManager, JwtTokenService tokenService,
-            UsuarioRepository usuarioRepo, PermissaoRepository permissaoRepo, AcessoRepository acessoRepo) {
+            UsuarioRepository usuarioRepo, PermissaoRepository permissaoRepo) {
         this.authManager = authManager;
         this.tokenService = tokenService;
         this.usuarioRepo = usuarioRepo;
         this.permissaoRepo = permissaoRepo;
-        this.acessoRepo = acessoRepo;
     }
 
     public AcessoUsuarioDto signin(CredenciaisUsuarioDto credenciais) {
@@ -83,8 +80,6 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public AcessoUsuarioDto refresh(String nomeUsuario, String refreshToken) {
-        if(nomeUsuario == null || nomeUsuario.isBlank() ) throw new InvalidAuthorizationException("Nome de usuário inválido ou ausente");
-        if(refreshToken == null || refreshToken.isBlank() ) throw new InvalidAuthorizationException("O token fornecido está inválido ou ausente");
         Usuario usuario = usuarioRepo.findUsuarioByUsername(nomeUsuario);
         if(usuario == null) throw new UsernameNotFoundException("Usuário ["+nomeUsuario+"] não encontrado");
 
@@ -100,14 +95,15 @@ public class UsuarioService implements UserDetailsService {
         return usuario;
     }
 
+    public Usuario fallbackSignup(Usuario usuario, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao criar novo usuário", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSignup")
+    @RateLimiter(name = "authRateLimit", fallbackMethod = "fallbackSignup")
     public Usuario signup(Usuario usuario) {
         List<Permissao> perms = null ;
-        
-        if(usuario == null || 
-            usuario.getPassword() == null || usuario.getPassword().isBlank() || 
-            usuario.getUsername() == null || usuario.getUsername().isBlank() || 
-            usuario.getNome() == null || usuario.getNome().isBlank())
-                throw new NotFoundException("Informações incompletas. Certifique-se que os campos USUÁRIO, NOME e SENHA foram informados");
         
         if(usuarioRepo.findUsuarioByUsername(usuario.getUsername()) != null)
             throw new NotFoundException("Esse nome de usuário já existe. É necessário usar um nome diferente");
@@ -134,15 +130,7 @@ public class UsuarioService implements UserDetailsService {
         }
         
         Usuario novoUsuario = usuarioRepo.save(usuario);
-
-        try {
-            if(perms != null) perms.forEach(p -> acessoRepo.save(new Acesso(novoUsuario, p)));
-            return novoUsuario;
-        } catch (Exception e) {
-            usuarioRepo.delete(novoUsuario);
-            logger.error("Erro ao cadastrar novo usuário: {}", e.getMessage());
-            throw e;
-        }
+        return novoUsuario;
 
     }
 
@@ -153,11 +141,13 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public Page<Usuario> findByAuthoritiesContains(String token, String nomePermissao, Pageable pageable) {
-        Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(nomePermissao.toUpperCase()));
-        if(p == null)
-            throw new NotFoundException("O perfil de acesso informado é inválido ou não existe");
         if(tokenService.tokenExpirado(token))
             throw new InvalidAuthorizationException("O token fornecido está expirado ou inválido");
+
+        Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(nomePermissao.toUpperCase()));
+        
+        if(p == null)
+            throw new NotFoundException("O perfil de acesso informado é inválido ou não existe");
         return usuarioRepo.findByAuthoritiesContains(p, pageable);
     }
 

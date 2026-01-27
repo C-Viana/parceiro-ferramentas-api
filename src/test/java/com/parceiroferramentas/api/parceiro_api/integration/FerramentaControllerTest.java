@@ -36,13 +36,15 @@ public class FerramentaControllerTest {
     }
 
     public String getAccessToken(CredenciaisUsuarioDto credencial) {
-        Response res = RestAssured
+        String token = RestAssured
             .given()
                 .contentType("application/json")
                 .body(credencial)
             .when()
-                .post("/usuarios/signin");
-        return res.body().jsonPath().getString("acesso");
+                .post("/usuarios/signin")
+            .then()
+                .extract().body().jsonPath().getString("acesso");
+        return token;
     }
 
     @Test
@@ -58,7 +60,10 @@ public class FerramentaControllerTest {
                 .header("Authorization", "Bearer "+token)
                 .body(ferramenta)
             .when()
-                .post("/api/v1/ferramentas");
+                .post("/api/v1/ferramentas")
+            .then()
+                .log().body()
+                .extract().response();
         
         Assertions.assertEquals(201, res.getStatusCode());
         Assertions.assertNotNull(res.body().jsonPath().getLong("id"));

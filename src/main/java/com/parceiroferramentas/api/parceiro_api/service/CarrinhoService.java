@@ -7,8 +7,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
@@ -20,8 +23,14 @@ import com.parceiroferramentas.api.parceiro_api.repository.CarrinhoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class CarrinhoService {
+
+    private Logger logger = LoggerFactory.getLogger(CarrinhoService.class);
 
     @Autowired
     private CarrinhoRepository repository;
@@ -37,6 +46,13 @@ public class CarrinhoService {
         return repository.findItemCarrinhoByUsuarioId(usuario.getId());
     }
 
+    public ItemCarrinho fallbackSalvarItemCarrinho(String username, Long ferramentaId, Integer quantidade, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao salvar item no carrinho", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSalvarItemCarrinho")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackSalvarItemCarrinho")
     public ItemCarrinho salvarItem(String username, Long ferramentaId, Integer quantidade) {
         Usuario usuario = buscaUsuario(username);
         Ferramenta ferramenta = buscaFerramenta(ferramentaId);
@@ -50,6 +66,13 @@ public class CarrinhoService {
         return repository.save(item);
     }
 
+    public List<ItemCarrinho> fallbackSalvarTodosCarrinho(String username, List<ItemCarrinhoRequestDto> itens, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao salvar lista de itens no carrinho", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSalvarTodosCarrinho")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackSalvarTodosCarrinho")
     public List<ItemCarrinho> salvarTodos(String username, List<ItemCarrinhoRequestDto> itens) {
         Usuario usuario = buscaUsuario(username);
         List<ItemCarrinho> ferramentas = new ArrayList<>();
@@ -85,6 +108,13 @@ public class CarrinhoService {
         usuario.limparCarrinho();
     }
 
+    public ItemCarrinho fallbackAtualizarItemCarrinho(ItemCarrinho itemAtual, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao atualizar o item do carrinho "+itemAtual.getId(), throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackAtualizarItemCarrinho")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackAtualizarItemCarrinho")
     public ItemCarrinho atualizarItem(ItemCarrinho itemAtual) {
         if(itemAtual == null || itemAtual.getId() == null) throw new BadRequestException("Dados do item são inválidos ou estão ausentes");
         ItemCarrinho itemAtualizavel = repository.findById(itemAtual.getId()).orElse(null);
@@ -92,28 +122,6 @@ public class CarrinhoService {
         atualizaItemCarrinho(itemAtualizavel, itemAtual);
         return repository.save(itemAtualizavel);
     }
-
-    // public List<ItemCarrinho> atualizarTodos(List<ItemCarrinho> itens) {
-    //     ItemCarrinho itemAtualizavel = null;
-    //     List<ItemCarrinho> itensAtualizados = new ArrayList<>();
-    //     for (int i = 0; i < itens.size(); i++) {
-    //         if(!itemCarrinhoValido(itens.get(i))) throw new BadRequestException("Os dados do item ID ["+itens.get(i).getId()+"] estão inválidos");
-    //         itemAtualizavel = repository.findById(itens.get(i).getId()).orElse(null);
-    //         if(itemAtualizavel == null) throw new NotFoundException("O item informado não foi encontrado");
-    //         atualizaItemCarrinho(itemAtualizavel, itens.get(i));
-    //         itensAtualizados.add(itemAtualizavel);
-    //     }
-    //     return repository.saveAll(itensAtualizados);
-    // }
-
-    // private boolean itemCarrinhoValido(ItemCarrinho item) {
-    //     boolean ferramentaNula = item.getFerramenta() != null;
-    //     boolean ferramentaExiste = ferramentaRepo.existsById(item.getFerramenta().getId());
-    //     boolean precoCompraValido = item.getPrecoVendaMomento() != null && item.getPrecoVendaMomento().compareTo(new BigDecimal("0.0")) > 0;
-    //     boolean precoAluguelValido = item.getPrecoAluguelMomento() != null && item.getPrecoAluguelMomento().compareTo(new BigDecimal("0.0")) > 0;
-    //     boolean dataValida = item.getDataAdicao() != null;
-    //     return (ferramentaNula && ferramentaExiste && precoCompraValido && precoAluguelValido && dataValida);
-    // }
 
     private void atualizaItemCarrinho(ItemCarrinho anterior, ItemCarrinho atual) {
         anterior.setQuantidade(atual.getQuantidade());
@@ -127,12 +135,6 @@ public class CarrinhoService {
         if(usuario == null) throw new NotFoundException("O usuário informado ["+username+"] não foi encontrado");
         return usuario;
     }
-
-    // private Usuario buscaUsuario(Long usuarioId) {
-    //     Usuario usuario = usuarioRepo.findById(usuarioId).orElse(null);
-    //     if(usuario == null) throw new NotFoundException("O usuário informado [ID "+usuarioId+"] não foi encontrado");
-    //     return usuario;
-    // }
 
     private Ferramenta buscaFerramenta(Long ferramentaId) {
         Ferramenta resposta = ferramentaRepo.findById(ferramentaId).orElse(null);

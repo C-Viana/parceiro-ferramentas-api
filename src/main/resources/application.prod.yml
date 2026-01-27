@@ -37,3 +37,40 @@ api:
     security:
         token:
             secret: ${JWT_SECRET}
+resilience4j:
+    circuitbreaker:
+        instances:
+            backendGlobalBreaker:
+                slidingWindowSize: 10
+                failureRateThreshold: 50
+                waitDurationInOpenState: 10s
+                ignoreExceptions:
+                - com.parceiroferramentas.api.parceiro_api.exception.BadRequestException
+                - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
+                - com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException
+                - com.parceiroferramentas.api.parceiro_api.exception.NotFoundException
+    retry:
+        instances:
+            backendGlobalRetry:
+                maxAttempts: 3
+                waitDuration: 1000ms
+                retryExceptions:
+                - org.springframework.dao.DataAccessException
+                - java.net.SocketTimeoutException
+                - java.io.IOException
+                ignoreExceptions:
+                - com.parceiroferramentas.api.parceiro_api.exception.BadRequestException
+                - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
+                - com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException
+                - com.parceiroferramentas.api.parceiro_api.exception.NotFoundException
+
+    ratelimiter:
+        instances:
+            authRateLimit:
+                limitForPeriod: 5
+                limitRefreshPeriod: 5s
+                timeoutDuration: 0
+            pedidosRateLimit:
+                limitForPeriod: 2
+                limitRefreshPeriod: 1m
+                timeoutDuration: 10s

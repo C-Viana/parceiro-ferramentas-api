@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +26,15 @@ import com.parceiroferramentas.api.parceiro_api.dto.EnderecoDto;
 import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.service.EnderecoService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
+@Validated
 @RequestMapping(value = "/api/v1/endereco")
 public class EnderecoController implements EnderecoDocumentation{
 
@@ -66,10 +71,10 @@ public class EnderecoController implements EnderecoDocumentation{
     }
 
     @Override
-    @GetMapping(value = "/usuario/{id}", produces = "application/json")
-    public ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long id) {
-        logger.info("Buscando o registro de endereço com ID {}", id);
-        List<Endereco> entidade = service.findUsuarioEnderecos(id);
+    @GetMapping(value = "/usuario/{usuarioId}", produces = "application/json")
+    public ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long usuarioId) {
+        logger.info("Buscando o registro de endereço com ID {}", usuarioId);
+        List<Endereco> entidade = service.findUsuarioEnderecos(usuarioId);
         if(entidade.size() < 1) return ResponseEntity.noContent().build();
         List<EnderecoDto> dto = entidade.stream().map(item -> mapper.toEnderecoDto(item)).toList();
         return ResponseEntity.ok( dto );
@@ -77,7 +82,11 @@ public class EnderecoController implements EnderecoDocumentation{
 
     @Override
     @PostMapping(value = "/usuario/{userId}")
-    public ResponseEntity<EnderecoDto> cadastrarEndereco(@PathVariable Long userId, @RequestBody EnderecoDto dto) {
+    public ResponseEntity<EnderecoDto> cadastrarEndereco(
+        @PathVariable Long userId, 
+        @Valid
+        @RequestBody EnderecoDto dto
+    ) {
         logger.info("Cadastrar novo endereço para o usuário {}", userId);
         logger.info("PAYLOAD {}", dto);
         Endereco response = service.create(userId, mapper.toEnderecoEntity(dto));
@@ -89,7 +98,11 @@ public class EnderecoController implements EnderecoDocumentation{
 
     @Override
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EnderecoDto> atualizarEndereco(@PathVariable Long id, @RequestBody EnderecoDto dto) {
+    public ResponseEntity<EnderecoDto> atualizarEndereco(
+        @PathVariable Long id, 
+        @Valid
+        @RequestBody EnderecoDto dto
+    ) {
         logger.info("Atualizar o endereço de ID {}", id);
         logger.info("PAYLOAD {}", dto);
         Endereco response = service.update(id, mapper.toEnderecoEntity(dto));

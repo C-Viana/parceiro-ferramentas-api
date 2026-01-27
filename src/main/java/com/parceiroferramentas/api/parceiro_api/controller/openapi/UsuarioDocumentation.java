@@ -18,8 +18,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Tag(name = "Usuários", description = "Endpoints para cadastro e login de usuários")
 public interface UsuarioDocumentation {
@@ -53,7 +56,7 @@ public interface UsuarioDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<?> entrar(CredenciaisUsuarioDto credenciais);
+    ResponseEntity<?> entrar(@Valid CredenciaisUsuarioDto credenciais);
 
     @Operation(
         summary = "Renovação",
@@ -80,7 +83,16 @@ public interface UsuarioDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<?> renovar(String nomeUsuario, String refreshToken);
+    ResponseEntity<?> renovar(
+        @Valid
+        @NotBlank(message = "O nome de usuário não pode estar vazio")
+        @NotNull(message = "O nome de usuário não pode ser nulo")
+        String nomeUsuario, 
+        @Valid
+        @NotBlank(message = "O token não pode estar vazio")
+        @NotNull(message = "O token não pode ser nulo")
+        String refreshToken
+    );
 
     @Operation(
         summary = "Cadastro",
@@ -107,7 +119,9 @@ public interface UsuarioDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<?> cadastrarUsuario(UsuarioRequestDto usuario);
+    ResponseEntity<?> cadastrarUsuario(
+        @Valid UsuarioRequestDto usuario
+    );
 
     @Operation(
         summary = "Busca todos os usuários",
@@ -135,6 +149,9 @@ public interface UsuarioDocumentation {
         }
     )
     ResponseEntity<Page<UsuarioResponseDto>> findAllUsuarios(
+        @Valid 
+        @NotBlank(message = "O token não pode estar vazio")
+        @NotNull(message = "O token não pode ser nulo")
         @RequestHeader("Authorization") String token,
         @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 
         @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24)int size);
@@ -165,6 +182,9 @@ public interface UsuarioDocumentation {
         }
     )
     ResponseEntity<Page<UsuarioResponseDto>> findUsuariosPorPerfil(
+        @Valid
+        @NotBlank(message = "O token não pode estar vazio")
+        @NotNull(message = "O token não pode ser nulo")
         @RequestHeader("Authorization") String token,
         @PathVariable String perfil, 
         @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 

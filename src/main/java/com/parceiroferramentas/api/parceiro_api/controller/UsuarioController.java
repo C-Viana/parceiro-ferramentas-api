@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,10 +32,14 @@ import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.service.UsuarioService;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
+@Validated
 @RequestMapping("/usuarios")
 public class UsuarioController implements UsuarioDocumentation {
 
@@ -48,7 +53,7 @@ public class UsuarioController implements UsuarioDocumentation {
 
     @Override
     @PostMapping(value = "/signin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> entrar(@RequestBody CredenciaisUsuarioDto credenciais) {
+    public ResponseEntity<?> entrar(@Valid @RequestBody CredenciaisUsuarioDto credenciais) {
         if(credenciais == null || credenciais.senha().isBlank() || credenciais.username().isBlank())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados de acesso precisam ser informados");
         AcessoUsuarioDto token = service.signin(credenciais);
@@ -57,14 +62,23 @@ public class UsuarioController implements UsuarioDocumentation {
 
     @Override
     @PutMapping(value = "/refresh/{nomeUsuario}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> renovar(@PathVariable String nomeUsuario, @RequestHeader("Authorization") String refreshToken) {
+    public ResponseEntity<?> renovar(
+        @Valid
+        @NotBlank(message = "O nome de usuário não pode estar vazio")
+        @NotNull(message = "O nome de usuário não pode ser nulo")
+        @PathVariable String nomeUsuario, 
+        @Valid
+        @NotBlank(message = "O token não pode estar vazio")
+        @NotNull(message = "O token não pode ser nulo")
+        @RequestHeader("Authorization") String refreshToken
+    ) {
         AcessoUsuarioDto token = service.refresh(nomeUsuario, refreshToken);
         return ResponseEntity.ok().body(token);
     }
 
     @Override
     @PostMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioRequestDto usuario) {
+    public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDto usuario) {
         logger.info("Realizando cadastro de novo usuário");
         Usuario res = service.signup(mapper.toUsuarioEntity(usuario));
 
@@ -79,6 +93,9 @@ public class UsuarioController implements UsuarioDocumentation {
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UsuarioResponseDto>> findAllUsuarios(
+            @Valid
+            @NotBlank(message = "O token não pode estar vazio")
+            @NotNull(message = "O token não pode ser nulo")
             @RequestHeader("Authorization") String token,
             @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 
             @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24)int size
@@ -93,6 +110,9 @@ public class UsuarioController implements UsuarioDocumentation {
     @Override
     @GetMapping(value = "/perfil/{perfil}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UsuarioResponseDto>> findUsuariosPorPerfil(
+            @Valid
+            @NotBlank(message = "O token não pode estar vazio")
+            @NotNull(message = "O token não pode ser nulo")
             @RequestHeader("Authorization") String token,
             @PathVariable String perfil, 
             @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 

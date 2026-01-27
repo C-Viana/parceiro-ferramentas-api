@@ -100,7 +100,7 @@ public class UsuarioControllerTest {
 
         Response res = RestAssured.given()
             .contentType("application/json")
-            .body(new UsuarioRequestDto(null, nomeCliente, username, "123456", true, null))
+            .body(new UsuarioRequestDto(null, nomeCliente, username, "12345678", true, null))
             .when()
             .post("/signup");
         
@@ -119,7 +119,7 @@ public class UsuarioControllerTest {
 
         Response res = RestAssured.given()
             .contentType("application/json")
-            .body(new UsuarioRequestDto(null, nomeGerente, username, "123456", true, List.of(new PermissaoRequestDto(PERFIL_ACESSO.GERENTE.toString()))))
+            .body(new UsuarioRequestDto(null, nomeGerente, username, "12345678", true, List.of(new PermissaoRequestDto(PERFIL_ACESSO.GERENTE.toString()))))
             .when()
             .post("/signup");
         

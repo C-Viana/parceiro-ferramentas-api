@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,14 @@ import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
 import com.parceiroferramentas.api.parceiro_api.service.PedidoService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 @RestController
+@Validated
 @RequestMapping("/api/v1/pedido")
 public class PedidoController implements PedidoDocumentation {
 
@@ -65,7 +73,15 @@ public class PedidoController implements PedidoDocumentation {
         consumes = "application/json",
         produces = "application/json"
     )
-    public ResponseEntity<PedidoResponseDto> criarPedidoDeCompra(@RequestHeader("Authorization") String token, @PathVariable Long enderecoId, @RequestBody PagamentoRequestDto pagamento) throws JsonProcessingException {
+    public ResponseEntity<PedidoResponseDto> criarPedidoDeCompra(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @PathVariable Long enderecoId, 
+        @Valid
+        @RequestBody PagamentoRequestDto pagamento
+    ) throws JsonProcessingException {
         logger.info("CRIANDO PEDIDO DE COMPRA");
         String jsonDetalhesPagamento = new ObjectMapper().writeValueAsString(pagamento.detalhes());
         Pedido pedidoCriado = pedidoService.criarPedidoCompra(token, enderecoId, setPagamento(pagamento), jsonDetalhesPagamento);
@@ -81,7 +97,16 @@ public class PedidoController implements PedidoDocumentation {
         consumes = "application/json",
         produces = "application/json"
     )
-    public ResponseEntity<PedidoResponseDto> criarPedidoDeAluguel(@RequestHeader("Authorization") String token, @PathVariable Long diasPrazo, @PathVariable Long enderecoId, @RequestBody PagamentoRequestDto pagamento) throws JsonProcessingException {
+    public ResponseEntity<PedidoResponseDto> criarPedidoDeAluguel(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token, 
+        @PathVariable Long diasPrazo, 
+        @PathVariable Long enderecoId, 
+        @Valid
+        @RequestBody PagamentoRequestDto pagamento
+    ) throws JsonProcessingException {
         logger.info("CRIANDO PEDIDO DE ALUGUEL");
         String jsonDetalhesPagamento = new ObjectMapper().writeValueAsString(pagamento.detalhes());
         Pedido pedidoCriado = pedidoService.criarPedidoAluguel(token, diasPrazo, enderecoId, setPagamento(pagamento), jsonDetalhesPagamento);
@@ -102,7 +127,12 @@ public class PedidoController implements PedidoDocumentation {
 
     @Override
     @GetMapping
-    public ResponseEntity<List<PedidoResponseDto>> buscarPedidosDoUsuario(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<PedidoResponseDto>> buscarPedidosDoUsuario(
+        @Valid
+        @NotNull(message = "O token de acesso não pode ser nulo")
+        @NotBlank(message = "O token de acesso está vazio")
+        @RequestHeader("Authorization") String token
+    ) {
         logger.info("RECUPERANDO OS PEDIDOS DO USUARIO");
         List<Pedido> pedidos = pedidoService.buscarPedidosDoUsuario(token);
         
@@ -114,7 +144,14 @@ public class PedidoController implements PedidoDocumentation {
     @Override
     @PatchMapping(value = "/datafim", produces = "application/json")
     public ResponseEntity<PedidoResponseDto> atualizarDataFimDoPedido(
+        @Valid
+        @NotNull(message = "O parâmetro de identificação do pedido está nulo")
+        @Min(value = 1, message = "O identificador do pedido não pode ser inferior a 1")
         @RequestParam(name = "pedido_id", required = true) Long pedido_id,
+        @Valid
+        @NotNull(message = "O parâmetro data (dd/mm/yyyy) não foi informado")
+        @NotBlank(message = "O parâmetro data (dd/mm/yyyy) foi enviado vazio")
+        @Pattern(regexp = "[0-9]{2}-[0-9]{2}-[0-9]{4}", message = "O formato da data deve seguir o padrão dd-MM-yyyy")
         @RequestParam(name = "nova_data", required = true) String nova_data
     ) {
         Pedido pedido = pedidoService.atualizarDataFim(pedido_id, nova_data);
@@ -124,7 +161,12 @@ public class PedidoController implements PedidoDocumentation {
     @Override
     @PatchMapping(value = "/situacao", produces = "application/json")
     public ResponseEntity<PedidoResponseDto> atualizarSituacaoDoPedido(
+        @Valid
+        @NotNull(message = "O parâmetro de identificação do pedido está nulo")
         @RequestParam(name = "pedido_id", required = true) Long pedido_id,
+        @Valid
+        @NotNull(message = "O parâmetro situação não foi informado")
+        @NotBlank(message = "O parâmetro situação foi enviado vazio")
         @RequestParam(name = "nova_situacao", required = true) String nova_situacao
     ) {
         Pedido pedido = pedidoService.atualizarSituacao(pedido_id, STATUS_PEDIDO.getByDisplayValue(nova_situacao));

@@ -10,6 +10,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +38,12 @@ import com.parceiroferramentas.api.parceiro_api.repository.PagamentoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PedidoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class PedidoService {
 
     @Autowired
@@ -60,7 +67,7 @@ public class PedidoService {
     @Autowired
     private JwtTokenService tokenService;
 
-    //private Logger logger = LoggerFactory.getLogger(EnderecoController.class);
+    private Logger logger = LoggerFactory.getLogger(PedidoService.class);
 
     public LocalDate validarTextoDeData( String textoData ) {
         DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -93,6 +100,14 @@ public class PedidoService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public Pedido fallbackCriarPedidoCompra(String token, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao criar pedido (compra)", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCriarPedidoCompra")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCriarPedidoCompra")
+    @RateLimiter(name = "pedidosRateLimit", fallbackMethod = "fallbackCriarPedidoCompra")
     public Pedido criarPedidoCompra(String token, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento) {
         Pedido pedido = new Pedido();
         String username = extrairUsername(token);
@@ -144,6 +159,14 @@ public class PedidoService {
         return pedidoCriado;
     }
 
+    public Pedido fallbackCriarPedidoAluguel(String token, Long prazo, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao criar pedido (aluguel)", throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCriarPedidoAluguel")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCriarPedidoAluguel")
+    @RateLimiter(name = "pedidosRateLimit", fallbackMethod = "fallbackCriarPedidoAluguel")
     public Pedido criarPedidoAluguel(String token, Long prazo, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento) {
         if(prazo < 1) throw new BadRequestException("O prazo de locação deve ser maior que ZERO");
         Pedido pedido = new Pedido();
@@ -208,20 +231,27 @@ public class PedidoService {
         return pedidoRepository.findPedidoByUsuarioId(usuario.getId());
     }
 
+    public Pedido fallbackAtualizarDataFim(Long pedidoId, String textoDataNova, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao atualizar data do pedido " + pedidoId, throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
+    }
+
     public Pedido atualizarDataFim(Long pedidoId, String textoDataNova) {
+        logger.info("DATA RECEBIDA: "+textoDataNova);
         LocalTime horaAtual = LocalTime.now();
         LocalDateTime novaData = validarTextoDeData(textoDataNova).atTime(horaAtual);
-
-        if( novaData == null )
-            throw new BadRequestException("A DATA INFORMADA NAO E VALIDA. VERIFIQUE SE O FORMADO ESTA DENTRO DA REGRA [dd-MM-yyyy]");
+        logger.info("DATA CONFIGURADA PARA ATUALIZACAO: "+novaData.toString());
 
         if( novaData.toLocalDate().isBefore(LocalDate.now()) ) throw new BadRequestException("A NOVA DATA NAO PODE SER ANTERIOR AO DIA ATUAL");
         
         Pedido entidade = pedidoRepository.findById(pedidoId).orElseThrow(() -> new NotFoundException("PEDIDO ID ["+pedidoId+"] NAO FOI ENCONTRADO"));
-
         entidade.setDataFim(novaData.toInstant(ZoneOffset.UTC));
-        
         return pedidoRepository.save(entidade);
+    }
+
+    public Pedido fallbackAtualizarSituacao(Long pedidoId, STATUS_PEDIDO novaSituacao, Throwable throwable) {
+        logger.error("CIRCUIT BREAKER: erro ao atualizar situação do pedido " + pedidoId, throwable);
+        throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
     public Pedido atualizarSituacao(Long pedidoId, STATUS_PEDIDO novaSituacao) {

@@ -17,8 +17,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 @Tag(name = "Ferramentas", description = "CRUD para tratativa do recurso Ferramentas")
@@ -56,7 +59,7 @@ public interface FerramentasDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<FerramentaDto> findById(@PathVariable @Min(0) Long id);
+    ResponseEntity<FerramentaDto> findById(@PathVariable @Min(1) Long id);
 
     @Operation(
         summary = "Cadastrar nova ferramenta",
@@ -90,7 +93,14 @@ public interface FerramentasDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<FerramentaDto> create(@RequestHeader("Authorization") String token, @RequestBody FerramentaDto ferramenta);
+    ResponseEntity<FerramentaDto> create(
+        @Valid
+        @NotBlank(message = "O nome de usuário não pode estar vazio")
+        @NotNull(message = "O nome de usuário não pode ser nulo")
+        @RequestHeader("Authorization") String token, 
+        @Valid 
+        @RequestBody FerramentaDto ferramenta
+    );
 
     @Operation(
         summary = "Remove uma ferramenta por ID",
@@ -152,7 +162,7 @@ public interface FerramentasDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<FerramentaDto> update(@PathVariable Long id, @RequestBody FerramentaDto ferramenta);
+    ResponseEntity<FerramentaDto> update(@PathVariable Long id, @Valid @RequestBody FerramentaDto ferramenta);
 
      @Operation(
         summary = "Lista todas as ferramentas",
@@ -224,6 +234,9 @@ public interface FerramentasDocumentation {
         }
     )
     ResponseEntity<Page<FerramentaDto>> findAllByType(
+        @Valid
+        @NotNull(message = "O parâmetro tipo deve ser informado")
+        @NotBlank(message = "O parâmetro tipo foi enviado vazio")
         @RequestParam String tipo, 
         @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
         @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
@@ -263,6 +276,9 @@ public interface FerramentasDocumentation {
         }
     )
     ResponseEntity<Page<FerramentaDto>> findAllByNome(
+        @Valid
+        @NotNull(message = "O parâmetro nome deve ser informado")
+        @NotBlank(message = "O parâmetro nome foi enviado vazio")
         @RequestParam String nome, 
         @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) Integer page, 
         @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) Integer size, 
