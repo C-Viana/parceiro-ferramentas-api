@@ -2,8 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -38,8 +36,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 @Validated
 @RequestMapping("/api/v1/pedido")
 public class PedidoController implements PedidoDocumentation {
@@ -47,14 +47,12 @@ public class PedidoController implements PedidoDocumentation {
     @Autowired
     PedidoService pedidoService;
 
-    private Logger logger = LoggerFactory.getLogger(FerramentasController.class.getName());
-
     @Autowired
     private GlobalObjectMapper mapper;
 
     private PagamentoStrategy setPagamento(PagamentoRequestDto dto) {
         PagamentoStrategy pagamentoStrategy;
-        logger.info("DADOS DE PAGAMENTO: " + dto.toString());
+        log.info("DADOS DE PAGAMENTO: " + dto.toString());
         
         switch (TIPO_PAGAMENTO.getByDisplayValue(dto.formaPagamento())) {
             case PIX:
@@ -82,7 +80,7 @@ public class PedidoController implements PedidoDocumentation {
         @Valid
         @RequestBody PagamentoRequestDto pagamento
     ) throws JsonProcessingException {
-        logger.info("CRIANDO PEDIDO DE COMPRA");
+        log.info("CRIANDO PEDIDO DE COMPRA");
         String jsonDetalhesPagamento = new ObjectMapper().writeValueAsString(pagamento.detalhes());
         Pedido pedidoCriado = pedidoService.criarPedidoCompra(token, enderecoId, setPagamento(pagamento), jsonDetalhesPagamento);
 
@@ -102,12 +100,18 @@ public class PedidoController implements PedidoDocumentation {
         @NotNull(message = "O token de acesso não pode ser nulo")
         @NotBlank(message = "O token de acesso está vazio")
         @RequestHeader("Authorization") String token, 
+        @Valid
+        @NotNull(message = "O prazo de locação não foi informado")
+        @Min(value = 1, message = "O prazo de locação deve ser de pelo menos 1 dia.")
         @PathVariable Long diasPrazo, 
+        @Valid
+        @NotNull(message = "O identificador de endereço não foi informado")
+        @Min(value = 1, message = "O identificador de endereço não pode ser inferior a 1")
         @PathVariable Long enderecoId, 
         @Valid
         @RequestBody PagamentoRequestDto pagamento
     ) throws JsonProcessingException {
-        logger.info("CRIANDO PEDIDO DE ALUGUEL");
+        log.info("CRIANDO PEDIDO DE ALUGUEL");
         String jsonDetalhesPagamento = new ObjectMapper().writeValueAsString(pagamento.detalhes());
         Pedido pedidoCriado = pedidoService.criarPedidoAluguel(token, diasPrazo, enderecoId, setPagamento(pagamento), jsonDetalhesPagamento);
 
@@ -120,7 +124,7 @@ public class PedidoController implements PedidoDocumentation {
     @Override
     @GetMapping(value = "/{pedidoId}", produces = "application/json")
     public ResponseEntity<PedidoResponseDto> buscarPedidoPorId(@PathVariable Long pedidoId) {
-        logger.info("RECUPERANDO O PEDIDO " + pedidoId);
+        log.info("RECUPERANDO O PEDIDO " + pedidoId);
         Pedido entidade = pedidoService.buscarPedido(pedidoId);
         return ResponseEntity.ok(mapper.toPedidoResponseDto(entidade));
     }
@@ -133,7 +137,7 @@ public class PedidoController implements PedidoDocumentation {
         @NotBlank(message = "O token de acesso está vazio")
         @RequestHeader("Authorization") String token
     ) {
-        logger.info("RECUPERANDO OS PEDIDOS DO USUARIO");
+        log.info("RECUPERANDO OS PEDIDOS DO USUARIO");
         List<Pedido> pedidos = pedidoService.buscarPedidosDoUsuario(token);
         
         List<PedidoResponseDto> response = pedidos.stream().map( mapper::toPedidoResponseDto ).toList();

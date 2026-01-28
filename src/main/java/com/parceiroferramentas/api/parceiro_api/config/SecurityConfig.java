@@ -47,7 +47,7 @@ public class SecurityConfig {
         JwtFilter filter = new JwtFilter(provider);
         return http
             .httpBasic(AbstractHttpConfigurer::disable)
-            .csrf(AbstractHttpConfigurer::disable) // Recomendável habilitar em produção
+            .csrf(AbstractHttpConfigurer::disable) // Recomendável habilitar em produção se houver integração com frontend
             .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

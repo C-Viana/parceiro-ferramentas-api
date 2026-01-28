@@ -7,8 +7,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +23,12 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class CarrinhoService {
-
-    private Logger logger = LoggerFactory.getLogger(CarrinhoService.class);
 
     @Autowired
     private CarrinhoRepository repository;
@@ -47,7 +45,7 @@ public class CarrinhoService {
     }
 
     public ItemCarrinho fallbackSalvarItemCarrinho(String username, Long ferramentaId, Integer quantidade, Throwable throwable) {
-        logger.error("CIRCUIT BREAKER: erro ao salvar item no carrinho", throwable);
+        log.error("CIRCUIT BREAKER: ERRO AO SALVAR ITEM NO CARRINHO", throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
@@ -67,7 +65,7 @@ public class CarrinhoService {
     }
 
     public List<ItemCarrinho> fallbackSalvarTodosCarrinho(String username, List<ItemCarrinhoRequestDto> itens, Throwable throwable) {
-        logger.error("CIRCUIT BREAKER: erro ao salvar lista de itens no carrinho", throwable);
+        log.error("CIRCUIT BREAKER: ERRO AO SALVAR LISTA DE ITENS NO CARRINHO", throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
@@ -109,7 +107,7 @@ public class CarrinhoService {
     }
 
     public ItemCarrinho fallbackAtualizarItemCarrinho(ItemCarrinho itemAtual, Throwable throwable) {
-        logger.error("CIRCUIT BREAKER: erro ao atualizar o item do carrinho "+itemAtual.getId(), throwable);
+        log.error("CIRCUIT BREAKER: ERRO AO ATUALIZAR O ITEM DO CARRINHO "+itemAtual.getId(), throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 

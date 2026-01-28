@@ -43,11 +43,13 @@ import com.parceiroferramentas.api.parceiro_api.repository.ItemPedidoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PagamentoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PedidoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
+import com.parceiroferramentas.api.parceiro_api.service.MetricsService;
 import com.parceiroferramentas.api.parceiro_api.service.PedidoService;
 
 @ExtendWith(MockitoExtension.class)
 public class PedidoServiceTest {
 
+    @Mock private MetricsService metricsService;
     @Mock private CarrinhoRepository carrinhoRepository;
     @Mock private ItemPedidoRepository itemRepository;
     @Mock private PedidoRepository pedidoRepository;
@@ -127,6 +129,7 @@ public class PedidoServiceTest {
 
         Mockito.verify(pedidoRepository, times(2)).save(any());
         Mockito.verify(pagamentoRepository, times(1)).save(any());
+        Mockito.verify(metricsService).registrarPedidoCriado("COMPRA");
     }
 
     @Test
@@ -190,6 +193,7 @@ public class PedidoServiceTest {
 
         Mockito.verify(pedidoRepository, times(2)).save(any());
         Mockito.verify(pagamentoRepository, times(1)).save(any());
+        Mockito.verify(metricsService).registrarPedidoCriado("ALUGUEL");
     }
 
     @Test

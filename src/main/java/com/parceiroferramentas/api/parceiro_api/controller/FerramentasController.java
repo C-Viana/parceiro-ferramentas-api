@@ -2,8 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +28,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,11 +38,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
+@Slf4j
 @Validated
 @RequestMapping("/api/v1/ferramentas")
 public class FerramentasController implements FerramentasDocumentation {
-
-    private Logger logger = LoggerFactory.getLogger(FerramentasController.class.getName());
 
     @Autowired
     private FerramentaService service;
@@ -98,10 +96,10 @@ public class FerramentasController implements FerramentasDocumentation {
         FerramentaDto entity = findById(id).getBody();
 
         if(entity.equals(ferramenta)){
-            logger.info("Nenhum dado alterado para a ferramenta ID ["+id+"]. Objeto novo é igual ao existente");
+            log.info("NENHUM DADO ALTERADO PARA A FERRAMENTA ID ["+id+"]. OBJETO NOVO É IGUAL AO EXISTENTE");
         }
         else {
-            logger.info("Alterando dados da ferramenta ID ["+id+"]");
+            log.info("ALTERANDO DADOS DA FERRAMENTA ID ["+id+"]");
             ferramenta = mapper.toFerramentaDto(
                 service.update(mapper.toFerramentaEntity(ferramenta))
             );
@@ -119,7 +117,7 @@ public class FerramentasController implements FerramentasDocumentation {
         
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAll(PageRequest.of(page, size, Sort.by(sortOption, "id")));
-        logger.info("Total de ferramentas encontradas: " + ferramentas.getTotalElements());
+        log.info("TOTAL DE FERRAMENTAS ENCONTRADAS: " + ferramentas.getTotalElements());
         return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
     }
 
@@ -135,7 +133,7 @@ public class FerramentasController implements FerramentasDocumentation {
             @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort) {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAllByType(tipo, PageRequest.of(page, size, Sort.by(sortOption, "id")));
-        logger.info("Total de ferramentas do tipo " + tipo + " encontradas: " + ferramentas.getTotalElements());
+        log.info("TOTAL DE FERRAMENTAS DO TIPO " + tipo + " ENCONTRADAS: " + ferramentas.getTotalElements());
         return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
     }
 
@@ -151,7 +149,7 @@ public class FerramentasController implements FerramentasDocumentation {
             @RequestParam(value = "ordem", defaultValue = "asc") @Pattern(regexp="asc|desc") String sort) {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
         Page<Ferramenta> ferramentas = service.findAllByName(nome, PageRequest.of(page, size, Sort.by(sortOption, "id")));
-        logger.info("Total de ferramentas do tipo " + nome + " encontradas: " + ferramentas.getTotalElements());
+        log.info("TOTAL DE FERRAMENTAS DO TIPO " + nome + " ENCONTRADAS: " + ferramentas.getTotalElements());
         return ResponseEntity.ok(ferramentas.map(ferramenta -> mapper.toFerramentaDto(ferramenta)));
     }
 

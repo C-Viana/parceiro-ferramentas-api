@@ -3,11 +3,16 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 import java.net.URI;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,17 +29,11 @@ import com.parceiroferramentas.api.parceiro_api.service.CarrinhoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
+@Slf4j
 @Validated
 @RequestMapping(value = "/api/v1/carrinho")
 public class CarrinhoController implements CarrinhoDocumentation {
@@ -47,8 +46,6 @@ public class CarrinhoController implements CarrinhoDocumentation {
 
     @Autowired
     private JwtTokenService tokenService;
-
-    private Logger logger = LoggerFactory.getLogger(EnderecoController.class);
 
     private String extrairUsername(String jwtAccessToken) {
         if(jwtAccessToken == null || !jwtAccessToken.startsWith("Bearer")) {
@@ -66,9 +63,9 @@ public class CarrinhoController implements CarrinhoDocumentation {
         @RequestHeader("Authorization") String token
     ) {
         String extractedUsername = extrairUsername(token);
-        logger.info("Buscando o carrinho do usuário de ID "+extractedUsername);
+        log.info("BUSCANDO O CARRINHO DO USUÁRIO DE ID "+extractedUsername);
         List<ItemCarrinho> carrinho = service.recuperarCarrinho(extractedUsername);
-        logger.info("Carrinho encontrado com total de " + carrinho.size() + " itens");
+        log.info("CARRINHO ENCONTRADO COM TOTAL DE " + carrinho.size() + " ITENS");
         List<ItemCarrinhoDto> carrinhoDto = carrinho.stream().map(item -> mapper.toItemCarrinhoDto(item)).toList();
         return ResponseEntity.ok(carrinhoDto);
     }
@@ -84,7 +81,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
         @RequestBody ItemCarrinhoRequestDto item
     ) {
         String username = extrairUsername(token);
-        logger.info("Salvando item no carrinho do usuário "+username);
+        log.info("SALVANDO ITEM NO CARRINHO DO USUÁRIO "+username);
         
         ItemCarrinho itemSalvo = service.salvarItem(username, item.ferramenta_id(), item.quantidade());
 
@@ -103,7 +100,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
         @RequestBody List<ItemCarrinhoRequestDto> itens
     ) {
         String username = extrairUsername(token);
-        logger.info("Salvando ["+itens.size()+"] itens no carrinho do usuário "+username);
+        log.info("SALVANDO ["+itens.size()+"] ITENS NO CARRINHO DO USUÁRIO "+username);
         List<ItemCarrinho> itensSalvos = service.salvarTodos(username, itens);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(itensSalvos.get(0).getId()).toUri();
@@ -120,7 +117,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
         @PathVariable Long itemCarrinhoId
     ) {
         String username = extrairUsername(token);
-        logger.info("REMOVER ITEM DE CARRINHO DO USUARIO "+username);
+        log.info("REMOVER ITEM DE CARRINHO DO USUARIO "+username);
         service.removerItem(username, itemCarrinhoId);
         return ResponseEntity.noContent().build();
     }
@@ -134,7 +131,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
         @RequestHeader("Authorization") String token
     ) {
         String username = extrairUsername(token);
-        logger.info("LIMPAR CARRINHO DO USUARIO "+username);
+        log.info("LIMPAR CARRINHO DO USUARIO "+username);
         service.removerTodos(username);
         return ResponseEntity.noContent().build();
     }
@@ -145,7 +142,7 @@ public class CarrinhoController implements CarrinhoDocumentation {
         @Valid
         @RequestBody ItemCarrinhoDto itemAtualizado
     ) {
-        logger.info("ATUALIZAR ITEM DO CARRINHO");
+        log.info("ATUALIZAR ITEM DO CARRINHO");
         ItemCarrinho entidade = service.atualizarItem(mapper.toItemCarrinho(itemAtualizado));
         return ResponseEntity.ok(mapper.toItemCarrinhoDto(entidade));
     }

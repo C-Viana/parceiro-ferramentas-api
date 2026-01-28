@@ -3,8 +3,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 import java.net.URI;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,12 +26,14 @@ import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.service.EnderecoService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
+@Slf4j
 @Validated
 @RequestMapping(value = "/api/v1/endereco")
 public class EnderecoController implements EnderecoDocumentation{
@@ -44,8 +44,6 @@ public class EnderecoController implements EnderecoDocumentation{
     @Autowired
     private GlobalObjectMapper mapper;
 
-    private Logger logger = LoggerFactory.getLogger(EnderecoController.class);
-
     @Override
     @GetMapping(value = "/todos")
     public ResponseEntity<Page<EnderecoDto>> getEnderecos( 
@@ -54,16 +52,16 @@ public class EnderecoController implements EnderecoDocumentation{
             @RequestParam(value = "ordem", defaultValue = "asc") String sort
         ) {
         var sortOption = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
-        logger.info("Buscando todos os endereços");
+        log.info("BUSCANDO TODOS OS ENDEREÇOS");
         Page<Endereco> entidade = service.findAll( PageRequest.of(page, size, Sort.by(sortOption, "id")) );
-        logger.info("Total de endereços encontrados: {}", entidade.getTotalElements());
+        log.info("TOTAL DE ENDEREÇOS ENCONTRADOS: {}", entidade.getTotalElements());
         return ResponseEntity.ok( entidade.map(item -> mapper.toEnderecoDto(item)) );
     }
 
     @Override
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<EnderecoDto> getEnderecoById(@PathVariable Long id) {
-        logger.info("Buscando o registro de endereço com ID {}", id);
+        log.info("BUSCANDO O REGISTRO DE ENDEREÇO COM ID {}", id);
         Endereco entidade = service.findById(id);
         if(entidade == null) return ResponseEntity.noContent().build();
         EnderecoDto dto = mapper.toEnderecoDto(entidade);
@@ -73,7 +71,7 @@ public class EnderecoController implements EnderecoDocumentation{
     @Override
     @GetMapping(value = "/usuario/{usuarioId}", produces = "application/json")
     public ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long usuarioId) {
-        logger.info("Buscando o registro de endereço com ID {}", usuarioId);
+        log.info("BUSCANDO O REGISTRO DE ENDEREÇO COM ID {}", usuarioId);
         List<Endereco> entidade = service.findUsuarioEnderecos(usuarioId);
         if(entidade.size() < 1) return ResponseEntity.noContent().build();
         List<EnderecoDto> dto = entidade.stream().map(item -> mapper.toEnderecoDto(item)).toList();
@@ -87,10 +85,8 @@ public class EnderecoController implements EnderecoDocumentation{
         @Valid
         @RequestBody EnderecoDto dto
     ) {
-        logger.info("Cadastrar novo endereço para o usuário {}", userId);
-        logger.info("PAYLOAD {}", dto);
+        log.info("CADASTRAR NOVO ENDEREÇO PARA O USUÁRIO {}", userId);
         Endereco response = service.create(userId, mapper.toEnderecoEntity(dto));
-        logger.info("ENDEREÇO CADASTRADO COM ID {}", response.getId());
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.getId()).toUri();
         return ResponseEntity.created( uri ).body(mapper.toEnderecoDto(response));
@@ -103,8 +99,7 @@ public class EnderecoController implements EnderecoDocumentation{
         @Valid
         @RequestBody EnderecoDto dto
     ) {
-        logger.info("Atualizar o endereço de ID {}", id);
-        logger.info("PAYLOAD {}", dto);
+        log.info("ATUALIZAR O ENDEREÇO DE ID {}", id);
         Endereco response = service.update(id, mapper.toEnderecoEntity(dto));
         return ResponseEntity.ok( mapper.toEnderecoDto(response) );
     }
@@ -112,7 +107,7 @@ public class EnderecoController implements EnderecoDocumentation{
     @Override
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> removerEndereco(@PathVariable Long id) {
-        logger.info("Remover o endereço de ID {}", id);
+        log.info("REMOVER O ENDEREÇO DE ID {}", id);
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

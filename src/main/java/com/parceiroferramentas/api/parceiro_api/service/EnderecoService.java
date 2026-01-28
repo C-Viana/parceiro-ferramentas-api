@@ -2,8 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +17,12 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class EnderecoService {
-
-    private Logger logger = LoggerFactory.getLogger(EnderecoService.class);
 
     @Autowired
     private EnderecoRepository repository;
@@ -47,7 +45,7 @@ public class EnderecoService {
     }
 
     public Endereco fallbackCreateEndereco(Long usuarioId, Endereco novoEndereco, Throwable throwable) {
-        logger.error("CIRCUIT BREAKER: erro ao criar novo endereco", throwable);
+        log.error("CIRCUIT BREAKER: ERRO AO CRIAR NOVO ENDERECO", throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
@@ -75,7 +73,7 @@ public class EnderecoService {
     }
 
     public Endereco fallbackUpdateEndereco(Long enderecoId, Endereco enderecoAtualizado, Throwable throwable) {
-        logger.error("CIRCUIT BREAKER: erro ao atualizar o endereco "+enderecoId, throwable);
+        log.error("CIRCUIT BREAKER: ERRO AO ATUALIZAR O ENDERECO "+enderecoId, throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 

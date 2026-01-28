@@ -1,8 +1,6 @@
 package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,13 +35,13 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 @Validated
 @RequestMapping("/usuarios")
 public class UsuarioController implements UsuarioDocumentation {
-
-    Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioService service;
@@ -79,7 +77,7 @@ public class UsuarioController implements UsuarioDocumentation {
     @Override
     @PostMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDto usuario) {
-        logger.info("Realizando cadastro de novo usuário");
+        log.info("REALIZANDO CADASTRO DE NOVO USUÁRIO");
         Usuario res = service.signup(mapper.toUsuarioEntity(usuario));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -100,7 +98,7 @@ public class UsuarioController implements UsuarioDocumentation {
             @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 
             @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24)int size
         ) {
-        logger.info("Realizando busca de lista de usuários");
+        log.info("REALIZANDO BUSCA DE LISTA DE USUÁRIOS");
         Page<Usuario> response = service.findAllUsuarios(token.substring("Bearer ".length()), PageRequest.of(page, size, Sort.by(Direction.ASC, "id")));
         Page<UsuarioResponseDto> dtoPage = response.map(user -> mapper.toUsuarioResponseDto(user));
 
@@ -118,7 +116,7 @@ public class UsuarioController implements UsuarioDocumentation {
             @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 
             @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) int size
         ) {
-        logger.info("Realizando busca de usuários com o perfil: {}", perfil);
+        log.info("REALIZANDO BUSCA DE USUÁRIOS COM O PERFIL: {}", perfil);
         Page<Usuario> response = service.findByAuthoritiesContains(token.substring("Bearer ".length()), perfil, PageRequest.of(page, size, Sort.by(Direction.ASC, "id")));
         Page<UsuarioResponseDto> dtoPage = response.map(user -> mapper.toUsuarioResponseDto(user));
 

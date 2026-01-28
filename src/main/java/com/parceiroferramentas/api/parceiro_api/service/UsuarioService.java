@@ -2,8 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -30,12 +28,12 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class UsuarioService implements UserDetailsService {
-
-    Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     private AuthenticationManager authManager;
 
@@ -96,7 +94,7 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public Usuario fallbackSignup(Usuario usuario, Throwable throwable) {
-        logger.error("CIRCUIT BREAKER: erro ao criar novo usuário", throwable);
+        log.error("CIRCUIT BREAKER: ERRO AO CRIAR NOVO USUÁRIO", throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
@@ -115,7 +113,7 @@ public class UsuarioService implements UserDetailsService {
         usuario.setPassword(new BCryptPasswordEncoder().encode(usuario.getPassword()));
 
         if(usuario.getAuthorities() == null || usuario.getAuthorities().isEmpty()) {
-            logger.info("Nenhum acesso foi informado para o novo usuário. Definindo acesso padrão de CLIENTE");
+            log.info("NENHUM ACESSO FOI INFORMADO PARA O NOVO USUÁRIO. DEFININDO ACESSO PADRÃO DE \"CLIENTE\"");
             Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.CLIENTE);
             usuario.setAuthorities(List.of(p));
         }
