@@ -13,12 +13,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
+import com.parceiroferramentas.api.parceiro_api.config.SecurityConfig;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
@@ -33,7 +33,7 @@ import com.parceiroferramentas.api.parceiro_api.service.UsuarioService;
 @ExtendWith(MockitoExtension.class)
 public class AuthorizationServiceTest {
 
-    @Mock private AuthenticationManager authManager;
+    @Mock private SecurityConfig security;
     @Mock private UsuarioRepository usuarioRepo;
     @Mock private PermissaoRepository permissoesRepo;
     @Mock private AcessoRepository acessoRepo;
@@ -183,17 +183,9 @@ public class AuthorizationServiceTest {
     @DisplayName("Deve lançar a exceção InvalidAuthorizationException ao logar com um usuário com senha inválida")
     void invalidAuthorizationException_senhaIncorreta_excecao() {
         int userIndex = 1;
-        acessoDto = new AcessoUsuarioDto(
-            mockedUsuarios.get(userIndex).getUsername(),
-            true,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusHours(3),
-            "SENHA_INVALIDA.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.GonnWko3af3wm1u5wFomBHe7OqZB0WUOySxVlLBN77Q",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJBRE1JTiIsIkdFUkVOVEUiLCJWRU5ERURPUiIsIkNMSUVOVEUiXSwiaWF0IjoxNzY2MTUxNDkwLCJleHAiOjE3NjYxNjIyOTAsInN1YiI6IjgwNjkwNTcxIn0.GonnWko3af3wm1u5wFomBHe7OqZB0WUOySxVlLBN77Q"
-        );
 
         Mockito.when(usuarioRepo.findUsuarioByUsername(mockedUsuarios.get(userIndex).getUsername())).thenReturn(mockedUsuarios.get(userIndex));
-        Mockito.doThrow(new RuntimeException("Bad credentials")).when(authManager).authenticate(Mockito.any());
+        Mockito.when(security.authenticate(mockedUsuarios.get(userIndex).getUsername(), "SENHA_INVALIDA")).thenThrow(InvalidAuthorizationException.class);
 
         Assertions.assertThatExceptionOfType(
             InvalidAuthorizationException.class).isThrownBy(() -> {

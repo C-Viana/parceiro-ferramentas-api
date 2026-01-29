@@ -3,7 +3,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -26,6 +25,7 @@ import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.service.EnderecoService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,15 +34,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Validated
 @RequestMapping(value = "/api/v1/endereco")
 public class EnderecoController implements EnderecoDocumentation{
 
-    @Autowired
-    private EnderecoService service;
-
-    @Autowired
-    private GlobalObjectMapper mapper;
+    private final EnderecoService service;
+    private final GlobalObjectMapper mapper;
 
     @Override
     @GetMapping(value = "/todos")

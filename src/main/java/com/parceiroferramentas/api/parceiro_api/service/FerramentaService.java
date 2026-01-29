@@ -2,7 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,17 +13,18 @@ import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class FerramentaService {
 
     private final String BAD_REQUEST_MESSAGE = "Campos obrigatórios não podem ser nulos, vazios ou com preços menores ou iguais a zero";
 
-    @Autowired
-    private FerramentaRepository repository;
+    private final FerramentaRepository repository;
 
     public Ferramenta findById(Long id) {
         log.info("BUSCA PELA FERRAMENTA COM ID {"+id+"}");

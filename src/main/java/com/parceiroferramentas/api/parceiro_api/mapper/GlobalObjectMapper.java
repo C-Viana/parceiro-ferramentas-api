@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import com.parceiroferramentas.api.parceiro_api.dto.EnderecoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.FerramentaDto;
@@ -20,7 +21,7 @@ import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface GlobalObjectMapper {
 
     Ferramenta toFerramentaEntity(FerramentaDto dto);
@@ -71,9 +72,5 @@ public interface GlobalObjectMapper {
     List<ItemCarrinhoDto> toListaItemCarrinhoDto(List<ItemCarrinho> entidade);
 
     PedidoResponseDto toPedidoResponseDto(Pedido pedido);
-
-    // @Mapping(target = "detalhes", expression = "java(detalhes().toString())")
-    // @Mapping(target = "formaPagamento", expression = "java(TIPO_PAGAMENTO.getByDisplayValue(formaPagamento()))")
-    // Pagamento toPagamento(PagamentoRequestDto pagamentoDto);
 
 }

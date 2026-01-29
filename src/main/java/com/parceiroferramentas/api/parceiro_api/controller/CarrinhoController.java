@@ -3,7 +3,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,23 +28,20 @@ import com.parceiroferramentas.api.parceiro_api.service.CarrinhoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Validated
 @RequestMapping(value = "/api/v1/carrinho")
 public class CarrinhoController implements CarrinhoDocumentation {
 
-    @Autowired
-    private CarrinhoService service;
-
-    @Autowired
-    private GlobalObjectMapper mapper;
-
-    @Autowired
-    private JwtTokenService tokenService;
+    private final CarrinhoService service;
+    private final GlobalObjectMapper mapper;
+    private final JwtTokenService tokenService;
 
     private String extrairUsername(String jwtAccessToken) {
         if(jwtAccessToken == null || !jwtAccessToken.startsWith("Bearer")) {

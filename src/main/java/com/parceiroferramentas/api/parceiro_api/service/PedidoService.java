@@ -11,7 +11,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,36 +38,23 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class PedidoService {
 
-    @Autowired
-    private MetricsService metricsService;
-
-    @Autowired
-    private CarrinhoRepository carrinhoRepository;
-
-    @Autowired
-    private ItemPedidoRepository itemRepository;
-
-    @Autowired
-    private PedidoRepository pedidoRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepo;
-
-    @Autowired
-    private EnderecoRepository enderecoRepository;
-
-    @Autowired
-    private PagamentoRepository pagamentoRepository;
-
-    @Autowired
-    private JwtTokenService tokenService;
+    private final MetricsService metricsService;
+    private final CarrinhoRepository carrinhoRepository;
+    private final ItemPedidoRepository itemRepository;
+    private final PedidoRepository pedidoRepository;
+    private final UsuarioRepository usuarioRepo;
+    private final EnderecoRepository enderecoRepository;
+    private final PagamentoRepository pagamentoRepository;
+    private final JwtTokenService tokenService;
 
     public LocalDate validarTextoDeData( String textoData ) {
         DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");

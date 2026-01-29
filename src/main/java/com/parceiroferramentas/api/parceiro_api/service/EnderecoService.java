@@ -2,7 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,18 +16,17 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class EnderecoService {
 
-    @Autowired
-    private EnderecoRepository repository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final EnderecoRepository repository;
+    private final UsuarioRepository usuarioRepository;
 
     public Page<Endereco> findAll(Pageable pageable) {
         return repository.findAll(pageable);

@@ -2,12 +2,8 @@ package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
+import com.parceiroferramentas.api.parceiro_api.config.SecurityConfig;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
@@ -28,31 +25,19 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class UsuarioService implements UserDetailsService {
 
-    private AuthenticationManager authManager;
-
-    @Autowired
-    private JwtTokenService tokenService;
-
-    @Autowired
-    private UsuarioRepository usuarioRepo;
-
-    @Autowired
-    private PermissaoRepository permissaoRepo;
-
-    public UsuarioService(@Lazy AuthenticationManager authManager, JwtTokenService tokenService,
-            UsuarioRepository usuarioRepo, PermissaoRepository permissaoRepo) {
-        this.authManager = authManager;
-        this.tokenService = tokenService;
-        this.usuarioRepo = usuarioRepo;
-        this.permissaoRepo = permissaoRepo;
-    }
+    private final JwtTokenService tokenService;
+    private final UsuarioRepository usuarioRepo;
+    private final PermissaoRepository permissaoRepo;
+    private final SecurityConfig security;
 
     public AcessoUsuarioDto signin(CredenciaisUsuarioDto credenciais) {
         Usuario user = usuarioRepo.findUsuarioByUsername(credenciais.username());
@@ -67,9 +52,7 @@ public class UsuarioService implements UserDetailsService {
         );
 
         try {
-            authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(credenciais.username(), credenciais.senha())
-            );
+            security.authenticate( credenciais.username(), credenciais.senha() );
         } catch (Exception e) {
             throw new InvalidAuthorizationException("O acesso não foi permitido. Verifique se os dados estão corretos ou tente novamente");
         }

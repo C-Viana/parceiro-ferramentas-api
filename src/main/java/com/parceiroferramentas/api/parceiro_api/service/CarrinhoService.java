@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,21 +22,18 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class CarrinhoService {
 
-    @Autowired
-    private CarrinhoRepository repository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepo;
-
-    @Autowired
-    private FerramentaRepository ferramentaRepo;
+    private final CarrinhoRepository repository;
+    private final UsuarioRepository usuarioRepo;
+    private final FerramentaRepository ferramentaRepo;
 
     public List<ItemCarrinho> recuperarCarrinho(String usuarioUsername) {
         Usuario usuario = buscaUsuario(usuarioUsername);

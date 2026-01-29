@@ -1,7 +1,6 @@
 package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,19 +34,18 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Validated
 @RequestMapping("/usuarios")
 public class UsuarioController implements UsuarioDocumentation {
 
-    @Autowired
-    private UsuarioService service;
-
-    @Autowired
-    private GlobalObjectMapper mapper;
+    private final UsuarioService service;
+    private final GlobalObjectMapper mapper;
 
     @Override
     @PostMapping(value = "/signin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

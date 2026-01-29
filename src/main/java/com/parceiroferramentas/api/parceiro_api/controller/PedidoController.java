@@ -2,7 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,19 +35,18 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Validated
 @RequestMapping("/api/v1/pedido")
 public class PedidoController implements PedidoDocumentation {
 
-    @Autowired
-    PedidoService pedidoService;
-
-    @Autowired
-    private GlobalObjectMapper mapper;
+    private final PedidoService pedidoService;
+    private final GlobalObjectMapper mapper;
 
     private PagamentoStrategy setPagamento(PagamentoRequestDto dto) {
         PagamentoStrategy pagamentoStrategy;

@@ -2,7 +2,6 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,6 +27,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,15 +39,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Validated
 @RequestMapping("/api/v1/ferramentas")
 public class FerramentasController implements FerramentasDocumentation {
 
-    @Autowired
-    private FerramentaService service;
-
-    @Autowired
-    private GlobalObjectMapper mapper;
+    private final FerramentaService service;
+    private final GlobalObjectMapper mapper;
 
     @Override
     @GetMapping(value = "/{id}", produces = "application/json")

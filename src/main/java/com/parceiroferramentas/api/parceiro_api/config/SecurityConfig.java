@@ -1,16 +1,17 @@
 package com.parceiroferramentas.api.parceiro_api.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,26 +21,30 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtFilter;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private JwtTokenService provider;
+    private final JwtTokenService provider;
+    private static AuthenticationManager authManager;
 
-    public SecurityConfig(JwtTokenService provider) {
-        this.provider = provider;
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
+        authManager = config.getAuthenticationManager();
+        return authManager;
+    }
+
+    public Authentication authenticate(String username, String password) {
+        return authManager.authenticate( new UsernamePasswordAuthenticationToken(username, password) );
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
-        return config.getAuthenticationManager();
     }
  
     @Bean
