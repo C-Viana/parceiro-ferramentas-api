@@ -25,17 +25,16 @@ logging:
     charset:
         console: UTF-8
     level:
-        root: info
-        "[com.parceiroferramentas.api]": DEBUG
+        root: INFO
+        "[org.hibernate]": WARN
+        "[org.springframework]": INFO
+        "[com.parceiroferramentas.api]": INFO
     pattern:
         console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow} %clr($$   {LOG_LEVEL_PATTERN:-%5p}) %clr(   $${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
         file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     structured:
         format:
             console: ecs
-            file: ecs
-    file:
-        name: parceiro-api.log
 server:
     port: 8080
 springdoc:
@@ -53,7 +52,7 @@ resilience4j:
             backendGlobalBreaker:
                 slidingWindowSize: 10
                 failureRateThreshold: 50
-                waitDurationInOpenState: 10s
+                waitDurationInOpenState: 8s
                 ignoreExceptions:
                 - com.parceiroferramentas.api.parceiro_api.exception.BadRequestException
                 - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
@@ -63,7 +62,7 @@ resilience4j:
         instances:
             backendGlobalRetry:
                 maxAttempts: 3
-                waitDuration: 1000ms
+                waitDuration: 500ms
                 retryExceptions:
                 - org.springframework.dao.DataAccessException
                 - java.net.SocketTimeoutException
@@ -88,15 +87,16 @@ management:
     endpoints:
         web:
             exposure:
+                exclude:
+                - prometheus
+                - metrics
                 include:
                 - health
                 - info
-                - prometheus
-                - metrics
     endpoint:
         health:
-            show-details: always
+            show-details: when-authorized
     prometheus:
         metrics:
             export:
-                enabled: true
+                enabled: false
