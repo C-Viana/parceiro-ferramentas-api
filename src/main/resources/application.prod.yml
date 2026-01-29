@@ -72,7 +72,6 @@ resilience4j:
                 - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
                 - com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException
                 - com.parceiroferramentas.api.parceiro_api.exception.NotFoundException
-
     ratelimiter:
         instances:
             authRateLimit:

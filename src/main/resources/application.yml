@@ -25,16 +25,7 @@ logging:
     charset:
         console: UTF-8
     level:
-        root: INFO
-        "[org.hibernate]": WARN
-        "[org.springframework]": INFO
-        "[com.parceiroferramentas.api]": INFO
-    pattern:
-        console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow} %clr($$   {LOG_LEVEL_PATTERN:-%5p}) %clr(   $${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
-        file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    structured:
-        format:
-            console: ecs
+        root: info
 server:
     port: 8080
 springdoc:
@@ -72,7 +63,6 @@ resilience4j:
                 - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
                 - com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException
                 - com.parceiroferramentas.api.parceiro_api.exception.NotFoundException
-
     ratelimiter:
         instances:
             authRateLimit:
@@ -83,20 +73,3 @@ resilience4j:
                 limitForPeriod: 2
                 limitRefreshPeriod: 1m
                 timeoutDuration: 10s
-management:
-    endpoints:
-        web:
-            exposure:
-                exclude:
-                - prometheus
-                - metrics
-                include:
-                - health
-                - info
-    endpoint:
-        health:
-            show-details: when-authorized
-    prometheus:
-        metrics:
-            export:
-                enabled: false
