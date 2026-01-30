@@ -1,3 +1,6 @@
 spring:
     profiles:
         active: prod
+info:
+    app:
+        version: ${project.version}

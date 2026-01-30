@@ -1,5 +1,7 @@
 package com.parceiroferramentas.api.parceiro_api.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.parceiroferramentas.api.parceiro_api.auth.JwtFilter;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
@@ -82,7 +85,15 @@ public class SecurityConfig {
                     "/api/v1/pedido/**"
                 ).authenticated()
             )
-            .cors(cors -> {})
+            .cors(cors -> cors.configurationSource( request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("https://parceiro-ferramentas-api-production.up.railway.app"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
+                    return config;
+                })
+            )
             .build();
     }
 

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 @OpenAPIDefinition(
 	info = @Info(
 		title = "Parceiro Ferramentas API",
-		version = "0.0.1-SNAPSHOT",
+		version = "1.2.5",
 		description = "Documentação da API da loja Parceiro Ferramentas para venda e aluguel"
 	)
 )
