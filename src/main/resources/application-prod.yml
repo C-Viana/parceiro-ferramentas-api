@@ -28,6 +28,7 @@ logging:
         root: info
 server:
     port: 8080
+    forward-headers-strategy: framework
 springdoc:
     api-docs:
         enabled: true
