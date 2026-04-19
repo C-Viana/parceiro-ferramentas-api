@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
+import com.parceiroferramentas.api.parceiro_api.enums.PerfilAcesso;
 
 @Component
 public class JwtHealthIndicator implements HealthIndicator {
@@ -23,7 +23,7 @@ public class JwtHealthIndicator implements HealthIndicator {
     @Override
     public @Nullable Health health() {
         try {
-            AcessoUsuarioDto acesso = jwtService.gerarAcesso("dummy-user", List.of(PERFIL_ACESSO.CLIENTE));
+            AcessoUsuarioDto acesso = jwtService.gerarAcesso("dummy-user", List.of(PerfilAcesso.CLIENTE));
             jwtService.decodeToken(acesso.acesso());
             return Health.up().withDetail("jwt", "Validação de token OK").build();
         } catch (Exception e) {

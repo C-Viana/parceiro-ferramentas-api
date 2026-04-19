@@ -4,16 +4,16 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class StatusPedidoConverter implements AttributeConverter<STATUS_PEDIDO, String> {
+public class StatusPedidoConverter implements AttributeConverter<StatusPedido, String> {
 
     @Override
-    public String convertToDatabaseColumn(STATUS_PEDIDO attribute) {
+    public String convertToDatabaseColumn(StatusPedido attribute) {
         return attribute == null ? null : attribute.getString();
     }
 
     @Override
-    public STATUS_PEDIDO convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : STATUS_PEDIDO.getByDisplayValue(dbData);
+    public StatusPedido convertToEntityAttribute(String dbData) {
+        return dbData == null ? null : StatusPedido.getByDisplayValue(dbData);
     }
 
 }

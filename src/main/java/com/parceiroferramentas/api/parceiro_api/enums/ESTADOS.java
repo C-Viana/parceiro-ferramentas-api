@@ -3,7 +3,7 @@ package com.parceiroferramentas.api.parceiro_api.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum ESTADOS {
+public enum Estados {
     ACRE ("Acre"),
     ALAGOAS ("Alagoas"),
     AMAZONAS ("Amazonas"),
@@ -33,13 +33,13 @@ public enum ESTADOS {
     TOCANTINS ("Tocantins ");
 
     private String ufSigla;
-    private static final Map<String, ESTADOS> LOOKUP = new HashMap<>();
+    private static final Map<String, Estados> LOOKUP = new HashMap<>();
 
-    ESTADOS(String role) {
+    Estados(String role) {
         this.ufSigla = role;
     }
 
-    public ESTADOS getEnum() {
+    public Estados getEnum() {
         return this;
     }
 
@@ -48,12 +48,12 @@ public enum ESTADOS {
     }
 
     static {
-        for (ESTADOS estado : ESTADOS.values()) {
+        for (Estados estado : Estados.values()) {
             LOOKUP.put(estado.ufSigla, estado);
         }
     }
 
-    public static ESTADOS getByDisplayValue(String displayValue) {
+    public static Estados getByDisplayValue(String displayValue) {
         return LOOKUP.get(displayValue);
     }
 }

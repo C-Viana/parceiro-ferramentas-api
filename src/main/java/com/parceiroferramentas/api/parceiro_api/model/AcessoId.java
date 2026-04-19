@@ -1,5 +1,7 @@
 package com.parceiroferramentas.api.parceiro_api.model;
 
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
@@ -7,23 +9,23 @@ import jakarta.persistence.Embeddable;
 public class AcessoId {
 
     @Column(name = "id_usuario")
-    private Long idUsuario;
+    private UUID idUsuario;
 
     @Column(name = "id_permissao")
     private Long idPermissao;
 
     public AcessoId() {}
 
-    public AcessoId(Long idUsuario, Long idPermissao) {
+    public AcessoId(UUID idUsuario, Long idPermissao) {
         this.idUsuario = idUsuario;
         this.idPermissao = idPermissao;
     }
 
-    public Long getIdUsuario() {
+    public UUID getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(Long idUsuario) {
+    public void setIdUsuario(UUID idUsuario) {
         this.idUsuario = idUsuario;
     }
 

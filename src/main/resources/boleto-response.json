@@ -1,0 +1,66 @@
+{
+  "_id": "452f2518-9f48-45a0-843a-ec35fbeea429",
+  "ExternalOrderId": "PF-20260324180256-977",
+  "Amount": {
+    "$numberDecimal": "1452.79"
+  },
+  "Currency": "BRL",
+  "Status": "SETTLED",
+  "CreatedAt": {
+    "DateTime": {
+      "$date": "2026-03-24T21:02:56.363Z"
+    },
+    "Ticks": {
+      "$numberLong": "639099721763632838"
+    },
+    "Offset": -180
+  },
+  "UpdatedAt": {
+    "DateTime": {
+      "$date": "2026-03-24T21:02:56.927Z"
+    },
+    "Ticks": {
+      "$numberLong": "639099721769277151"
+    },
+    "Offset": -180
+  },
+  "MerchantDocument": "53178402000147",
+  "CustomerDocument": "26499704102",
+  "PaymentDetails": {
+	  "_id": "9d5b3ac9-d4ee-45a3-9edb-b476cb393c17",
+	  "PaymentId": "452f2518-9f48-45a0-843a-ec35fbeea429",
+	  "PaymentType": "BOLETO",
+	  "PaymentDetails": {
+		"_t": "BoletoDetails",
+		"PaymentType": "BOLETO",
+		"BeneficiaryName": "Parceiro Ferramentas Ltda",
+		"BeneficiaryId": "1000375",
+		"BankCode": "1051",
+		"Agency": "3051",
+		"Account": "0790052-9",
+		"DocumentModality": "101",
+		"Barcode": "105192202600001452791000375260324210256330101",
+		"DigitableLine": "010519000071000375101800001452793226032421025633",
+		"GeneratedAt": {
+		  "DateTime": {
+			"$date": "2026-03-24T21:02:56.331Z"
+		  },
+		  "Ticks": {
+			"$numberLong": "639099721763315702"
+		  },
+		  "Offset": -180
+		},
+		"DueDate": {
+		  "$date": "2026-03-27T00:00:00.000Z"
+		},
+		"OurNumber": "26032421025633",
+		"BoletoUrl": "https://localhost:7033/boleto/452f2518-9f48-45a0-843a-ec35fbeea429",
+		"ExpirationDays": 3,
+		"Instructions": "Não receber após vencimento.\nBoleto referente ao pagamento 452f2518-9f48-45a0-843a-ec35fbeea429 de 24/03/2026 18:02:56 -03:00",
+		"PaymentId": "452f2518-9f48-45a0-843a-ec35fbeea429",
+		"Amount": {
+		  "$numberDecimal": "1452.79"
+		}
+	  }
+	}
+}

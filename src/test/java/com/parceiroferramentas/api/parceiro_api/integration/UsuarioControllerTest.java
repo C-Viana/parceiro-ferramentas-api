@@ -19,7 +19,7 @@ import com.parceiroferramentas.api.parceiro_api.data.CreateIntegratedData;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioRequestDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
+import com.parceiroferramentas.api.parceiro_api.enums.PerfilAcesso;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 
 import io.restassured.RestAssured;
@@ -100,7 +100,7 @@ public class UsuarioControllerTest {
 
         Response res = RestAssured.given()
             .contentType("application/json")
-            .body(new UsuarioRequestDto(null, nomeCliente, username, "12345678", true, null))
+            .body(new UsuarioRequestDto(null, username, "12345678", true, null))
             .when()
             .post("/signup");
         
@@ -119,7 +119,7 @@ public class UsuarioControllerTest {
 
         Response res = RestAssured.given()
             .contentType("application/json")
-            .body(new UsuarioRequestDto(null, nomeGerente, username, "12345678", true, List.of(new PermissaoRequestDto(PERFIL_ACESSO.GERENTE.toString()))))
+            .body(new UsuarioRequestDto(null, username, "12345678", true, List.of(new PermissaoRequestDto(PerfilAcesso.GERENTE.toString()))))
             .when()
             .post("/signup");
         

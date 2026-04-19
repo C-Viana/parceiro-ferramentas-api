@@ -1,6 +1,7 @@
 package com.parceiroferramentas.api.parceiro_api.controller.openapi;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -127,7 +128,7 @@ public interface EnderecoDocumentation {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
         }
     )
-    ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long usuarioId);
+    ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable UUID usuarioId);
 
     @Operation(
         summary = "Cadastra um novo endereço",
@@ -162,7 +163,7 @@ public interface EnderecoDocumentation {
         }
     )
     ResponseEntity<EnderecoDto> cadastrarEndereco(
-        @PathVariable Long usuarioId, 
+        @PathVariable UUID usuarioId, 
         @Valid
         @RequestBody EnderecoDto dto
     );

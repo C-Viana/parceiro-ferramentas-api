@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
+import com.parceiroferramentas.api.parceiro_api.dto.CompradorCadastroDto;
+import com.parceiroferramentas.api.parceiro_api.dto.CompradorDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioResponseDto;
@@ -189,4 +191,122 @@ public interface UsuarioDocumentation {
         @PathVariable String perfil, 
         @RequestParam(value = "indice", defaultValue = "0") @Min(0) @Max(199) int page, 
         @RequestParam(value = "quant", defaultValue = "12") @Min(1) @Max(24) int size);
+
+    @Operation(
+        summary = "Cadastro",
+        description = "Cria um cadastro de cliente conjuntamente com as credenciais de acesso",
+        tags = "Compradores",
+        responses = {
+            @ApiResponse(
+                description = "Success",
+                responseCode = "201",
+                content = {
+                    @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = @Schema(implementation = CompradorCadastroDto.class)
+                    )
+                }
+            ),
+            @ApiResponse(
+                description = "Bad Request", 
+                responseCode = "400",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Internal Error", 
+                responseCode = "500",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
+        }
+    )
+    ResponseEntity<?> cadastrarComprador(
+        @Valid CompradorCadastroDto cadastro
+    );
+
+    @Operation(
+        summary = "Busca um comprador pelo documento",
+        description = "Retorna os dados de cadastro de um comprador em busca pelo documento",
+        tags = "Compradores",
+        responses = {
+            @ApiResponse(
+                description = "Success",
+                responseCode = "200",
+                content = {
+                    @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        array = @ArraySchema(schema = @Schema(implementation = CompradorDto.class))
+                    )
+                }
+            ),
+            @ApiResponse(
+                description = "Bad Request", 
+                responseCode = "400",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Not Found", 
+                responseCode = "404",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Internal Error", 
+                responseCode = "500",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
+        }
+    )
+    ResponseEntity<CompradorDto> buscarCompradorPorDocumento(@PathVariable String documento);
+
+    @Operation(
+        summary = "Atualiza um comprador pelo documento",
+        description = "Atualiza os dados de cadastro de um comprador após busca pelo documento",
+        tags = "Compradores",
+        responses = {
+            @ApiResponse(
+                description = "Success",
+                responseCode = "200",
+                content = {
+                    @Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        array = @ArraySchema(schema = @Schema(implementation = CompradorDto.class))
+                    )
+                }
+            ),
+            @ApiResponse(
+                description = "Bad Request", 
+                responseCode = "400",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Not Found", 
+                responseCode = "404",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Internal Error", 
+                responseCode = "500",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
+        }
+    )
+    ResponseEntity<CompradorDto> atualizarComprador(CompradorDto compradorAtualizado);
+
+    
+
+    @Operation(
+        summary = "Remove um comprador por documento",
+        description = "Localiza um comprador pelo seu documento e a remove da base de dados junto de seu acesso",
+        tags = "Compradores",
+        responses = {
+            @ApiResponse(
+                description = "No Content", 
+                responseCode = "204",
+                content = @Content),
+            @ApiResponse(
+                description = "Not Found", 
+                responseCode = "404",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Internal Error", 
+                responseCode = "500",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class))),
+            @ApiResponse(
+                description = "Unauthorized", 
+                responseCode = "401",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ExceptionResponseTemplate.class)))
+        }
+    )
+    ResponseEntity<Void> deletarCompradorPorDocumento(@PathVariable String cpf);
 }

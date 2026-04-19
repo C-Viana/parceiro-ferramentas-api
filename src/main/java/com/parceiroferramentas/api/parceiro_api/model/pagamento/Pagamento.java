@@ -37,10 +37,10 @@ public class Pagamento {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "forma_pagamento")
-    private TIPO_PAGAMENTO formaPagamento;
+    private TipoPagamento formaPagamento;
     
     @Enumerated(EnumType.STRING)
-    private STATUS_PAGAMENTO situacao;
+    private StatusPagamento situacao;
 
     @Column(name = "data_criacao")
     private Instant dataCriacao;
@@ -81,23 +81,23 @@ public class Pagamento {
         this.valor = valor;
     }
 
-    public TIPO_PAGAMENTO getFormaPagamento() {
+    public TipoPagamento getFormaPagamento() {
         return formaPagamento;
     }
 
-    public void setFormaPagamento(TIPO_PAGAMENTO formaPagamento) {
+    public void setFormaPagamento(TipoPagamento formaPagamento) {
         this.formaPagamento = formaPagamento;
     }
 
     public void setFormaPagamento(String formaPagamento) {
-        this.formaPagamento = TIPO_PAGAMENTO.getByDisplayValue(formaPagamento);
+        this.formaPagamento = TipoPagamento.getByDisplayValue(formaPagamento);
     }
 
-    public STATUS_PAGAMENTO getSituacao() {
+    public StatusPagamento getSituacao() {
         return situacao;
     }
 
-    public void setSituacao(STATUS_PAGAMENTO situacao) {
+    public void setSituacao(StatusPagamento situacao) {
         this.situacao = situacao;
     }
 

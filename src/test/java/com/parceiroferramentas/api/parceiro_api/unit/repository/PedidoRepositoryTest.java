@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -21,17 +23,17 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.parceiroferramentas.api.parceiro_api.config.DatabaseConfig;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
-import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.ItemPedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.TIPO_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.TipoPedido;
+import com.parceiroferramentas.api.parceiro_api.repository.CompradorRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PedidoRepository;
-import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
 @SpringBootTest
 @Testcontainers
@@ -45,7 +47,8 @@ public class PedidoRepositoryTest {
     private PedidoRepository repository;
 
     @Autowired private PedidoRepository pedidoRepository;
-    @Autowired private UsuarioRepository usuarioRepo;
+    //@Autowired private UsuarioRepository usuarioRepo;
+    @Autowired private CompradorRepository compradorRepo;
     @Autowired private EnderecoRepository enderecoRepository;
     @Autowired private FerramentaRepository ferramentaRepo;
 
@@ -76,8 +79,8 @@ public class PedidoRepositoryTest {
     @DisplayName("Buscar pedidos do usuário")
     @Order(2)
     void buscarPedidosDoUsuarioTest() {
-        long usuarioId = 4L;
-        List<Pedido> pedidos = repository.findPedidoByUsuarioId(usuarioId);
+        UUID usuarioId = UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f");
+        List<Pedido> pedidos = repository.findPedidoByCompradorId(usuarioId);
         Assertions.assertNotNull(pedidos);
         Assertions.assertEquals(2, pedidos.size());
         Assertions.assertNotNull(pedidos.get(0).getId());
@@ -110,7 +113,7 @@ public class PedidoRepositoryTest {
     @DisplayName("Atualizar a situação de um pedido")
     @Order(4)
     void atualizarSituacaoTest() {
-        STATUS_PEDIDO status = STATUS_PEDIDO.FINALIZADO;
+        StatusPedido status = StatusPedido.FINALIZADO;
         Pedido pedidoOriginal = repository.findById(3L).orElse(null);
 
         Assertions.assertNotEquals(status, pedidoOriginal.getSituacao());
@@ -128,15 +131,16 @@ public class PedidoRepositoryTest {
     @DisplayName("Criar um pedido")
     @Order(5)
     void criarPedidoTest() {
-        long usuarioId = 5L;
+        UUID usuarioId = UUID.fromString("76ea733f-728b-4a17-c536-bba6cfd5a21f");
         Pedido pedido = new Pedido();
-        Usuario usuario = usuarioRepo.findById(usuarioId).orElse(null);
+        //Usuario usuario = usuarioRepo.findById(usuarioId).orElse(null);
+        Comprador comprador = compradorRepo.findById(usuarioId).orElse(null);
         Endereco endereco = enderecoRepository.findEnderecoByUsuarioId(usuarioId).get(0);
 
-        pedido.setUsuario(usuario);
+        pedido.setComprador(comprador);
         pedido.setEndereco( endereco );
-        pedido.setTipo(TIPO_PEDIDO.COMPRA);
-        pedido.setSituacao(STATUS_PEDIDO.PENDENTE);
+        pedido.setTipo(TipoPedido.COMPRA);
+        pedido.setSituacao(StatusPedido.PENDENTE);
         pedido.setDataCriacao(Instant.now());
         pedido.setDataAtualizacao(Instant.now());
 
@@ -160,11 +164,11 @@ public class PedidoRepositoryTest {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.getId());
         Assertions.assertNotNull(response.getDataCriacao());
-        Assertions.assertEquals(STATUS_PEDIDO.PENDENTE, response.getSituacao());
-        Assertions.assertEquals(TIPO_PEDIDO.COMPRA, response.getTipo());
+        Assertions.assertEquals(StatusPedido.PENDENTE, response.getSituacao());
+        Assertions.assertEquals(TipoPedido.COMPRA, response.getTipo());
         Assertions.assertEquals(BigDecimal.valueOf(valorTotal), response.getValorTotal());
 
-        List<Pedido> pedidosSalvos = repository.findPedidoByUsuarioId(usuarioId);
+        List<Pedido> pedidosSalvos = repository.findPedidoByCompradorId(usuarioId);
         Assertions.assertTrue(pedidosSalvos.size() > 1);
         Assertions.assertNotNull(pedidosSalvos.stream().filter(x -> x.getId() == response.getId()).findFirst());
     }

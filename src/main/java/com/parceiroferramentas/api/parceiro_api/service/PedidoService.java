@@ -18,17 +18,18 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.Pagamento;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.PagamentoStrategy;
-import com.parceiroferramentas.api.parceiro_api.model.pagamento.STATUS_PAGAMENTO;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.ItemPedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.TIPO_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.TipoPedido;
 import com.parceiroferramentas.api.parceiro_api.repository.CarrinhoRepository;
+import com.parceiroferramentas.api.parceiro_api.repository.CompradorRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.ItemPedidoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PagamentoRepository;
@@ -52,6 +53,7 @@ public class PedidoService {
     private final ItemPedidoRepository itemRepository;
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepo;
+    private final CompradorRepository compradorRepo;
     private final EnderecoRepository enderecoRepository;
     private final PagamentoRepository pagamentoRepository;
     private final JwtTokenService tokenService;
@@ -99,21 +101,21 @@ public class PedidoService {
         metricsService.registrarPedidoCriado("COMPRA");
         Pedido pedido = new Pedido();
         String username = extrairUsername(token);
-        Usuario usuario = usuarioRepo.findUsuarioByUsername(username);
+        Comprador comprador = compradorRepo.findById(usuarioRepo.findUsuarioByUsername(username).getId()).orElse(null);
         Endereco endereco = enderecoRepository.findById(enderecoId).orElseThrow(() -> new BadRequestException("Endereço não encontrado"));
 
-        if(usuario.getId() != endereco.getUsuario().getId()) throw new BadRequestException("Foi identificada uma inconsistência com os dados de endereço");
+        if(comprador.getId() != endereco.getComprador().getId()) throw new BadRequestException("Foi identificada uma inconsistência com os dados de endereço");
 
         List<ItemPedido> itens = new ArrayList<>();
 
-        pedido.setUsuario(usuario);
+        pedido.setComprador(comprador);
         pedido.setEndereco( endereco );
-        pedido.setTipo(TIPO_PEDIDO.COMPRA);
-        pedido.setSituacao(STATUS_PEDIDO.PENDENTE);
+        pedido.setTipo(TipoPedido.COMPRA);
+        pedido.setSituacao(StatusPedido.CRIADO);
         pedido.setDataCriacao(Instant.now());
         pedido.setDataAtualizacao(Instant.now());
 
-        usuario.getCarrinhoItens().forEach( itemCarrinho -> {
+        comprador.getCarrinhoItens().forEach( itemCarrinho -> {
             ItemPedido item = new ItemPedido();
             item.setPedido(pedido);
             item.setFerramenta(itemCarrinho.getFerramenta());
@@ -123,10 +125,10 @@ public class PedidoService {
         });
         
         pedido.setItens(itens);
-        pedido.setValorTotal( calcularValorTotalCompraCarrinho(usuario.getCarrinhoItens()) );
+        pedido.setValorTotal( calcularValorTotalCompraCarrinho(comprador.getCarrinhoItens()) );
 
         Pedido pedidoCriado = pedidoRepository.save(pedido);
-        if(pedidoCriado == null) throw new RuntimeException("ERRO AO CRIAR O PEDIDO PARA O USUARIO " + usuario.getUsername());
+        if(pedidoCriado == null) throw new RuntimeException("ERRO AO CRIAR O PEDIDO PARA O USUARIO " + username);
 
         itemRepository.saveAll(itens);
 
@@ -136,12 +138,12 @@ public class PedidoService {
         pagamento.setDataAtualizacao(Instant.now());
         pagamentoRepository.save(pagamento);
 
-        if (pagamento.getSituacao() == STATUS_PAGAMENTO.APROVADO) {
+        if (pagamento != null) {
             pedidoCriado.setPagamento(pagamento);
-            pedidoCriado.setSituacao(STATUS_PEDIDO.APROVADO);
+            pedidoCriado.setSituacao(StatusPedido.PROCESSANDO);
             pedidoRepository.save(pedidoCriado);
-            carrinhoRepository.deleteAll(usuario.getCarrinhoItens());
-            usuario.getCarrinhoItens().clear();
+            carrinhoRepository.deleteAll(comprador.getCarrinhoItens());
+            comprador.getCarrinhoItens().clear();
         }
         return pedidoCriado;
     }
@@ -151,29 +153,29 @@ public class PedidoService {
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
-    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCriarPedidoAluguel")
-    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCriarPedidoAluguel")
-    @RateLimiter(name = "pedidosRateLimit", fallbackMethod = "fallbackCriarPedidoAluguel")
+    // @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCriarPedidoAluguel")
+    // @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCriarPedidoAluguel")
+    // @RateLimiter(name = "pedidosRateLimit", fallbackMethod = "fallbackCriarPedidoAluguel")
     public Pedido criarPedidoAluguel(String token, Long prazo, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento) {
         metricsService.registrarPedidoCriado("ALUGUEL");
         Pedido pedido = new Pedido();
         String username = extrairUsername(token);
-        Usuario usuario = usuarioRepo.findUsuarioByUsername(username);
+        Comprador comprador = compradorRepo.findById(usuarioRepo.findUsuarioByUsername(username).getId()).orElse(null);
         Endereco endereco = enderecoRepository.findById(enderecoId).orElseThrow(() -> new BadRequestException("Endereço não encontrado"));
 
-        if(usuario.getId() != endereco.getUsuario().getId()) throw new BadRequestException("Foi identificada uma inconsistência com os dados de endereço");
+        if(comprador.getId() != endereco.getComprador().getId()) throw new BadRequestException("Foi identificada uma inconsistência com os dados de endereço");
 
         List<ItemPedido> itens = new ArrayList<>();
 
-        pedido.setUsuario(usuario);
+        pedido.setComprador(comprador);
         pedido.setEndereco( endereco );
-        pedido.setTipo(TIPO_PEDIDO.ALUGUEL);
-        pedido.setSituacao(STATUS_PEDIDO.PENDENTE);
+        pedido.setTipo(TipoPedido.ALUGUEL);
+        pedido.setSituacao(StatusPedido.PENDENTE);
         pedido.setDataCriacao(Instant.now());
         pedido.setDataAtualizacao(Instant.now());
         pedido.setDataFim(Instant.now().plus(prazo, ChronoUnit.DAYS));
 
-        usuario.getCarrinhoItens().forEach( itemCarrinho -> {
+        comprador.getCarrinhoItens().forEach( itemCarrinho -> {
             ItemPedido item = new ItemPedido();
             item.setPedido(pedido);
             item.setFerramenta(itemCarrinho.getFerramenta());
@@ -183,11 +185,11 @@ public class PedidoService {
         });
         
         pedido.setItens(itens);
-        BigDecimal valorFinal = calcularValorTotalAluguelCarrinho(usuario.getCarrinhoItens()).multiply(BigDecimal.valueOf(prazo));
+        BigDecimal valorFinal = calcularValorTotalAluguelCarrinho(comprador.getCarrinhoItens()).multiply(BigDecimal.valueOf(prazo));
         pedido.setValorTotal( valorFinal );
 
         Pedido pedidoCriado = pedidoRepository.save(pedido);
-        if(pedidoCriado == null) throw new RuntimeException("ERRO AO CRIAR O PEDIDO PARA O USUARIO " + usuario.getUsername());
+        if(pedidoCriado == null) throw new RuntimeException("ERRO AO CRIAR O PEDIDO PARA O USUARIO " + username);
 
         itemRepository.saveAll(itens);
 
@@ -197,12 +199,12 @@ public class PedidoService {
         pagamento.setDataAtualizacao(Instant.now());
         pagamentoRepository.save(pagamento);
 
-        if (pagamento.getSituacao() == STATUS_PAGAMENTO.APROVADO) {
+        if (pagamento != null) {
             pedidoCriado.setPagamento(pagamento);
-            pedidoCriado.setSituacao(STATUS_PEDIDO.APROVADO);
+            pedidoCriado.setSituacao(StatusPedido.PROCESSANDO);
             pedidoRepository.save(pedidoCriado);
-            carrinhoRepository.deleteAll(usuario.getCarrinhoItens());
-            usuario.getCarrinhoItens().clear();
+            carrinhoRepository.deleteAll(comprador.getCarrinhoItens());
+            comprador.getCarrinhoItens().clear();
         }
 
         return pedidoCriado;
@@ -215,7 +217,7 @@ public class PedidoService {
     public List<Pedido> buscarPedidosDoUsuario(String token) {
         String username = extrairUsername(token);
         Usuario usuario = usuarioRepo.findUsuarioByUsername(username);
-        return pedidoRepository.findPedidoByUsuarioId(usuario.getId());
+        return pedidoRepository.findPedidoByCompradorId(usuario.getId());
     }
 
     public Pedido fallbackAtualizarDataFim(Long pedidoId, String textoDataNova, Throwable throwable) {
@@ -236,14 +238,14 @@ public class PedidoService {
         return pedidoRepository.save(entidade);
     }
 
-    public Pedido fallbackAtualizarSituacao(Long pedidoId, STATUS_PEDIDO novaSituacao, Throwable throwable) {
+    public Pedido fallbackAtualizarSituacao(Long pedidoId, StatusPedido novaSituacao, Throwable throwable) {
         log.error("CIRCUIT BREAKER: ERRO AO ATUALIZAR SITUAÇÃO DO PEDIDO " + pedidoId, throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
-    public Pedido atualizarSituacao(Long pedidoId, STATUS_PEDIDO novaSituacao) {
+    public Pedido atualizarSituacao(Long pedidoId, StatusPedido novaSituacao) {
         if( novaSituacao == null )
-            throw new BadRequestException("A SITUACAO NAO FOI RECEBIDA. INFORME UM VALOR DE ACORDO COM O PADRAO -> " + STATUS_PEDIDO.values());
+            throw new BadRequestException("A SITUACAO NAO FOI RECEBIDA. INFORME UM VALOR DE ACORDO COM O PADRAO -> " + StatusPedido.values());
 
         Pedido entidade = pedidoRepository.findById(pedidoId).orElseThrow(() -> new NotFoundException("PEDIDO ID ["+pedidoId+"] NAO FOI ENCONTRADO"));
 

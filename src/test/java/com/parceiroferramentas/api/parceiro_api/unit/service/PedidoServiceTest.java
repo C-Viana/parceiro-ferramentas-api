@@ -25,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
@@ -32,11 +33,11 @@ import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.DebitoStrategy;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.Pagamento;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.PixStrategy;
-import com.parceiroferramentas.api.parceiro_api.model.pagamento.TIPO_PAGAMENTO;
+import com.parceiroferramentas.api.parceiro_api.model.pagamento.TipoPagamento;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.ItemPedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.TIPO_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.TipoPedido;
 import com.parceiroferramentas.api.parceiro_api.repository.CarrinhoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.ItemPedidoRepository;
@@ -60,6 +61,7 @@ public class PedidoServiceTest {
 
     @InjectMocks PedidoService service;
 
+    static Comprador comprador;
     static Usuario usuario;
     static List<Ferramenta> ferramentas;
     static List<ItemCarrinho> carrinho;
@@ -69,15 +71,16 @@ public class PedidoServiceTest {
     @BeforeAll
     public static void setup() {
         usuario = CreateMockedData.getInstance().getUsuarios().get(3);
+        comprador = CreateMockedData.getInstance().getCompradores().get(3);
         ferramentas = CreateMockedData.getInstance().getFerramentas();
-        enderecos = CreateMockedData.getInstance().getEnderecos( CreateMockedData.getInstance().getUsuarios());
+        enderecos = CreateMockedData.getInstance().getEnderecos( CreateMockedData.getInstance().getCompradores());
     }
 
     @Test
     @DisplayName("Deve criar um pedido de compra")
     void criarPedidoCompraTeste() {
         int tamanhoCarrinho = 2;
-        usuario.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, usuario, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
                         "    \"forma_pagamento\": \"PIX\",\r\n" + //
                         "    \"valor\": 2188.58,\r\n" + //
@@ -91,8 +94,8 @@ public class PedidoServiceTest {
                         "    }\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(usuario.getCarrinhoItens());
-        Pedido pedidoAntes = CreateMockedData.getInstance().getPedido(TIPO_PEDIDO.COMPRA, 0, usuario, enderecos.get(3), itens);
+        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoAntes = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
         Pagamento pagamento = new PixStrategy().processar(pedidoAntes, pagamentoDetalhesJson);
         
         Pedido pedidoComId = pedidoAntes;
@@ -100,7 +103,7 @@ public class PedidoServiceTest {
         
         Pedido pedidoPago = pedidoComId;
         pedidoPago.setPagamento(pagamento);
-        pedidoPago.setSituacao(STATUS_PEDIDO.APROVADO);
+        pedidoPago.setSituacao(StatusPedido.CRIADO);
 
         DecodedJWT decodedToken = Mockito.mock(DecodedJWT.class);
         
@@ -124,7 +127,7 @@ public class PedidoServiceTest {
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(tamanhoCarrinho, response.getItens().size());
-        Assertions.assertEquals(TIPO_PAGAMENTO.PIX, response.getPagamento().getFormaPagamento());
+        Assertions.assertEquals(TipoPagamento.PIX_DYNAMIC, response.getPagamento().getFormaPagamento());
         Assertions.assertEquals(BigDecimal.valueOf(2188.58), response.getValorTotal());
 
         Mockito.verify(pedidoRepository, times(2)).save(any());
@@ -136,7 +139,7 @@ public class PedidoServiceTest {
     @DisplayName("Deve criar um pedido de aluguel")
     void criarPedidoAluguelTeste() {
         int tamanhoCarrinho = 2;
-        usuario.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, usuario, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
                         "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
                         "    \"valor\": 1219.00,\r\n" + //
@@ -150,8 +153,8 @@ public class PedidoServiceTest {
                         "    }\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoAluguel(usuario.getCarrinhoItens());
-        Pedido pedidoAntes = CreateMockedData.getInstance().getPedido(TIPO_PEDIDO.ALUGUEL, 10, usuario, enderecos.get(3), itens);
+        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoAluguel(comprador.getCarrinhoItens());
+        Pedido pedidoAntes = CreateMockedData.getInstance().getPedido(TipoPedido.ALUGUEL, 10, comprador, enderecos.get(3), itens);
         Pagamento pagamento = new PixStrategy().processar(pedidoAntes, pagamentoDetalhesJson);
         
         Pedido pedidoComId = pedidoAntes;
@@ -159,7 +162,7 @@ public class PedidoServiceTest {
         
         Pedido pedidoPago = pedidoComId;
         pedidoPago.setPagamento(pagamento);
-        pedidoPago.setSituacao(STATUS_PEDIDO.APROVADO);
+        pedidoPago.setSituacao(StatusPedido.CRIADO);
 
         DecodedJWT decodedToken = Mockito.mock(DecodedJWT.class);
         
@@ -178,17 +181,17 @@ public class PedidoServiceTest {
         
         Mockito.doNothing().when(carrinhoRepository).deleteAll(any());
 
-        System.out.println( "LOG >>>>>>>>>>>> SIZE " + usuario.getCarrinhoItens().size() );
-        System.out.println( "LOG >>>>>>>>>>>> ITEM #1 " + usuario.getCarrinhoItens().get(0).getPrecoAluguelMomento() );
-        System.out.println( "LOG >>>>>>>>>>>> ITEM #1 " + usuario.getCarrinhoItens().get(0).getQuantidade() );
-        System.out.println( "LOG >>>>>>>>>>>> ITEM #2 " + usuario.getCarrinhoItens().get(1).getPrecoAluguelMomento() );
-        System.out.println( "LOG >>>>>>>>>>>> ITEM #2 " + usuario.getCarrinhoItens().get(1).getQuantidade() );
+        System.out.println( "LOG >>>>>>>>>>>> SIZE " + comprador.getCarrinhoItens().size() );
+        System.out.println( "LOG >>>>>>>>>>>> ITEM #1 " + comprador.getCarrinhoItens().get(0).getPrecoAluguelMomento() );
+        System.out.println( "LOG >>>>>>>>>>>> ITEM #1 " + comprador.getCarrinhoItens().get(0).getQuantidade() );
+        System.out.println( "LOG >>>>>>>>>>>> ITEM #2 " + comprador.getCarrinhoItens().get(1).getPrecoAluguelMomento() );
+        System.out.println( "LOG >>>>>>>>>>>> ITEM #2 " + comprador.getCarrinhoItens().get(1).getQuantidade() );
         
         Pedido response = service.criarPedidoAluguel(ACCESS_TOKEN, 10L, enderecos.get(3).getId(), new DebitoStrategy(), pagamentoDetalhesJson);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(tamanhoCarrinho, response.getItens().size());
-        Assertions.assertEquals(TIPO_PAGAMENTO.DEBITO, response.getPagamento().getFormaPagamento());
+        Assertions.assertEquals(TipoPagamento.DEBITO, response.getPagamento().getFormaPagamento());
         Assertions.assertEquals(BigDecimal.valueOf(1219.00), response.getValorTotal());
 
         Mockito.verify(pedidoRepository, times(2)).save(any());
@@ -200,7 +203,7 @@ public class PedidoServiceTest {
     @DisplayName("Deve buscar um pedido pelo seu ID")
     void buscarPedidoTeste() {
         int tamanhoCarrinho = 3;
-        usuario.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, usuario, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
                         "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
                         "    \"valor\": 3178.28,\r\n" + //
@@ -214,12 +217,12 @@ public class PedidoServiceTest {
                         "    }\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(usuario.getCarrinhoItens());
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TIPO_PEDIDO.COMPRA, 0, usuario, enderecos.get(3), itens);
+        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
         pedidoModel.setId(1L);
         Pagamento pagamento = new DebitoStrategy().processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
-        pedidoModel.setSituacao(STATUS_PEDIDO.APROVADO);
+        pedidoModel.setSituacao(StatusPedido.CRIADO);
 
         Mockito.when(pedidoRepository.findById(anyLong())).thenReturn(Optional.of(pedidoModel));
 
@@ -227,7 +230,7 @@ public class PedidoServiceTest {
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(tamanhoCarrinho, response.getItens().size());
-        Assertions.assertEquals(TIPO_PAGAMENTO.DEBITO, response.getPagamento().getFormaPagamento());
+        Assertions.assertEquals(TipoPagamento.DEBITO, response.getPagamento().getFormaPagamento());
         Assertions.assertEquals(BigDecimal.valueOf(3178.28), response.getValorTotal());
 
         Mockito.verify(pedidoRepository, times(1)).findById(any());
@@ -237,7 +240,7 @@ public class PedidoServiceTest {
     @DisplayName("Deve buscar a lista de pedidos de um cliente")
     void buscarPedidosDoUsuarioTeste() {
         int tamanhoCarrinho = 3;
-        usuario.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, usuario, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
                         "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
                         "    \"valor\": 1219.00,\r\n" + //
@@ -251,13 +254,13 @@ public class PedidoServiceTest {
                         "    }\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(usuario.getCarrinhoItens());
+        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
         List<Pedido> pedidosModel = new ArrayList<>();
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TIPO_PEDIDO.COMPRA, 0, usuario, enderecos.get(3), itens);
+        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
         pedidoModel.setId(1L);
         Pagamento pagamento = new PixStrategy().processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
-        pedidoModel.setSituacao(STATUS_PEDIDO.APROVADO);
+        pedidoModel.setSituacao(StatusPedido.CRIADO);
         pedidosModel.add(pedidoModel);
 
         DecodedJWT decodedToken = Mockito.mock(DecodedJWT.class);
@@ -265,23 +268,23 @@ public class PedidoServiceTest {
         Mockito.when(decodedToken.getSubject()).thenReturn(usuario.getUsername());
         Mockito.when(tokenService.decodeToken(Mockito.anyString())).thenReturn(decodedToken);
         Mockito.when(usuarioRepo.findUsuarioByUsername(usuario.getUsername())).thenReturn(usuario);
-        Mockito.when(pedidoRepository.findPedidoByUsuarioId(usuario.getId())).thenReturn(pedidosModel);
+        Mockito.when(pedidoRepository.findPedidoByCompradorId(comprador.getId())).thenReturn(pedidosModel);
 
         List<Pedido> response = service.buscarPedidosDoUsuario(ACCESS_TOKEN);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(1, response.size(), "Quantidade de pedidos deve ser 1 (UM)");
-        Assertions.assertEquals(TIPO_PAGAMENTO.PIX, response.get(0).getPagamento().getFormaPagamento());
+        Assertions.assertEquals(TipoPagamento.PIX_DYNAMIC, response.get(0).getPagamento().getFormaPagamento());
         Assertions.assertEquals(BigDecimal.valueOf(3178.28), response.get(0).getValorTotal());
 
-        Mockito.verify(pedidoRepository, times(1)).findPedidoByUsuarioId(any());
+        Mockito.verify(pedidoRepository, times(1)).findPedidoByCompradorId(any());
     }
 
     @Test
     @DisplayName("Deve atualizar a data de finalização de um pedido")
     void atualizarDataFimTeste() {
         int tamanhoCarrinho = 3;
-        usuario.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, usuario, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
                         "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
                         "    \"valor\": 3178.28,\r\n" + //
@@ -295,12 +298,12 @@ public class PedidoServiceTest {
                         "    }\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(usuario.getCarrinhoItens());
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TIPO_PEDIDO.COMPRA, 0, usuario, enderecos.get(3), itens);
+        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
         pedidoModel.setId(1L);
         Pagamento pagamento = new DebitoStrategy().processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
-        pedidoModel.setSituacao(STATUS_PEDIDO.APROVADO);
+        pedidoModel.setSituacao(StatusPedido.CRIADO);
 
         Pedido pedidoAtualizado = pedidoModel;
         pedidoAtualizado.setDataFim(Instant.now());
@@ -322,7 +325,7 @@ public class PedidoServiceTest {
     @DisplayName("Deve atualizar a situação de um pedido")
     void atualizarSituacao() {
         int tamanhoCarrinho = 3;
-        usuario.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, usuario, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
                         "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
                         "    \"valor\": 3178.28,\r\n" + //
@@ -336,12 +339,12 @@ public class PedidoServiceTest {
                         "    }\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(usuario.getCarrinhoItens());
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TIPO_PEDIDO.COMPRA, 0, usuario, enderecos.get(3), itens);
+        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
         pedidoModel.setId(1L);
         Pagamento pagamento = new DebitoStrategy().processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
-        pedidoModel.setSituacao(STATUS_PEDIDO.APROVADO);
+        pedidoModel.setSituacao(StatusPedido.CRIADO);
 
         Pedido pedidoAtualizado = pedidoModel;
         pedidoAtualizado.setDataFim(Instant.now());
@@ -350,10 +353,10 @@ public class PedidoServiceTest {
         Mockito.when(pedidoRepository.save(any(Pedido.class)))
             .thenReturn(pedidoAtualizado);
 
-        Pedido response = service.atualizarSituacao(1L, STATUS_PEDIDO.CANCELADO);
+        Pedido response = service.atualizarSituacao(1L, StatusPedido.CANCELADO);
 
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(STATUS_PEDIDO.CANCELADO, response.getSituacao());
+        Assertions.assertEquals(StatusPedido.CANCELADO, response.getSituacao());
         Assertions.assertEquals(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()), LocalDate.ofInstant(response.getDataFim(), ZoneId.systemDefault()));
 
         Mockito.verify(pedidoRepository, times(1)).findById(any());

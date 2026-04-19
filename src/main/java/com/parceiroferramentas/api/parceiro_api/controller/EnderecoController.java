@@ -2,6 +2,7 @@ package com.parceiroferramentas.api.parceiro_api.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,7 +69,7 @@ public class EnderecoController implements EnderecoDocumentation{
 
     @Override
     @GetMapping(value = "/usuario/{usuarioId}", produces = "application/json")
-    public ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<EnderecoDto>> findEnderecosDoUsuario(@PathVariable UUID usuarioId) {
         log.info("BUSCANDO O REGISTRO DE ENDEREÇO COM ID {}", usuarioId);
         List<Endereco> entidade = service.findUsuarioEnderecos(usuarioId);
         if(entidade.size() < 1) return ResponseEntity.noContent().build();
@@ -79,7 +80,7 @@ public class EnderecoController implements EnderecoDocumentation{
     @Override
     @PostMapping(value = "/usuario/{userId}")
     public ResponseEntity<EnderecoDto> cadastrarEndereco(
-        @PathVariable Long userId, 
+        @PathVariable UUID userId, 
         @Valid
         @RequestBody EnderecoDto dto
     ) {

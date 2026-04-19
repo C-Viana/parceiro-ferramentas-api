@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.CarrinhoRepository;
+import com.parceiroferramentas.api.parceiro_api.repository.CompradorRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
@@ -33,6 +35,7 @@ public class CarrinhoService {
 
     private final CarrinhoRepository repository;
     private final UsuarioRepository usuarioRepo;
+    private final CompradorRepository compradorRepo;
     private final FerramentaRepository ferramentaRepo;
 
     public List<ItemCarrinho> recuperarCarrinho(String usuarioUsername) {
@@ -49,9 +52,10 @@ public class CarrinhoService {
     @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackSalvarItemCarrinho")
     public ItemCarrinho salvarItem(String username, Long ferramentaId, Integer quantidade) {
         Usuario usuario = buscaUsuario(username);
+        Comprador comprador = compradorRepo.findById(usuario.getId()).orElse(null);
         Ferramenta ferramenta = buscaFerramenta(ferramentaId);
         ItemCarrinho item = new ItemCarrinho();
-        item.setUsuario(usuario);
+        item.setComprador(comprador);
         item.setFerramenta(ferramenta);
         item.setQuantidade(quantidade);
         item.setPrecoAluguelMomento(BigDecimal.valueOf(ferramenta.getPreco_aluguel()));
@@ -69,11 +73,12 @@ public class CarrinhoService {
     @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackSalvarTodosCarrinho")
     public List<ItemCarrinho> salvarTodos(String username, List<ItemCarrinhoRequestDto> itens) {
         Usuario usuario = buscaUsuario(username);
+        Comprador comprador = compradorRepo.findById(usuario.getId()).orElse(null);
         List<ItemCarrinho> ferramentas = new ArrayList<>();
         itens.forEach( itemDto -> {
             Ferramenta f = buscaFerramenta(itemDto.ferramenta_id());
             ItemCarrinho item = new ItemCarrinho();
-            item.setUsuario(usuario);
+            item.setComprador(comprador);
             item.setFerramenta(f);
             item.setQuantidade(itemDto.quantidade());
             item.setPrecoAluguelMomento(BigDecimal.valueOf(f.getPreco_aluguel()));
@@ -86,20 +91,22 @@ public class CarrinhoService {
 
     public void removerItem(String username, Long itemCarrinhoId) {
         Usuario usuario = buscaUsuario(username);
+        Comprador comprador = compradorRepo.findById(usuario.getId()).orElse(null);
         ItemCarrinho item = repository.findById(itemCarrinhoId).orElse(null);
-        if( usuario.getId() != item.getUsuario().getId() ) throw new RuntimeException("Operação não permitida");
+        if( usuario.getId() != item.getComprador().getId() ) throw new RuntimeException("Operação não permitida");
         if( item != null )
             repository.delete(item);
-        usuario.removerDoCarrinho(buscaFerramenta(item.getFerramenta().getId()));
+        comprador.removerDoCarrinho(buscaFerramenta(item.getFerramenta().getId()));
     }
 
     public void removerTodos(String username) {
         Usuario usuario = buscaUsuario(username);
+        Comprador comprador = compradorRepo.findById(usuario.getId()).orElse(null);
         List<ItemCarrinho> itens = repository.findItemCarrinhoByUsuarioId(usuario.getId());
-        if( usuario.getId() != itens.get(0).getUsuario().getId() ) throw new RuntimeException("Operação não permitida");
+        if( usuario.getId() != itens.get(0).getComprador().getId() ) throw new RuntimeException("Operação não permitida");
         if( itens != null )
             repository.deleteAll(itens);
-        usuario.limparCarrinho();
+        comprador.limparCarrinho();
     }
 
     public ItemCarrinho fallbackAtualizarItemCarrinho(ItemCarrinho itemAtual, Throwable throwable) {

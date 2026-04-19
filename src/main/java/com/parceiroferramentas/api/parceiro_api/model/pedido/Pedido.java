@@ -5,8 +5,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
-import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.Pagamento;
 
 import jakarta.persistence.CascadeType;
@@ -34,11 +34,11 @@ public class Pedido {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo")
-    private TIPO_PEDIDO tipo;
+    private TipoPedido tipo;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "situacao")
-    private STATUS_PEDIDO situacao;
+    private StatusPedido situacao;
 
     @Column(name = "valor_total", nullable = false)
     private BigDecimal valorTotal;
@@ -60,7 +60,7 @@ public class Pedido {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Comprador comprador;
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Pagamento pagamento;
@@ -75,19 +75,19 @@ public class Pedido {
         this.id = id;
     }
 
-    public TIPO_PEDIDO getTipo() {
+    public TipoPedido getTipo() {
         return tipo;
     }
 
-    public void setTipo(TIPO_PEDIDO tipo) {
+    public void setTipo(TipoPedido tipo) {
         this.tipo = tipo;
     }
 
-    public STATUS_PEDIDO getSituacao() {
+    public StatusPedido getSituacao() {
         return situacao;
     }
 
-    public void setSituacao(STATUS_PEDIDO situacao) {
+    public void setSituacao(StatusPedido situacao) {
         this.situacao = situacao;
     }
 
@@ -139,12 +139,12 @@ public class Pedido {
         this.endereco = enderecoEntrega;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Comprador getComprador() {
+        return comprador;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setComprador(Comprador usuario) {
+        this.comprador = usuario;
     }
 
     public Pagamento getPagamento() {
@@ -167,7 +167,7 @@ public class Pedido {
         result = prime * result + ((dataAtualizacao == null) ? 0 : dataAtualizacao.hashCode());
         result = prime * result + ((dataFim == null) ? 0 : dataFim.hashCode());
         result = prime * result + ((endereco == null) ? 0 : endereco.hashCode());
-        result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
+        result = prime * result + ((comprador == null) ? 0 : comprador.hashCode());
         return result;
     }
 
@@ -214,10 +214,10 @@ public class Pedido {
                 return false;
         } else if (!endereco.equals(other.endereco))
             return false;
-        if (usuario == null) {
-            if (other.usuario != null)
+        if (comprador == null) {
+            if (other.comprador != null)
                 return false;
-        } else if (!usuario.equals(other.usuario))
+        } else if (!comprador.equals(other.comprador))
             return false;
         return true;
     }

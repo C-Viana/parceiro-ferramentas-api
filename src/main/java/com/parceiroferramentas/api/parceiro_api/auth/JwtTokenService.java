@@ -26,7 +26,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
+import com.parceiroferramentas.api.parceiro_api.enums.PerfilAcesso;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 
 import io.micrometer.common.util.StringUtils;
@@ -56,8 +56,8 @@ public class JwtTokenService {
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
     }
 
-    public AcessoUsuarioDto gerarAcesso(String username, List<PERFIL_ACESSO> permissions) {
-        List<String> listaPermissoes = permissions.stream().map(PERFIL_ACESSO::getString).toList();
+    public AcessoUsuarioDto gerarAcesso(String username, List<PerfilAcesso> permissions) {
+        List<String> listaPermissoes = permissions.stream().map(PerfilAcesso::getString).toList();
         startTime = LocalDateTime.now();
         endTime = startTime.plus(DURATION, ChronoUnit.HOURS);
 
@@ -79,7 +79,7 @@ public class JwtTokenService {
             refreshToken = refreshToken.substring("Bearer ".length());
 
         DecodedJWT decodedJWT = decodeToken(refreshToken);
-        return gerarAcesso(decodedJWT.getSubject(), decodedJWT.getClaim("roles").asList(PERFIL_ACESSO.class));
+        return gerarAcesso(decodedJWT.getSubject(), decodedJWT.getClaim("roles").asList(PerfilAcesso.class));
     }
 
     private String getTokenAcesso(String username, List<String> permissions, LocalDateTime startTime, LocalDateTime endTime) {

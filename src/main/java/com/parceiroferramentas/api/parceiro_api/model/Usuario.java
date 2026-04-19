@@ -3,32 +3,25 @@ package com.parceiroferramentas.api.parceiro_api.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class Usuario implements UserDetails {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nome;
+    //@GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(unique = true)
     private String username;
@@ -48,34 +41,31 @@ public class Usuario implements UserDetails {
     )
     private List<Permissao> authorities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Endereco> enderecos = new ArrayList<>();
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ItemCarrinho> carrinhoItens = new ArrayList<>();
-
     public Usuario(){}
 
-    public Usuario(String username, String nome, String password, List<Permissao> permissoes) {
+    public Usuario(String username, String password, List<Permissao> permissoes) {
         this.username = username;
-        this.nome = nome;
         this.password = password;
         this.authorities = permissoes;
     }
 
-    public Usuario(Long id, String username, String nome, String password, boolean account_non_expired,
-            boolean account_non_locked, boolean credentials_non_expired, boolean enabled, List<Permissao> permissoes, List<Endereco> enderecos, List<ItemCarrinho> carrinhoItens) {
-        this.id = id;
+    public Usuario(UUID id, String username, String password, List<Permissao> permissoes) {
+        this.id = (id == null) ? UUID.randomUUID() : id;
         this.username = username;
-        this.nome = nome;
+        this.password = password;
+        this.authorities = permissoes;
+    }
+
+    public Usuario(UUID id, String username, String password, boolean account_non_expired,
+            boolean account_non_locked, boolean credentials_non_expired, boolean enabled, List<Permissao> permissoes) {
+        this.id = (id == null) ? UUID.randomUUID() : id;
+        this.username = username;
         this.password = password;
         this.account_non_expired = account_non_expired;
         this.account_non_locked = account_non_locked;
         this.credentials_non_expired = credentials_non_expired;
         this.enabled = enabled;
         this.authorities = permissoes;
-        this.enderecos = enderecos;
-        this.carrinhoItens = carrinhoItens;
     }
 
     @Override
@@ -120,24 +110,16 @@ public class Usuario implements UserDetails {
     }
 
     // ------------ JPA ------------
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public void setPassword(String password) {
@@ -164,85 +146,11 @@ public class Usuario implements UserDetails {
         this.authorities = authorities;
     }
 
-    public List<Endereco> getEnderecos() {
-        return enderecos;
-    }
-
-    public void setEnderecos(List<Endereco> enderecos) {
-        this.enderecos = enderecos;
-    }
-
-    public void adicionarEndereco(Endereco endereco) {
-        this.enderecos.add(endereco);
-        endereco.setUsuario(this);
-    }
-
-    public void removerEndereco(Endereco endereco) {
-        this.enderecos.remove(endereco);
-        endereco.setUsuario(null);
-    }
-
-    public List<ItemCarrinho> getCarrinhoItens() {
-        return carrinhoItens;
-    }
-
-    public void setCarrinhoItens(List<ItemCarrinho> carrinhoItens) {
-        this.carrinhoItens = carrinhoItens;
-    }
-
-    public void adicionarAoCarrinho(Ferramenta ferramenta, Integer quantidade) {
-        if (ferramenta == null) {
-            throw new IllegalArgumentException("Ferramenta não pode ser nula");
-        }
-        if (quantidade == null || quantidade <= 0) {
-            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
-        }
-        Optional<ItemCarrinho> itemExistente = carrinhoItens.stream()
-                .filter(item -> item.getFerramenta().equals(ferramenta))
-                .findFirst();
-        
-        if (itemExistente.isPresent()) {
-            ItemCarrinho item = itemExistente.get();
-            item.setQuantidade(item.getQuantidade() + quantidade);
-        } else {
-            ItemCarrinho novoItem = new ItemCarrinho(this, ferramenta, quantidade);
-            carrinhoItens.add(novoItem);
-        }
-    }
-
-    public void removerDoCarrinho(Ferramenta ferramenta) {
-        if (ferramenta == null) {
-            throw new IllegalArgumentException("Ferramenta não pode ser nula");
-        }
-        carrinhoItens.removeIf(item -> item.getFerramenta().equals(ferramenta));
-    }
-
-    public void mudarQuantidade(ItemCarrinho item, Integer novaQuantidade) {
-        if (item == null) {
-            throw new IllegalArgumentException("Item não pode ser nulo");
-        }
-        if (novaQuantidade <= 0) {
-            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
-        }
-        if (!carrinhoItens.contains(item)) {
-            throw new IllegalArgumentException("Item não pertence ao carrinho deste usuário");
-        }
-
-        item.setQuantidade(novaQuantidade);
-    }
-
-    public void limparCarrinho() {
-        carrinhoItens.clear();
-    }
-
-    // ------------ CARRINHO ------------
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((nome == null) ? 0 : nome.hashCode());
         result = prime * result + ((username == null) ? 0 : username.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
         result = prime * result + (account_non_expired ? 1231 : 1237);
@@ -250,7 +158,6 @@ public class Usuario implements UserDetails {
         result = prime * result + (credentials_non_expired ? 1231 : 1237);
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((authorities == null) ? 0 : authorities.hashCode());
-        result = prime * result + ((enderecos == null) ? 0 : enderecos.hashCode());
         return result;
     }
 
@@ -267,11 +174,6 @@ public class Usuario implements UserDetails {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
-            return false;
-        if (nome == null) {
-            if (other.nome != null)
-                return false;
-        } else if (!nome.equals(other.nome))
             return false;
         if (username == null) {
             if (other.username != null)
@@ -295,11 +197,6 @@ public class Usuario implements UserDetails {
             if (other.authorities != null)
                 return false;
         } else if (!authorities.equals(other.authorities))
-            return false;
-        if (enderecos == null) {
-            if (other.enderecos != null)
-                return false;
-        } else if (!enderecos.equals(other.enderecos))
             return false;
         return true;
     }

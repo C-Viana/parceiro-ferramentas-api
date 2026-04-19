@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.TIPO_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.TipoPedido;
 
 public record PedidoResponseDto(
     Long id,
-    TIPO_PEDIDO tipo,
-    STATUS_PEDIDO situacao,
+    TipoPedido tipo,
+    StatusPedido situacao,
     BigDecimal valorTotal,
     Instant dataCriacao,
     Instant dataFim,

@@ -1,6 +1,7 @@
 package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.config.SecurityConfig;
 import com.parceiroferramentas.api.parceiro_api.dto.AcessoUsuarioDto;
 import com.parceiroferramentas.api.parceiro_api.dto.CredenciaisUsuarioDto;
-import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
+import com.parceiroferramentas.api.parceiro_api.enums.PerfilAcesso;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
 import com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException;
 import com.parceiroferramentas.api.parceiro_api.model.Permissao;
@@ -23,8 +24,6 @@ import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +38,12 @@ public class UsuarioService implements UserDetailsService {
     private final PermissaoRepository permissaoRepo;
     private final SecurityConfig security;
 
+    public void deletarUsuario(UUID id) {
+        Usuario user = usuarioRepo.findById(id).orElse(null);
+        if(user == null) return;
+        usuarioRepo.delete(user);
+    }
+
     public AcessoUsuarioDto signin(CredenciaisUsuarioDto credenciais) {
         Usuario user = usuarioRepo.findUsuarioByUsername(credenciais.username());
         if(user == null) throw new UsernameNotFoundException("Usuário ["+credenciais.username()+"] não encontrado");
@@ -47,7 +52,7 @@ public class UsuarioService implements UserDetailsService {
             credenciais.username(), 
             user.getAuthorities()
                 .stream()
-                .map(auth -> PERFIL_ACESSO.valueOf(auth.getAuthority()))
+                .map(auth -> PerfilAcesso.valueOf(auth.getAuthority()))
                 .toList()
         );
 
@@ -81,8 +86,8 @@ public class UsuarioService implements UserDetailsService {
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
-    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSignup")
-    @RateLimiter(name = "authRateLimit", fallbackMethod = "fallbackSignup")
+    // @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSignup")
+    // @RateLimiter(name = "authRateLimit", fallbackMethod = "fallbackSignup")
     public Usuario signup(Usuario usuario) {
         List<Permissao> perms = null ;
         
@@ -97,12 +102,12 @@ public class UsuarioService implements UserDetailsService {
 
         if(usuario.getAuthorities() == null || usuario.getAuthorities().isEmpty()) {
             log.info("NENHUM ACESSO FOI INFORMADO PARA O NOVO USUÁRIO. DEFININDO ACESSO PADRÃO DE \"CLIENTE\"");
-            Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.CLIENTE);
+            Permissao p = permissaoRepo.findPermissaoByAuthority(PerfilAcesso.CLIENTE);
             usuario.setAuthorities(List.of(p));
         }
         else {
             perms = usuario.getAuthorities().stream().map(role -> {
-                Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(role.getAuthority()));
+                Permissao p = permissaoRepo.findPermissaoByAuthority(PerfilAcesso.valueOf(role.getAuthority()));
                 if(p == null)
                     throw new NotFoundException("O perfil de acesso ["+role.getAuthority()+"] é inválido ou não existe");
                 return p;
@@ -125,7 +130,7 @@ public class UsuarioService implements UserDetailsService {
         if(tokenService.tokenExpirado(token))
             throw new InvalidAuthorizationException("O token fornecido está expirado ou inválido");
 
-        Permissao p = permissaoRepo.findPermissaoByAuthority(PERFIL_ACESSO.valueOf(nomePermissao.toUpperCase()));
+        Permissao p = permissaoRepo.findPermissaoByAuthority(PerfilAcesso.valueOf(nomePermissao.toUpperCase()));
         
         if(p == null)
             throw new NotFoundException("O perfil de acesso informado é inválido ou não existe");

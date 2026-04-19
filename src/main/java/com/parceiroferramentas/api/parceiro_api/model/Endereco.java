@@ -1,6 +1,6 @@
 package com.parceiroferramentas.api.parceiro_api.model;
 
-import com.parceiroferramentas.api.parceiro_api.enums.ESTADOS;
+import com.parceiroferramentas.api.parceiro_api.enums.Estados;
 import com.parceiroferramentas.api.parceiro_api.enums.UF;
 
 import jakarta.persistence.Entity;
@@ -28,7 +28,7 @@ public class Endereco {
     private String cidade;
 
     @Enumerated(EnumType.STRING)
-    private ESTADOS estado;
+    private Estados estado;
 
     @Enumerated(EnumType.STRING)
     private UF uf;
@@ -38,12 +38,12 @@ public class Endereco {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Comprador usuario;
 
     public Endereco(){}
 
-    public Endereco(Long id, String logradouro, Integer numero, String bairro, String cidade, ESTADOS estado, UF uf,
-            String cep, String referencia, boolean principal, Usuario usuario) {
+    public Endereco(Long id, String logradouro, Integer numero, String bairro, String cidade, Estados estado, UF uf,
+            String cep, String referencia, boolean principal, Comprador usuario) {
         this.id = id;
         this.logradouro = logradouro;
         this.numero = numero;
@@ -97,7 +97,7 @@ public class Endereco {
         this.cidade = cidade;
     }
 
-    public ESTADOS getEstado() {
+    public Estados getEstado() {
         return estado;
     }
 
@@ -105,7 +105,7 @@ public class Endereco {
         return estado.getString();
     }
 
-    public void setEstado(ESTADOS estado) {
+    public void setEstado(Estados estado) {
         this.estado = estado;
     }
 
@@ -141,11 +141,11 @@ public class Endereco {
         this.principal = principal;
     }
 
-    public Usuario getUsuario() {
+    public Comprador getComprador() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setComprador(Comprador usuario) {
         this.usuario = usuario;
     }
 

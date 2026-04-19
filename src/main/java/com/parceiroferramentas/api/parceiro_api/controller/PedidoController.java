@@ -22,12 +22,14 @@ import com.parceiroferramentas.api.parceiro_api.dto.PagamentoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PedidoResponseDto;
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.mapper.GlobalObjectMapper;
+import com.parceiroferramentas.api.parceiro_api.model.pagamento.BoletoStrategy;
+import com.parceiroferramentas.api.parceiro_api.model.pagamento.CreditoStrategy;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.DebitoStrategy;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.PagamentoStrategy;
 import com.parceiroferramentas.api.parceiro_api.model.pagamento.PixStrategy;
-import com.parceiroferramentas.api.parceiro_api.model.pagamento.TIPO_PAGAMENTO;
+import com.parceiroferramentas.api.parceiro_api.model.pagamento.TipoPagamento;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
 import com.parceiroferramentas.api.parceiro_api.service.PedidoService;
 
 import jakarta.validation.Valid;
@@ -52,16 +54,23 @@ public class PedidoController implements PedidoDocumentation {
         PagamentoStrategy pagamentoStrategy;
         log.info("DADOS DE PAGAMENTO: " + dto.toString());
         
-        switch (TIPO_PAGAMENTO.getByDisplayValue(dto.formaPagamento())) {
-            case PIX:
+        switch (TipoPagamento.getByDisplayValue(dto.formaPagamento())) {
+            case PIX_DYNAMIC:
                 pagamentoStrategy = new PixStrategy();
-                return pagamentoStrategy;
+                    break;
             case DEBITO:
                 pagamentoStrategy = new DebitoStrategy();
-                return pagamentoStrategy;
+                    break;
+            case BOLETO:
+                pagamentoStrategy = new BoletoStrategy();
+                    break;
+            case CARTAO_CREDITO:
+                pagamentoStrategy = new CreditoStrategy();
+                break;
             default:
                 throw new BadRequestException("TIPO DE PAGAMENTO INVALIDO OU NAO ACEITO EM NOSSA OPERACAO");
         }
+        return pagamentoStrategy;
     }
 
     @Override
@@ -171,7 +180,7 @@ public class PedidoController implements PedidoDocumentation {
         @NotBlank(message = "O parâmetro situação foi enviado vazio")
         @RequestParam(name = "nova_situacao", required = true) String nova_situacao
     ) {
-        Pedido pedido = pedidoService.atualizarSituacao(pedido_id, STATUS_PEDIDO.getByDisplayValue(nova_situacao));
+        Pedido pedido = pedidoService.atualizarSituacao(pedido_id, StatusPedido.getByDisplayValue(nova_situacao));
         return ResponseEntity.ok(mapper.toPedidoResponseDto(pedido));
     }
 

@@ -39,6 +39,4 @@ public record EnderecoDto(
     String referencia,
     boolean principal
 )
-{
-
-}
+{}

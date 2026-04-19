@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import com.parceiroferramentas.api.parceiro_api.dto.CompradorCadastroDto;
+import com.parceiroferramentas.api.parceiro_api.dto.CompradorDto;
 import com.parceiroferramentas.api.parceiro_api.dto.EnderecoDto;
 import com.parceiroferramentas.api.parceiro_api.dto.FerramentaDto;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoDto;
@@ -14,6 +16,7 @@ import com.parceiroferramentas.api.parceiro_api.dto.PermissaoRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.PermissaoResponseDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioRequestDto;
 import com.parceiroferramentas.api.parceiro_api.dto.UsuarioResponseDto;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
@@ -30,7 +33,6 @@ public interface GlobalObjectMapper {
     FerramentaDto toFerramentaDto(Ferramenta entidade);
     
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "nome", source = "nome")
     @Mapping(target = "username", source = "username")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "authorities", source = "authorities")
@@ -59,8 +61,8 @@ public interface GlobalObjectMapper {
     PermissaoResponseDto toPermissaoResponseDto(Permissao permissao);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "usuario", ignore = true)
-    @Mapping(target = "estado", expression = "java(com.parceiroferramentas.api.parceiro_api.enums.ESTADOS.getByDisplayValue(dto.estado()))")
+    @Mapping(target = "comprador", ignore = true)
+    @Mapping(target = "estado", expression = "java(com.parceiroferramentas.api.parceiro_api.enums.Estados.getByDisplayValue(dto.estado()))")
     Endereco toEnderecoEntity(EnderecoDto dto);
 
     @Mapping(target = "estado", expression = "java(entity.getEstadoAsString())")
@@ -73,4 +75,15 @@ public interface GlobalObjectMapper {
 
     PedidoResponseDto toPedidoResponseDto(Pedido pedido);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "carrinhoItens", ignore = true)
+    Comprador toComprador(CompradorDto dto);
+    
+    CompradorDto toCompradorDto(Comprador dto);
+
+    @Mapping(target = "id", ignore = true)
+    Comprador toComprador(CompradorCadastroDto dto);
+
+    @Mapping(target = "senha", ignore = true)
+    CompradorCadastroDto toCompradorCadastroDto(Comprador entity);
 }

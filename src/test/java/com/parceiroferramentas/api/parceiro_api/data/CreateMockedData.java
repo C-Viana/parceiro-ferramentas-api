@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -18,9 +20,10 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.parceiroferramentas.api.parceiro_api.dto.ItemCarrinhoRequestDto;
-import com.parceiroferramentas.api.parceiro_api.enums.ESTADOS;
-import com.parceiroferramentas.api.parceiro_api.enums.PERFIL_ACESSO;
+import com.parceiroferramentas.api.parceiro_api.enums.Estados;
+import com.parceiroferramentas.api.parceiro_api.enums.PerfilAcesso;
 import com.parceiroferramentas.api.parceiro_api.enums.UF;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
 import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
@@ -28,13 +31,14 @@ import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.ItemPedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.STATUS_PEDIDO;
-import com.parceiroferramentas.api.parceiro_api.model.pedido.TIPO_PEDIDO;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
+import com.parceiroferramentas.api.parceiro_api.model.pedido.TipoPedido;
 
 public class CreateMockedData {
 
     private File jsonFerramentas = new File("src/test/resources/FerramentasMock.json");
     private File jsonItemCarrinhoRequestDto = new File("src/test/resources/ItemCarrinhoRequestDto.json");
+    private final String senhaEncriptada = "$2a$10$Ur9TKcWfC2oVKBF9jOnaiOxl/FhGjHIdzmG158wxvzrGk9UDqxJsS";
 
     public static CreateMockedData getInstance() {
         return new CreateMockedData();
@@ -99,22 +103,113 @@ public class CreateMockedData {
 
     public List<Usuario> getUsuarios() {
         List<Usuario> mockedUsuarios = new ArrayList<>();
-        String senhaEncriptada = "$2a$10$AzCbojDDN5urYBKGcQk2Oewne3YiHMOOGsyndFejY2rpjldua2KzK";
 
         mockedUsuarios.add(new Usuario(
-            null, "useradmin", "João Oliveira da Silva", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(1L, PERFIL_ACESSO.ADMIN)), List.of(), List.of()
+            UUID.fromString("33476ff5-27cf-4113-ab83-7486e9d7e2dd"),
+            "useradmin",
+            senhaEncriptada,
+            true,
+            true,
+            true,
+            true,
+            Arrays.asList(new Permissao(1L, PerfilAcesso.ADMIN))
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usergerente", "Cláudia Ferreira dos Santos", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(2L, PERFIL_ACESSO.GERENTE)), List.of(), List.of()
+            UUID.fromString("3f3b406b-b6b2-4a13-afe6-35746410cd86"),
+            "usergerente",
+            senhaEncriptada,
+            true,
+            true,
+            true,
+            true,
+            Arrays.asList(new Permissao(2L, PerfilAcesso.GERENTE))
         ));
         mockedUsuarios.add(new Usuario(
-            null, "uservendedor", "Luana Correia Costa", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(3L, PERFIL_ACESSO.VENDEDOR)), List.of(), List.of()
+            UUID.fromString("cccdefd5-bbae-4b46-9ac5-425ea28fbf5f"),
+            "uservendedor",
+            senhaEncriptada,
+            true,
+            true,
+            true,
+            true,
+            Arrays.asList(new Permissao(3L, PerfilAcesso.VENDEDOR))
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usercliente", "Marcos Castro de Almeida", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PERFIL_ACESSO.CLIENTE)), List.of(), List.of()
+            UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"),
+            "usercliente",
+            senhaEncriptada,
+            true,
+            true,
+            true,
+            true,
+            Arrays.asList(new Permissao(4L, PerfilAcesso.CLIENTE))
         ));
         mockedUsuarios.add(new Usuario(
-            null, "usuarioinexistente", "Usuario Não Cadastrado", senhaEncriptada, true, true, true, true, Arrays.asList(new Permissao(4L, PERFIL_ACESSO.CLIENTE)), List.of(), List.of()
+            UUID.fromString("76ea733f-728b-4a17-c536-bba6cfd5a21f"),
+            "usuarioinexistente",
+            senhaEncriptada,
+            true,
+            true,
+            true,
+            true,
+            Arrays.asList(new Permissao(4L, PerfilAcesso.CLIENTE))
+        ));
+
+        return mockedUsuarios;
+    }
+
+    public List<Comprador> getCompradores() {
+        List<Comprador> mockedUsuarios = new ArrayList<>();
+
+        mockedUsuarios.add(new Comprador(
+            UUID.fromString("33476ff5-27cf-4113-ab83-7486e9d7e2dd"),
+            "40681843802",
+            "João Oliveira da Silva",
+            LocalDate.of(1992, 4, 15),
+            "josilva@parceiro.com.br",
+            "11930306080",
+            List.of(),
+            List.of()
+        ));
+        mockedUsuarios.add(new Comprador(
+            UUID.fromString("3f3b406b-b6b2-4a13-afe6-35746410cd86"),
+            "49055010678",
+            "Cláudia Ferreira dos Santos",
+            LocalDate.of(1985, 7, 22),
+            "cfsantos@parceiro.com.br",
+            "13978456421",
+            List.of(),
+            List.of()
+        ));
+        mockedUsuarios.add(new Comprador(
+            UUID.fromString("cccdefd5-bbae-4b46-9ac5-425ea28fbf5f"),
+            "70052289310",
+            "Luana Correia Costa",
+            LocalDate.of(1999, 10, 9),
+            "lccosta@parceiro.com.br",
+            "13946742103",
+            List.of(),
+            List.of()
+        ));
+        mockedUsuarios.add(new Comprador(
+            UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"),
+            "19278755003",
+            "Marcos Castro de Almeida",
+            LocalDate.of(1978, 3, 13),
+            "mcalmeida@gmail.com",
+            "11985253710",
+            List.of(),
+            List.of()
+        ));
+        mockedUsuarios.add(new Comprador(
+            UUID.fromString("76ea733f-728b-4a17-c536-bba6cfd5a21f"),
+            "22641593001",
+            "Usuario Não Cadastrado",
+            LocalDate.of(2002, 11, 28),
+            "desconhecido@outlook.com",
+            "21945608812",
+            List.of(),
+            List.of()
         ));
 
         return mockedUsuarios;
@@ -122,26 +217,26 @@ public class CreateMockedData {
 
     public List<Permissao> getPermissoes() {
         List<Permissao> permissoes = new ArrayList<>();
-        permissoes.add(new Permissao(null, PERFIL_ACESSO.ADMIN));
-        permissoes.add(new Permissao(null, PERFIL_ACESSO.GERENTE));
-        permissoes.add(new Permissao(null, PERFIL_ACESSO.VENDEDOR));
-        permissoes.add(new Permissao(null, PERFIL_ACESSO.CLIENTE));
+        permissoes.add(new Permissao(null, PerfilAcesso.ADMIN));
+        permissoes.add(new Permissao(null, PerfilAcesso.GERENTE));
+        permissoes.add(new Permissao(null, PerfilAcesso.VENDEDOR));
+        permissoes.add(new Permissao(null, PerfilAcesso.CLIENTE));
 
         return permissoes;
     }
 
-    public List<Endereco> getEnderecos(List<Usuario> mockedUsuarios) {
+    public List<Endereco> getEnderecos(List<Comprador> mockedUsuarios) {
         List<Endereco> mockedEnderecos = new ArrayList<>();
 
-        mockedEnderecos.add(new Endereco(null, "Rua José Eugênio da Silva", 122, "Parque Santa Teresa", "Carapicuíba", ESTADOS.SAO_PAULO, UF.SP, "06340400", null, true, mockedUsuarios.get(0)));
-        mockedEnderecos.add(new Endereco(null, "Rua Aline", 74, "Parque dos Camargos", "Barueri", ESTADOS.SAO_PAULO, UF.SP, "06436110", "Portão amarelo após a adega do Jurandir", true, mockedUsuarios.get(1)));
-        mockedEnderecos.add(new Endereco(null, "Rua Serra Leoa", 328, "Rochdale", "Osasco", ESTADOS.SAO_PAULO, UF.SP, "06220059", "Próximo da praça", true, mockedUsuarios.get(2)));
-        mockedEnderecos.add(new Endereco(null, "Rua Florindo Redivo", 14, "Vila Esperança", "Maringá", ESTADOS.PARANA, UF.PR, "87020520", null, true, mockedUsuarios.get(3)));
+        mockedEnderecos.add(new Endereco(null, "Rua José Eugênio da Silva", 122, "Parque Santa Teresa", "Carapicuíba", Estados.SAO_PAULO, UF.SP, "06340400", null, true, mockedUsuarios.get(0)));
+        mockedEnderecos.add(new Endereco(null, "Rua Aline", 74, "Parque dos Camargos", "Barueri", Estados.SAO_PAULO, UF.SP, "06436110", "Portão amarelo após a adega do Jurandir", true, mockedUsuarios.get(1)));
+        mockedEnderecos.add(new Endereco(null, "Rua Serra Leoa", 328, "Rochdale", "Osasco", Estados.SAO_PAULO, UF.SP, "06220059", "Próximo da praça", true, mockedUsuarios.get(2)));
+        mockedEnderecos.add(new Endereco(null, "Rua Florindo Redivo", 14, "Vila Esperança", "Maringá", Estados.PARANA, UF.PR, "87020520", null, true, mockedUsuarios.get(3)));
 
         return mockedEnderecos;
     }
 
-    public List<ItemCarrinho> getCarrinho( int quantidadeItens, boolean comId, Usuario donoCarrinho, List<Ferramenta> ferramentas ) {
+    public List<ItemCarrinho> getCarrinho( int quantidadeItens, boolean comId, Comprador donoCarrinho, List<Ferramenta> ferramentas ) {
         List<ItemCarrinho> carrinho = new ArrayList<>();
 
         for (int i = 0; i < quantidadeItens; i++) {
@@ -153,7 +248,7 @@ public class CreateMockedData {
             item.setDataAdicao(Instant.now());
             item.setQuantidade((i+1));
             item.setUrlImage(ferramenta.getLista_imagens().get(0));
-            item.setUsuario(donoCarrinho);
+            item.setComprador(donoCarrinho);
             if(comId) item.setId(Integer.toUnsignedLong((i+1)));
             carrinho.add(item);
         }
@@ -201,17 +296,17 @@ public class CreateMockedData {
         return pedido;
     }
 
-    public Pedido getPedido(TIPO_PEDIDO tipoPedido, int prazo, Usuario usuario, Endereco endereco, List<ItemPedido> itens) {
+    public Pedido getPedido(TipoPedido tipoPedido, int prazo, Comprador usuario, Endereco endereco, List<ItemPedido> itens) {
         Pedido pedidoModel = new Pedido();
-        pedidoModel.setUsuario(usuario);
+        pedidoModel.setComprador(usuario);
         pedidoModel.setEndereco(endereco);
-        pedidoModel.setTipo(TIPO_PEDIDO.COMPRA);
-        pedidoModel.setSituacao(STATUS_PEDIDO.PENDENTE);
+        pedidoModel.setTipo(TipoPedido.COMPRA);
+        pedidoModel.setSituacao(StatusPedido.PENDENTE);
         pedidoModel.setDataCriacao(Instant.now());
         pedidoModel.setDataAtualizacao(Instant.now());
         pedidoModel.setItens(itens);
 
-        if(tipoPedido == TIPO_PEDIDO.COMPRA)
+        if(tipoPedido == TipoPedido.COMPRA)
         pedidoModel.setValorTotal(
             itens.stream()
             .map( item -> item.getPrecoUnitario().multiply(BigDecimal.valueOf(item.getQuantidade())))

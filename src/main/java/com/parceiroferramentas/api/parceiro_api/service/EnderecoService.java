@@ -1,6 +1,7 @@
 package com.parceiroferramentas.api.parceiro_api.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,11 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.parceiroferramentas.api.parceiro_api.exception.BadRequestException;
 import com.parceiroferramentas.api.parceiro_api.exception.NotFoundException;
+import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
-import com.parceiroferramentas.api.parceiro_api.model.Usuario;
+import com.parceiroferramentas.api.parceiro_api.repository.CompradorRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
-import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EnderecoService {
 
     private final EnderecoRepository repository;
-    private final UsuarioRepository usuarioRepository;
+    private final CompradorRepository compradorRepository;
 
     public Page<Endereco> findAll(Pageable pageable) {
         return repository.findAll(pageable);
@@ -36,22 +36,22 @@ public class EnderecoService {
         return repository.findById(id).orElse(null);
     }
 
-    public List<Endereco> findUsuarioEnderecos(Long usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+    public List<Endereco> findUsuarioEnderecos(UUID usuarioId) {
+        Comprador usuario = compradorRepository.findById(usuarioId).orElse(null);
         if(usuario == null) throw new BadRequestException("Dados de usuario não informados para buscar endereços");
         return repository.findEnderecoByUsuarioId(usuario.getId());
     }
 
-    public Endereco fallbackCreateEndereco(Long usuarioId, Endereco novoEndereco, Throwable throwable) {
+    public Endereco fallbackCreateEndereco(UUID usuarioId, Endereco novoEndereco, Throwable throwable) {
         log.error("CIRCUIT BREAKER: ERRO AO CRIAR NOVO ENDERECO", throwable);
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
     @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCreateEndereco")
     @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCreateEndereco")
-    public Endereco create(Long usuarioId, Endereco novoEndereco) {
-        Usuario u = usuarioRepository.findById(usuarioId).orElse(null);
-        if( u == null ) throw new BadRequestException("Nenhum usuário encontrado pelo ID ["+usuarioId+"]");
+    public Endereco create(UUID usuarioId, Endereco novoEndereco) {
+        Comprador comprador = compradorRepository.findById(usuarioId).orElse(null);
+        if( comprador == null ) throw new BadRequestException("Nenhum usuário encontrado pelo ID ["+usuarioId+"]");
 
         List<Endereco> enderecos = repository.findEnderecoByUsuarioId(usuarioId);
         if(enderecos.size() > 0) {
@@ -66,7 +66,7 @@ public class EnderecoService {
         else
             novoEndereco.setPrincipal(true);
         
-        novoEndereco.setUsuario(u);
+        novoEndereco.setComprador(comprador);
         return repository.save(novoEndereco);
     }
 
@@ -92,7 +92,7 @@ public class EnderecoService {
         if(entidade.enderecoInvalido()) throw new BadRequestException("Um ou mais campos estão inválidos. Verifique se há inconsistências e tente novamente.");
 
         if(entidade.isPrincipal() == false && enderecoAtualizado.isPrincipal() == true) {
-            List<Endereco> enderecos = repository.findEnderecoByUsuarioId(entidade.getUsuario().getId());
+            List<Endereco> enderecos = repository.findEnderecoByUsuarioId(entidade.getComprador().getId());
             if(enderecos.size() > 1) {
                 enderecos.stream().forEach(e -> e.setPrincipal(false));
                 repository.saveAll(enderecos);

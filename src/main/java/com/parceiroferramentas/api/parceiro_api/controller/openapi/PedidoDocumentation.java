@@ -102,7 +102,13 @@ public interface PedidoDocumentation {
         @NotNull(message = "O token de acesso não pode ser nulo")
         @NotBlank(message = "O token de acesso está vazio")
         @RequestHeader("Authorization") String token, 
+        @Valid
+        @NotNull(message = "O prazo de locação não foi informado")
+        @Min(value = 1, message = "O prazo de locação deve ser de pelo menos 1 dia.")
         @PathVariable Long diasPrazo, 
+        @Valid
+        @NotNull(message = "O identificador de endereço não foi informado")
+        @Min(value = 1, message = "O identificador de endereço não pode ser inferior a 1")
         @PathVariable Long enderecoId, 
         @Valid
         @RequestBody PagamentoRequestDto pagamento) throws JsonProcessingException;

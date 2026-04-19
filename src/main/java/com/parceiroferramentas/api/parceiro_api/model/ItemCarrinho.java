@@ -25,7 +25,7 @@ public class ItemCarrinho {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Comprador usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ferramenta_id", nullable = false)
@@ -48,7 +48,7 @@ public class ItemCarrinho {
     
     public ItemCarrinho() {}
 
-    public ItemCarrinho(Usuario usuario, Ferramenta ferramenta, Integer quantidade) {
+    public ItemCarrinho(Comprador usuario, Ferramenta ferramenta, Integer quantidade) {
         this.usuario = usuario;
         this.ferramenta = ferramenta;
         this.quantidade = quantidade;
@@ -62,11 +62,11 @@ public class ItemCarrinho {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
+    public Comprador getComprador() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setComprador(Comprador usuario) {
         this.usuario = usuario;
     }
 
