@@ -153,9 +153,9 @@ public class PedidoService {
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
-    // @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCriarPedidoAluguel")
-    // @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCriarPedidoAluguel")
-    // @RateLimiter(name = "pedidosRateLimit", fallbackMethod = "fallbackCriarPedidoAluguel")
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackCriarPedidoAluguel")
+    @Retry(name = "backendGlobalRetry", fallbackMethod = "fallbackCriarPedidoAluguel")
+    @RateLimiter(name = "pedidosRateLimit", fallbackMethod = "fallbackCriarPedidoAluguel")
     public Pedido criarPedidoAluguel(String token, Long prazo, Long enderecoId, PagamentoStrategy pagamentoReq, String detalhesPagamento) {
         metricsService.registrarPedidoCriado("ALUGUEL");
         Pedido pedido = new Pedido();

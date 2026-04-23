@@ -4,9 +4,9 @@ spring:
     datasource:
         name: parceirodb
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5432/parceirodb
-        username: postgres
-        password: 1234
+        url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+        username: ${DB_USER}
+        password: ${DB_PASSWORD}
     jpa:
         show-sql: true
         properties:
@@ -25,21 +25,10 @@ logging:
     charset:
         console: UTF-8
     level:
-        root: INFO
-        "[org.hibernate]": INFO
-        "[org.springframework]": INFO
-        "[com.parceiroferramentas.api]": DEBUG
-    pattern:
-        console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow} %clr($$   {LOG_LEVEL_PATTERN:-%5p}) %clr(   $${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
-        file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    structured:
-        format:
-            console: ecs
-            file: ecs
-    file:
-        name: parceiro-api.log
+        root: info
 server:
     port: 8080
+    forward-headers-strategy: framework
 springdoc:
     api-docs:
         enabled: true
@@ -48,14 +37,14 @@ springdoc:
 api:
     security:
         token:
-            secret: secret
+            secret: ${JWT_SECRET}
 resilience4j:
     circuitbreaker:
         instances:
             backendGlobalBreaker:
                 slidingWindowSize: 10
                 failureRateThreshold: 50
-                waitDurationInOpenState: 10s
+                waitDurationInOpenState: 8s
                 ignoreExceptions:
                 - com.parceiroferramentas.api.parceiro_api.exception.BadRequestException
                 - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
@@ -65,7 +54,7 @@ resilience4j:
         instances:
             backendGlobalRetry:
                 maxAttempts: 3
-                waitDuration: 1000ms
+                waitDuration: 500ms
                 retryExceptions:
                 - org.springframework.dao.DataAccessException
                 - java.net.SocketTimeoutException
@@ -75,7 +64,6 @@ resilience4j:
                 - com.parceiroferramentas.api.parceiro_api.exception.InternalApplicationException
                 - com.parceiroferramentas.api.parceiro_api.exception.InvalidAuthorizationException
                 - com.parceiroferramentas.api.parceiro_api.exception.NotFoundException
-
     ratelimiter:
         instances:
             authRateLimit:
@@ -86,19 +74,3 @@ resilience4j:
                 limitForPeriod: 2
                 limitRefreshPeriod: 1m
                 timeoutDuration: 10s
-management:
-    endpoints:
-        web:
-            exposure:
-                include:
-                - health
-                - info
-                - prometheus
-                - metrics
-    endpoint:
-        health:
-            show-details: always
-    prometheus:
-        metrics:
-            export:
-                enabled: true

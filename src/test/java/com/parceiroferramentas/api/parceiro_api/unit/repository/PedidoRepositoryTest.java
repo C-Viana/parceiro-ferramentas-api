@@ -18,7 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -34,6 +35,8 @@ import com.parceiroferramentas.api.parceiro_api.repository.CompradorRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.FerramentaRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PedidoRepository;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurAuthenticationService;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurPaymentService;
 
 @SpringBootTest
 @Testcontainers
@@ -41,7 +44,7 @@ import com.parceiroferramentas.api.parceiro_api.repository.PedidoRepository;
 public class PedidoRepositoryTest {
 
     @Container
-    static PostgreSQLContainer<?> postgres = DatabaseConfig.getDatabaseConfig();
+    static PostgreSQLContainer postgres = DatabaseConfig.getDatabaseConfig();
 
     @Autowired
     private PedidoRepository repository;
@@ -51,6 +54,11 @@ public class PedidoRepositoryTest {
     @Autowired private CompradorRepository compradorRepo;
     @Autowired private EnderecoRepository enderecoRepository;
     @Autowired private FerramentaRepository ferramentaRepo;
+
+    @MockitoBean private SimurPaymentService simurPaymentService;
+    @MockitoBean private SimurAuthenticationService simurAuthenticationService;
+
+    private final UUID usuarioId = UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f");
 
     @DynamicPropertySource
     static void configurePropertires(DynamicPropertyRegistry registry) {
@@ -79,7 +87,6 @@ public class PedidoRepositoryTest {
     @DisplayName("Buscar pedidos do usuário")
     @Order(2)
     void buscarPedidosDoUsuarioTest() {
-        UUID usuarioId = UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f");
         List<Pedido> pedidos = repository.findPedidoByCompradorId(usuarioId);
         Assertions.assertNotNull(pedidos);
         Assertions.assertEquals(2, pedidos.size());
@@ -131,11 +138,10 @@ public class PedidoRepositoryTest {
     @DisplayName("Criar um pedido")
     @Order(5)
     void criarPedidoTest() {
-        UUID usuarioId = UUID.fromString("76ea733f-728b-4a17-c536-bba6cfd5a21f");
         Pedido pedido = new Pedido();
         //Usuario usuario = usuarioRepo.findById(usuarioId).orElse(null);
         Comprador comprador = compradorRepo.findById(usuarioId).orElse(null);
-        Endereco endereco = enderecoRepository.findEnderecoByUsuarioId(usuarioId).get(0);
+        Endereco endereco = enderecoRepository.findEnderecoByCompradorId(usuarioId).get(0);
 
         pedido.setComprador(comprador);
         pedido.setEndereco( endereco );

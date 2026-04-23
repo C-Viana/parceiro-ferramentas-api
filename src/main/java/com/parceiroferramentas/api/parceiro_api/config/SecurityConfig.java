@@ -2,6 +2,7 @@ package com.parceiroferramentas.api.parceiro_api.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtFilter;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.enums.PerfilAcesso;
+import com.parceiroferramentas.api.parceiro_api.exception.JwtAuthenticationEntryPoint;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +36,9 @@ public class SecurityConfig {
 
     private final JwtTokenService provider;
     private static AuthenticationManager authManager;
+
+    @Autowired
+    private JwtAuthenticationEntryPoint exceptionHandler;
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
@@ -51,9 +56,10 @@ public class SecurityConfig {
     }
  
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         JwtFilter filter = new JwtFilter(provider);
         return http
+            .exceptionHandling( exception -> exception.authenticationEntryPoint(exceptionHandler))
             .httpBasic(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable) // Recomendável habilitar em produção se houver integração com frontend
             .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
@@ -83,7 +89,8 @@ public class SecurityConfig {
                     "/api/v1/carrinho",
                     "/api/v1/carrinho/**",
                     "/api/v1/pedido",
-                    "/api/v1/pedido/**"
+                    "/api/v1/pedido/**",
+                    "/usuarios/comprador/atualizar"
                 ).authenticated()
             )
             .cors(cors -> cors.configurationSource( request -> {

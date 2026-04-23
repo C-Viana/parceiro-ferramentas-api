@@ -31,6 +31,7 @@ import com.parceiroferramentas.api.parceiro_api.model.pagamento.TipoPagamento;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
 import com.parceiroferramentas.api.parceiro_api.service.PedidoService;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurPaymentService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -48,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PedidoController implements PedidoDocumentation {
 
     private final PedidoService pedidoService;
+    private final SimurPaymentService simurClient;
     private final GlobalObjectMapper mapper;
 
     private PagamentoStrategy setPagamento(PagamentoRequestDto dto) {
@@ -56,16 +58,16 @@ public class PedidoController implements PedidoDocumentation {
         
         switch (TipoPagamento.getByDisplayValue(dto.formaPagamento())) {
             case PIX_DYNAMIC:
-                pagamentoStrategy = new PixStrategy();
+                pagamentoStrategy = new PixStrategy(simurClient);
                     break;
             case DEBITO:
-                pagamentoStrategy = new DebitoStrategy();
+                pagamentoStrategy = new DebitoStrategy(simurClient);
                     break;
             case BOLETO:
-                pagamentoStrategy = new BoletoStrategy();
+                pagamentoStrategy = new BoletoStrategy(simurClient);
                     break;
             case CARTAO_CREDITO:
-                pagamentoStrategy = new CreditoStrategy();
+                pagamentoStrategy = new CreditoStrategy(simurClient);
                 break;
             default:
                 throw new BadRequestException("TIPO DE PAGAMENTO INVALIDO OU NAO ACEITO EM NOSSA OPERACAO");

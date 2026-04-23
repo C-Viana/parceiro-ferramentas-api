@@ -79,6 +79,7 @@ public interface GlobalObjectMapper {
     @Mapping(target = "carrinhoItens", ignore = true)
     Comprador toComprador(CompradorDto dto);
     
+    @Mapping(target = "enderecos", source = "enderecos")
     CompradorDto toCompradorDto(Comprador dto);
 
     @Mapping(target = "id", ignore = true)

@@ -17,10 +17,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import com.parceiroferramentas.api.parceiro_api.config.DatabaseConfig;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
@@ -30,6 +31,8 @@ import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurAuthenticationService;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurPaymentService;
 
 @SpringBootTest
 @Testcontainers
@@ -38,7 +41,7 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 public class UsuarioRepositoryTest {
 
     @Container
-    static PostgreSQLContainer<?> postgres = DatabaseConfig.getDatabaseConfig();
+    static PostgreSQLContainer postgres = DatabaseConfig.getDatabaseConfig();
 
     @Autowired
     UsuarioRepository usuarioRepository;
@@ -48,6 +51,9 @@ public class UsuarioRepositoryTest {
 
     @Autowired
     PermissaoRepository permissaoRepository;
+
+    @MockitoBean private SimurPaymentService simurPaymentService;
+    @MockitoBean private SimurAuthenticationService simurAuthenticationService;
 
     private static List<Usuario> mockedUsuarios;
 
@@ -99,7 +105,13 @@ public class UsuarioRepositoryTest {
     public void deveRetornarUsuarioPorNomeDeUsuario() {
         int userIndex = 1;
         setPermission();
+
+        Permissao permissaoGerente = permissaoRepository.findAll().stream().filter( p -> p.getAuthority().equals("GERENTE")).findFirst().orElse(null);
+        Usuario usuario = mockedUsuarios.get(userIndex);
+        usuario.setAuthorities(List.of(permissaoGerente));
+
         usuarioRepository.save(mockedUsuarios.get(userIndex));
+
         Usuario resUsuario = usuarioRepository.findUsuarioByUsername(mockedUsuarios.get(userIndex).getUsername());
         Assertions.assertThatObject(resUsuario).isNotNull();
         Assertions.assertThat(resUsuario.getId()).isNotNull();

@@ -40,7 +40,7 @@ public class CarrinhoService {
 
     public List<ItemCarrinho> recuperarCarrinho(String usuarioUsername) {
         Usuario usuario = buscaUsuario(usuarioUsername);
-        return repository.findItemCarrinhoByUsuarioId(usuario.getId());
+        return repository.findItemCarrinhoByCompradorId(usuario.getId());
     }
 
     public ItemCarrinho fallbackSalvarItemCarrinho(String username, Long ferramentaId, Integer quantidade, Throwable throwable) {
@@ -102,7 +102,7 @@ public class CarrinhoService {
     public void removerTodos(String username) {
         Usuario usuario = buscaUsuario(username);
         Comprador comprador = compradorRepo.findById(usuario.getId()).orElse(null);
-        List<ItemCarrinho> itens = repository.findItemCarrinhoByUsuarioId(usuario.getId());
+        List<ItemCarrinho> itens = repository.findItemCarrinhoByCompradorId(usuario.getId());
         if( usuario.getId() != itens.get(0).getComprador().getId() ) throw new RuntimeException("Operação não permitida");
         if( itens != null )
             repository.deleteAll(itens);

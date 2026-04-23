@@ -200,5 +200,12 @@ public class Usuario implements UserDetails {
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Usuario [id=" + id + ", username=" + username + ", password=" + password + ", account_non_expired="
+                + account_non_expired + ", account_non_locked=" + account_non_locked + ", credentials_non_expired="
+                + credentials_non_expired + ", enabled=" + enabled + ", authorities=" + authorities.toString() + "]";
+    }
     
 }

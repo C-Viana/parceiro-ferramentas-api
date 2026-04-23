@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgres:latest
+    container_name: parceiro-db
+    image: postgres:18
     ports:
       - "5432:5432"
     expose:
@@ -11,6 +12,30 @@ services:
       POSTGRES_DB: parceirodb
     networks:
       - default
+  app:
+    container_name: parceiro-api
+    image: parceiro-api:latest
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: parceirodb
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+      DB_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET}
+      SIMUR_HOSTNAME: http://simur:5254
+      SIMUR_USERNAME: parceiroferramentas
+      SIMUR_PASSWORD: parceiroferramentas
+    networks:
+      - default
+      - shared-network
 networks:
   default:
     driver: bridge
+  shared-network:
+      external: true

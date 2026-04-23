@@ -24,6 +24,8 @@ import com.parceiroferramentas.api.parceiro_api.model.Usuario;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,8 +88,8 @@ public class UsuarioService implements UserDetailsService {
         throw new RuntimeException("Serviço indisponível no momento. Tente novamente mais tarde.");
     }
 
-    // @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSignup")
-    // @RateLimiter(name = "authRateLimit", fallbackMethod = "fallbackSignup")
+    @CircuitBreaker(name = "backendGlobalBreaker", fallbackMethod = "fallbackSignup")
+    @RateLimiter(name = "authRateLimit", fallbackMethod = "fallbackSignup")
     public Usuario signup(Usuario usuario) {
         List<Permissao> perms = null ;
         

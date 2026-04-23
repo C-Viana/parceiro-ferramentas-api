@@ -25,7 +25,7 @@ public class ItemCarrinho {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Comprador usuario;
+    private Comprador comprador;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ferramenta_id", nullable = false)
@@ -49,7 +49,7 @@ public class ItemCarrinho {
     public ItemCarrinho() {}
 
     public ItemCarrinho(Comprador usuario, Ferramenta ferramenta, Integer quantidade) {
-        this.usuario = usuario;
+        this.comprador = usuario;
         this.ferramenta = ferramenta;
         this.quantidade = quantidade;
     }
@@ -63,11 +63,11 @@ public class ItemCarrinho {
     }
 
     public Comprador getComprador() {
-        return usuario;
+        return comprador;
     }
 
     public void setComprador(Comprador usuario) {
-        this.usuario = usuario;
+        this.comprador = usuario;
     }
 
     public Ferramenta getFerramenta() {
@@ -125,7 +125,7 @@ public class ItemCarrinho {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
+        result = prime * result + ((comprador == null) ? 0 : comprador.hashCode());
         result = prime * result + ((ferramenta == null) ? 0 : ferramenta.hashCode());
         result = prime * result + ((quantidade == null) ? 0 : quantidade.hashCode());
         result = prime * result + ((precoVendaMomento == null) ? 0 : precoVendaMomento.hashCode());
@@ -149,10 +149,10 @@ public class ItemCarrinho {
                 return false;
         } else if (!id.equals(other.id))
             return false;
-        if (usuario == null) {
-            if (other.usuario != null)
+        if (comprador == null) {
+            if (other.comprador != null)
                 return false;
-        } else if (!usuario.equals(other.usuario))
+        } else if (!comprador.equals(other.comprador))
             return false;
         if (ferramenta == null) {
             if (other.ferramenta != null)

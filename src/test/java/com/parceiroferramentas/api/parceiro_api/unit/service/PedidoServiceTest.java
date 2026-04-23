@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,8 +24,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.parceiroferramentas.api.parceiro_api.auth.JwtTokenService;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
+import com.parceiroferramentas.api.parceiro_api.data.CreateMockedSimurPaymentData;
 import com.parceiroferramentas.api.parceiro_api.model.Comprador;
 import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 import com.parceiroferramentas.api.parceiro_api.model.Ferramenta;
@@ -39,6 +42,7 @@ import com.parceiroferramentas.api.parceiro_api.model.pedido.Pedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.StatusPedido;
 import com.parceiroferramentas.api.parceiro_api.model.pedido.TipoPedido;
 import com.parceiroferramentas.api.parceiro_api.repository.CarrinhoRepository;
+import com.parceiroferramentas.api.parceiro_api.repository.CompradorRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.EnderecoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.ItemPedidoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PagamentoRepository;
@@ -46,6 +50,8 @@ import com.parceiroferramentas.api.parceiro_api.repository.PedidoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 import com.parceiroferramentas.api.parceiro_api.service.MetricsService;
 import com.parceiroferramentas.api.parceiro_api.service.PedidoService;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurPaymentService;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.models.SimurPaymentResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class PedidoServiceTest {
@@ -55,9 +61,11 @@ public class PedidoServiceTest {
     @Mock private ItemPedidoRepository itemRepository;
     @Mock private PedidoRepository pedidoRepository;
     @Mock private UsuarioRepository usuarioRepo;
+    @Mock private CompradorRepository compradorRepo;
     @Mock private EnderecoRepository enderecoRepository;
     @Mock private PagamentoRepository pagamentoRepository;
     @Mock private JwtTokenService tokenService;
+    @Mock private SimurPaymentService simurPaymentService;
 
     @InjectMocks PedidoService service;
 
@@ -67,36 +75,35 @@ public class PedidoServiceTest {
     static List<ItemCarrinho> carrinho;
     static List<Endereco> enderecos;
     static final String ACCESS_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJBRE1JTiIsIkdFUkVOVEUiLCJWRU5ERURPUiIsIkNMSUVOVEUiXSwiaWF0IjoxNzY2MTUxNDkwLCJleHAiOjE3NjYxNTUwOTAsInN1YiI6IjgwNjkwNTcxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.DnqrSTnvUMVasSb1yr9iJQGP4euPlkFXxbFJqSwFdWw";
+    static CreateMockedData mocks;
+
+    static int compradorIndex = 3;
 
     @BeforeAll
     public static void setup() {
-        usuario = CreateMockedData.getInstance().getUsuarios().get(3);
-        comprador = CreateMockedData.getInstance().getCompradores().get(3);
-        ferramentas = CreateMockedData.getInstance().getFerramentas();
-        enderecos = CreateMockedData.getInstance().getEnderecos( CreateMockedData.getInstance().getCompradores());
+        mocks = CreateMockedData.getInstance();
+        usuario = mocks.getUsuarios().get(compradorIndex);
+        comprador = mocks.getCompradores().get(compradorIndex);
+        ferramentas = mocks.getFerramentas();
+        enderecos = mocks.getEnderecos( mocks.getCompradores());
     }
 
     @Test
     @DisplayName("Deve criar um pedido de compra")
-    void criarPedidoCompraTeste() {
+    void criarPedidoCompraTeste() throws JsonProcessingException {
         int tamanhoCarrinho = 2;
-        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
-        String pagamentoDetalhesJson = "{\r\n" + //
-                        "    \"forma_pagamento\": \"PIX\",\r\n" + //
-                        "    \"valor\": 2188.58,\r\n" + //
-                        "    \"detalhes\": {\r\n" + //
-                        "        \"nome\": \"Lindosvaldo Melo da Silva\",\r\n" + //
-                        "        \"documento:\": \"46854810201\",\r\n" + //
-                        "        \"banco\": \"Nubank\",\r\n" + //
-                        "        \"agencia\": \"00001\",\r\n" + //
-                        "        \"conta\": \"10852432\",\r\n" + //
-                        "        \"digito\": \"2\"\r\n" + //
-                        "    }\r\n" + //
+        comprador.setCarrinhoItens(new ArrayList<>(mocks.getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
+        String pagamentoDetalhesJson = "{ " + //
+                        "    \"detalhes\": {}\r\n" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
-        Pedido pedidoAntes = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
-        Pagamento pagamento = new PixStrategy().processar(pedidoAntes, pagamentoDetalhesJson);
+        List<ItemPedido> itens = mocks.getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoAntes = mocks.getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(compradorIndex), itens);
+
+        SimurPaymentResponse paymentResponse = CreateMockedSimurPaymentData.getInstance().getPayments().get(2);
+        Mockito.when(simurPaymentService.criarPagamento(any())).thenReturn(paymentResponse);
+
+        Pagamento pagamento = new PixStrategy(simurPaymentService).processar(pedidoAntes, pagamentoDetalhesJson);
         
         Pedido pedidoComId = pedidoAntes;
         pedidoComId.setId(1L);
@@ -110,9 +117,10 @@ public class PedidoServiceTest {
         Mockito.when(decodedToken.getSubject()).thenReturn(usuario.getUsername());
         Mockito.when(tokenService.decodeToken(Mockito.anyString())).thenReturn(decodedToken);
         Mockito.when(usuarioRepo.findUsuarioByUsername(usuario.getUsername())).thenReturn(usuario);
-        Mockito.when(enderecoRepository.findById(enderecos.get(3).getId()))
+        Mockito.when(compradorRepo.findById(any(UUID.class))).thenReturn(Optional.of(comprador));
+        Mockito.when(enderecoRepository.findById(any()))
             .thenReturn(
-                Optional.of(enderecos.get(3))
+                Optional.of(enderecos.get(compradorIndex))
             );
         Mockito.when(pagamentoRepository.save(any(Pagamento.class))).thenReturn(pagamento);
         
@@ -123,7 +131,7 @@ public class PedidoServiceTest {
         
         Mockito.doNothing().when(carrinhoRepository).deleteAll(any());
 
-        Pedido response = service.criarPedidoCompra(ACCESS_TOKEN, enderecos.get(3).getId(), new PixStrategy(), pagamentoDetalhesJson);
+        Pedido response = service.criarPedidoCompra(ACCESS_TOKEN, enderecos.get(compradorIndex).getId(), new PixStrategy(simurPaymentService), pagamentoDetalhesJson);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(tamanhoCarrinho, response.getItens().size());
@@ -137,25 +145,20 @@ public class PedidoServiceTest {
 
     @Test
     @DisplayName("Deve criar um pedido de aluguel")
-    void criarPedidoAluguelTeste() {
+    void criarPedidoAluguelTeste() throws JsonProcessingException {
         int tamanhoCarrinho = 2;
-        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(mocks.getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
-                        "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
-                        "    \"valor\": 1219.00,\r\n" + //
-                        "    \"detalhes\": {\r\n" + //
-                        "        \"nome\": \"Lindosvaldo Melo da Silva\",\r\n" + //
-                        "        \"documento:\": \"46854810201\",\r\n" + //
-                        "        \"banco\": \"Nubank\",\r\n" + //
-                        "        \"agencia\": \"00001\",\r\n" + //
-                        "        \"conta\": \"10852432\",\r\n" + //
-                        "        \"digito\": \"2\"\r\n" + //
-                        "    }\r\n" + //
+                        "    \"card_token\": \"tok_simur_d055de21ed8f4a28\"" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoAluguel(comprador.getCarrinhoItens());
-        Pedido pedidoAntes = CreateMockedData.getInstance().getPedido(TipoPedido.ALUGUEL, 10, comprador, enderecos.get(3), itens);
-        Pagamento pagamento = new PixStrategy().processar(pedidoAntes, pagamentoDetalhesJson);
+        List<ItemPedido> itens = mocks.getItensDoPedidoAluguel(comprador.getCarrinhoItens());
+        Pedido pedidoAntes = mocks.getPedido(TipoPedido.ALUGUEL, 10, comprador, enderecos.get(compradorIndex), itens);
+
+        SimurPaymentResponse paymentResponse = CreateMockedSimurPaymentData.getInstance().getPayments().get(0);
+        Mockito.when(simurPaymentService.criarPagamento(any())).thenReturn(paymentResponse);
+
+        Pagamento pagamento = new DebitoStrategy(simurPaymentService).processar(pedidoAntes, pagamentoDetalhesJson);
         
         Pedido pedidoComId = pedidoAntes;
         pedidoComId.setId(1L);
@@ -169,9 +172,10 @@ public class PedidoServiceTest {
         Mockito.when(decodedToken.getSubject()).thenReturn(usuario.getUsername());
         Mockito.when(tokenService.decodeToken(Mockito.anyString())).thenReturn(decodedToken);
         Mockito.when(usuarioRepo.findUsuarioByUsername(usuario.getUsername())).thenReturn(usuario);
+        Mockito.when(compradorRepo.findById(any(UUID.class))).thenReturn(Optional.of(comprador));
         Mockito.when(enderecoRepository.findById(enderecos.get(3).getId()))
             .thenReturn(
-                Optional.of(enderecos.get(3))
+                Optional.of(enderecos.get(compradorIndex))
             );
         Mockito.when(pagamentoRepository.save(any(Pagamento.class))).thenReturn(pagamento);
         
@@ -187,7 +191,7 @@ public class PedidoServiceTest {
         System.out.println( "LOG >>>>>>>>>>>> ITEM #2 " + comprador.getCarrinhoItens().get(1).getPrecoAluguelMomento() );
         System.out.println( "LOG >>>>>>>>>>>> ITEM #2 " + comprador.getCarrinhoItens().get(1).getQuantidade() );
         
-        Pedido response = service.criarPedidoAluguel(ACCESS_TOKEN, 10L, enderecos.get(3).getId(), new DebitoStrategy(), pagamentoDetalhesJson);
+        Pedido response = service.criarPedidoAluguel(ACCESS_TOKEN, 10L, enderecos.get(compradorIndex).getId(), new DebitoStrategy(simurPaymentService), pagamentoDetalhesJson);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(tamanhoCarrinho, response.getItens().size());
@@ -201,26 +205,21 @@ public class PedidoServiceTest {
 
     @Test
     @DisplayName("Deve buscar um pedido pelo seu ID")
-    void buscarPedidoTeste() {
+    void buscarPedidoTeste() throws JsonProcessingException {
         int tamanhoCarrinho = 3;
-        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(mocks.getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
-                        "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
-                        "    \"valor\": 3178.28,\r\n" + //
-                        "    \"detalhes\": {\r\n" + //
-                        "        \"nome\": \"Lindosvaldo Melo da Silva\",\r\n" + //
-                        "        \"documento:\": \"46854810201\",\r\n" + //
-                        "        \"banco\": \"Nubank\",\r\n" + //
-                        "        \"agencia\": \"00001\",\r\n" + //
-                        "        \"conta\": \"10852432\",\r\n" + //
-                        "        \"digito\": \"2\"\r\n" + //
-                        "    }\r\n" + //
+                        "    \"card_token\": \"tok_simur_d055de21ed8f4a28\"" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
+        List<ItemPedido> itens = mocks.getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoModel = mocks.getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(compradorIndex), itens);
         pedidoModel.setId(1L);
-        Pagamento pagamento = new DebitoStrategy().processar(pedidoModel, pagamentoDetalhesJson);
+
+        SimurPaymentResponse paymentResponse = CreateMockedSimurPaymentData.getInstance().getPayments().get(0);
+        Mockito.when(simurPaymentService.criarPagamento(any())).thenReturn(paymentResponse);
+        
+        Pagamento pagamento = new DebitoStrategy(simurPaymentService).processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
         pedidoModel.setSituacao(StatusPedido.CRIADO);
 
@@ -238,27 +237,22 @@ public class PedidoServiceTest {
 
     @Test
     @DisplayName("Deve buscar a lista de pedidos de um cliente")
-    void buscarPedidosDoUsuarioTeste() {
+    void buscarPedidosDoUsuarioTeste() throws JsonProcessingException {
         int tamanhoCarrinho = 3;
-        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(mocks.getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
-                        "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
-                        "    \"valor\": 1219.00,\r\n" + //
-                        "    \"detalhes\": {\r\n" + //
-                        "        \"nome\": \"Lindosvaldo Melo da Silva\",\r\n" + //
-                        "        \"documento:\": \"46854810201\",\r\n" + //
-                        "        \"banco\": \"Nubank\",\r\n" + //
-                        "        \"agencia\": \"00001\",\r\n" + //
-                        "        \"conta\": \"10852432\",\r\n" + //
-                        "        \"digito\": \"2\"\r\n" + //
-                        "    }\r\n" + //
+                        "    \"card_token\": \"tok_simur_d055de21ed8f4a28\"" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        List<ItemPedido> itens = mocks.getItensDoPedidoCompra(comprador.getCarrinhoItens());
         List<Pedido> pedidosModel = new ArrayList<>();
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
+        Pedido pedidoModel = mocks.getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(compradorIndex), itens);
         pedidoModel.setId(1L);
-        Pagamento pagamento = new PixStrategy().processar(pedidoModel, pagamentoDetalhesJson);
+
+        SimurPaymentResponse paymentResponse = CreateMockedSimurPaymentData.getInstance().getPayments().get(2);
+        Mockito.when(simurPaymentService.criarPagamento(any())).thenReturn(paymentResponse);
+        
+        Pagamento pagamento = new PixStrategy(simurPaymentService).processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
         pedidoModel.setSituacao(StatusPedido.CRIADO);
         pedidosModel.add(pedidoModel);
@@ -282,26 +276,21 @@ public class PedidoServiceTest {
 
     @Test
     @DisplayName("Deve atualizar a data de finalização de um pedido")
-    void atualizarDataFimTeste() {
+    void atualizarDataFimTeste() throws JsonProcessingException {
         int tamanhoCarrinho = 3;
-        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(mocks.getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
-                        "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
-                        "    \"valor\": 3178.28,\r\n" + //
-                        "    \"detalhes\": {\r\n" + //
-                        "        \"nome\": \"Lindosvaldo Melo da Silva\",\r\n" + //
-                        "        \"documento:\": \"46854810201\",\r\n" + //
-                        "        \"banco\": \"Nubank\",\r\n" + //
-                        "        \"agencia\": \"00001\",\r\n" + //
-                        "        \"conta\": \"10852432\",\r\n" + //
-                        "        \"digito\": \"2\"\r\n" + //
-                        "    }\r\n" + //
+                        "    \"card_token\": \"tok_simur_d055de21ed8f4a28\"" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
+        List<ItemPedido> itens = mocks.getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoModel = mocks.getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(compradorIndex), itens);
         pedidoModel.setId(1L);
-        Pagamento pagamento = new DebitoStrategy().processar(pedidoModel, pagamentoDetalhesJson);
+
+        SimurPaymentResponse paymentResponse = CreateMockedSimurPaymentData.getInstance().getPayments().get(0);
+        Mockito.when(simurPaymentService.criarPagamento(any())).thenReturn(paymentResponse);
+
+        Pagamento pagamento = new DebitoStrategy(simurPaymentService).processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
         pedidoModel.setSituacao(StatusPedido.CRIADO);
 
@@ -323,26 +312,21 @@ public class PedidoServiceTest {
 
     @Test
     @DisplayName("Deve atualizar a situação de um pedido")
-    void atualizarSituacao() {
+    void atualizarSituacao() throws JsonProcessingException {
         int tamanhoCarrinho = 3;
-        comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
+        comprador.setCarrinhoItens(new ArrayList<>(mocks.getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         String pagamentoDetalhesJson = "{\r\n" + //
-                        "    \"forma_pagamento\": \"DEBITO\",\r\n" + //
-                        "    \"valor\": 3178.28,\r\n" + //
-                        "    \"detalhes\": {\r\n" + //
-                        "        \"nome\": \"Lindosvaldo Melo da Silva\",\r\n" + //
-                        "        \"documento:\": \"46854810201\",\r\n" + //
-                        "        \"banco\": \"Nubank\",\r\n" + //
-                        "        \"agencia\": \"00001\",\r\n" + //
-                        "        \"conta\": \"10852432\",\r\n" + //
-                        "        \"digito\": \"2\"\r\n" + //
-                        "    }\r\n" + //
+                        "    \"card_token\": \"tok_simur_d055de21ed8f4a28\"" + //
                         "}";
         
-        List<ItemPedido> itens = CreateMockedData.getInstance().getItensDoPedidoCompra(comprador.getCarrinhoItens());
-        Pedido pedidoModel = CreateMockedData.getInstance().getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
+        List<ItemPedido> itens = mocks.getItensDoPedidoCompra(comprador.getCarrinhoItens());
+        Pedido pedidoModel = mocks.getPedido(TipoPedido.COMPRA, 0, comprador, enderecos.get(3), itens);
         pedidoModel.setId(1L);
-        Pagamento pagamento = new DebitoStrategy().processar(pedidoModel, pagamentoDetalhesJson);
+
+        SimurPaymentResponse paymentResponse = CreateMockedSimurPaymentData.getInstance().getPayments().get(0);
+        Mockito.when(simurPaymentService.criarPagamento(any())).thenReturn(paymentResponse);
+
+        Pagamento pagamento = new DebitoStrategy(simurPaymentService).processar(pedidoModel, pagamentoDetalhesJson);
         pedidoModel.setPagamento(pagamento);
         pedidoModel.setSituacao(StatusPedido.CRIADO);
 

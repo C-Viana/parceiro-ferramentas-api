@@ -117,15 +117,12 @@ public class JwtTokenService {
     }
 
     public DecodedJWT decodeToken(String token) {
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
         try {
-            verifier.verify(token);
-        } catch (TokenExpiredException e) {
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            return verifier.verify(token);
+        } catch (JWTVerificationException e) {
             throw new InvalidAuthorizationException("O TOKEN INFORMADO EXPIROU OU CONTEM ERROS");
         }
-        
-        return verifier.verify(token);
     }
 
     public Authentication getAuthentication(String token) {

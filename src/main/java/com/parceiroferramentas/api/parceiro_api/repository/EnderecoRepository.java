@@ -11,6 +11,6 @@ import com.parceiroferramentas.api.parceiro_api.model.Endereco;
 @Repository
 public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
 
-    public List<Endereco> findEnderecoByUsuarioId(UUID id);
+    public List<Endereco> findEnderecoByCompradorId(UUID compradorId);
 
 }

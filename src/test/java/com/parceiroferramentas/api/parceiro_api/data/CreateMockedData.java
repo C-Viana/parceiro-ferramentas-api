@@ -39,6 +39,13 @@ public class CreateMockedData {
     private File jsonFerramentas = new File("src/test/resources/FerramentasMock.json");
     private File jsonItemCarrinhoRequestDto = new File("src/test/resources/ItemCarrinhoRequestDto.json");
     private final String senhaEncriptada = "$2a$10$Ur9TKcWfC2oVKBF9jOnaiOxl/FhGjHIdzmG158wxvzrGk9UDqxJsS";
+    private final List<UUID> IDS = List.of(
+        UUID.fromString("33476ff5-27cf-4113-ab83-7486e9d7e2dd"),
+        UUID.fromString("3f3b406b-b6b2-4a13-afe6-35746410cd86"),
+        UUID.fromString("cccdefd5-bbae-4b46-9ac5-425ea28fbf5f"),
+        UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"),
+        UUID.fromString("0f0b3ab2-cacb-47d9-a00c-68e2340da9c9")
+    );
 
     public static CreateMockedData getInstance() {
         return new CreateMockedData();
@@ -105,7 +112,7 @@ public class CreateMockedData {
         List<Usuario> mockedUsuarios = new ArrayList<>();
 
         mockedUsuarios.add(new Usuario(
-            UUID.fromString("33476ff5-27cf-4113-ab83-7486e9d7e2dd"),
+            (IDS.get(0)),
             "useradmin",
             senhaEncriptada,
             true,
@@ -115,7 +122,7 @@ public class CreateMockedData {
             Arrays.asList(new Permissao(1L, PerfilAcesso.ADMIN))
         ));
         mockedUsuarios.add(new Usuario(
-            UUID.fromString("3f3b406b-b6b2-4a13-afe6-35746410cd86"),
+            (IDS.get(1)),
             "usergerente",
             senhaEncriptada,
             true,
@@ -125,7 +132,7 @@ public class CreateMockedData {
             Arrays.asList(new Permissao(2L, PerfilAcesso.GERENTE))
         ));
         mockedUsuarios.add(new Usuario(
-            UUID.fromString("cccdefd5-bbae-4b46-9ac5-425ea28fbf5f"),
+            (IDS.get(2)),
             "uservendedor",
             senhaEncriptada,
             true,
@@ -135,7 +142,7 @@ public class CreateMockedData {
             Arrays.asList(new Permissao(3L, PerfilAcesso.VENDEDOR))
         ));
         mockedUsuarios.add(new Usuario(
-            UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"),
+            (IDS.get(3)),
             "usercliente",
             senhaEncriptada,
             true,
@@ -145,7 +152,7 @@ public class CreateMockedData {
             Arrays.asList(new Permissao(4L, PerfilAcesso.CLIENTE))
         ));
         mockedUsuarios.add(new Usuario(
-            UUID.fromString("76ea733f-728b-4a17-c536-bba6cfd5a21f"),
+            (IDS.get(4)),
             "usuarioinexistente",
             senhaEncriptada,
             true,
@@ -162,7 +169,7 @@ public class CreateMockedData {
         List<Comprador> mockedUsuarios = new ArrayList<>();
 
         mockedUsuarios.add(new Comprador(
-            UUID.fromString("33476ff5-27cf-4113-ab83-7486e9d7e2dd"),
+            (IDS.get(0)),
             "40681843802",
             "João Oliveira da Silva",
             LocalDate.of(1992, 4, 15),
@@ -172,7 +179,7 @@ public class CreateMockedData {
             List.of()
         ));
         mockedUsuarios.add(new Comprador(
-            UUID.fromString("3f3b406b-b6b2-4a13-afe6-35746410cd86"),
+            (IDS.get(1)),
             "49055010678",
             "Cláudia Ferreira dos Santos",
             LocalDate.of(1985, 7, 22),
@@ -182,7 +189,7 @@ public class CreateMockedData {
             List.of()
         ));
         mockedUsuarios.add(new Comprador(
-            UUID.fromString("cccdefd5-bbae-4b46-9ac5-425ea28fbf5f"),
+            (IDS.get(2)),
             "70052289310",
             "Luana Correia Costa",
             LocalDate.of(1999, 10, 9),
@@ -192,7 +199,7 @@ public class CreateMockedData {
             List.of()
         ));
         mockedUsuarios.add(new Comprador(
-            UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"),
+            (IDS.get(3)),
             "19278755003",
             "Marcos Castro de Almeida",
             LocalDate.of(1978, 3, 13),
@@ -202,7 +209,7 @@ public class CreateMockedData {
             List.of()
         ));
         mockedUsuarios.add(new Comprador(
-            UUID.fromString("76ea733f-728b-4a17-c536-bba6cfd5a21f"),
+            (IDS.get(4)),
             "22641593001",
             "Usuario Não Cadastrado",
             LocalDate.of(2002, 11, 28),
@@ -225,13 +232,13 @@ public class CreateMockedData {
         return permissoes;
     }
 
-    public List<Endereco> getEnderecos(List<Comprador> mockedUsuarios) {
+    public List<Endereco> getEnderecos(List<Comprador> mockedCompradores) {
         List<Endereco> mockedEnderecos = new ArrayList<>();
 
-        mockedEnderecos.add(new Endereco(null, "Rua José Eugênio da Silva", 122, "Parque Santa Teresa", "Carapicuíba", Estados.SAO_PAULO, UF.SP, "06340400", null, true, mockedUsuarios.get(0)));
-        mockedEnderecos.add(new Endereco(null, "Rua Aline", 74, "Parque dos Camargos", "Barueri", Estados.SAO_PAULO, UF.SP, "06436110", "Portão amarelo após a adega do Jurandir", true, mockedUsuarios.get(1)));
-        mockedEnderecos.add(new Endereco(null, "Rua Serra Leoa", 328, "Rochdale", "Osasco", Estados.SAO_PAULO, UF.SP, "06220059", "Próximo da praça", true, mockedUsuarios.get(2)));
-        mockedEnderecos.add(new Endereco(null, "Rua Florindo Redivo", 14, "Vila Esperança", "Maringá", Estados.PARANA, UF.PR, "87020520", null, true, mockedUsuarios.get(3)));
+        mockedEnderecos.add(new Endereco(null, "Rua José Eugênio da Silva", 122, "Parque Santa Teresa", "Carapicuíba", Estados.SAO_PAULO, UF.SP, "06340400", null, true, mockedCompradores.get(0)));
+        mockedEnderecos.add(new Endereco(null, "Rua Aline", 74, "Parque dos Camargos", "Barueri", Estados.SAO_PAULO, UF.SP, "06436110", "Portão amarelo após a adega do Jurandir", true, mockedCompradores.get(1)));
+        mockedEnderecos.add(new Endereco(null, "Rua Serra Leoa", 328, "Rochdale", "Osasco", Estados.SAO_PAULO, UF.SP, "06220059", "Próximo da praça", true, mockedCompradores.get(2)));
+        mockedEnderecos.add(new Endereco(null, "Rua Florindo Redivo", 14, "Vila Esperança", "Maringá", Estados.PARANA, UF.PR, "87020520", null, true, mockedCompradores.get(3)));
 
         return mockedEnderecos;
     }

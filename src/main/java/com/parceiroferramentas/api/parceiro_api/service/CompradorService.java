@@ -25,7 +25,7 @@ public class CompradorService {
         return repository.findById(id).orElse(null);
     }
 
-    public Comprador findByCpf(String documento) {
+    public Comprador findByDocumento(String documento) {
         log.info("BUSCA PELO COMPRADOR COM documento {"+documento+"}");
         return repository.findCompradorByDocumento(documento).orElse(null);
     }

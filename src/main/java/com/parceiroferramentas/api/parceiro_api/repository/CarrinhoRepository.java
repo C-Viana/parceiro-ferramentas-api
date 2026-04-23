@@ -11,5 +11,5 @@ import com.parceiroferramentas.api.parceiro_api.model.ItemCarrinho;
 @Repository
 public interface CarrinhoRepository extends JpaRepository<ItemCarrinho, Long> {
 
-    List<ItemCarrinho> findItemCarrinhoByUsuarioId(UUID usuarioId);
+    List<ItemCarrinho> findItemCarrinhoByCompradorId(UUID compradorId);
 }

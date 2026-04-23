@@ -38,8 +38,8 @@ public class EnderecoService {
 
     public List<Endereco> findUsuarioEnderecos(UUID usuarioId) {
         Comprador usuario = compradorRepository.findById(usuarioId).orElse(null);
-        if(usuario == null) throw new BadRequestException("Dados de usuario não informados para buscar endereços");
-        return repository.findEnderecoByUsuarioId(usuario.getId());
+        if(usuario == null) throw new BadRequestException("Dados de usuario não encontrados para buscar endereços");
+        return repository.findEnderecoByCompradorId(usuario.getId());
     }
 
     public Endereco fallbackCreateEndereco(UUID usuarioId, Endereco novoEndereco, Throwable throwable) {
@@ -53,7 +53,7 @@ public class EnderecoService {
         Comprador comprador = compradorRepository.findById(usuarioId).orElse(null);
         if( comprador == null ) throw new BadRequestException("Nenhum usuário encontrado pelo ID ["+usuarioId+"]");
 
-        List<Endereco> enderecos = repository.findEnderecoByUsuarioId(usuarioId);
+        List<Endereco> enderecos = repository.findEnderecoByCompradorId(usuarioId);
         if(enderecos.size() > 0) {
             if(novoEndereco.isPrincipal() == true){
                 enderecos.stream().forEach(e -> e.setPrincipal(false));
@@ -92,7 +92,7 @@ public class EnderecoService {
         if(entidade.enderecoInvalido()) throw new BadRequestException("Um ou mais campos estão inválidos. Verifique se há inconsistências e tente novamente.");
 
         if(entidade.isPrincipal() == false && enderecoAtualizado.isPrincipal() == true) {
-            List<Endereco> enderecos = repository.findEnderecoByUsuarioId(entidade.getComprador().getId());
+            List<Endereco> enderecos = repository.findEnderecoByCompradorId(entidade.getComprador().getId());
             if(enderecos.size() > 1) {
                 enderecos.stream().forEach(e -> e.setPrincipal(false));
                 repository.saveAll(enderecos);

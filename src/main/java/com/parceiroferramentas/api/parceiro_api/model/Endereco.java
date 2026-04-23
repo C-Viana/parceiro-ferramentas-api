@@ -38,7 +38,7 @@ public class Endereco {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Comprador usuario;
+    private Comprador comprador;
 
     public Endereco(){}
 
@@ -54,7 +54,7 @@ public class Endereco {
         this.cep = cep;
         this.referencia = referencia;
         this.principal = principal;
-        this.usuario = usuario;
+        this.comprador = usuario;
     }
 
     public Long getId() {
@@ -142,11 +142,11 @@ public class Endereco {
     }
 
     public Comprador getComprador() {
-        return usuario;
+        return comprador;
     }
 
     public void setComprador(Comprador usuario) {
-        this.usuario = usuario;
+        this.comprador = usuario;
     }
 
     public boolean enderecoInvalido() {
@@ -173,7 +173,7 @@ public class Endereco {
         result = prime * result + ((cep == null) ? 0 : cep.hashCode());
         result = prime * result + ((referencia == null) ? 0 : referencia.hashCode());
         result = prime * result + (principal ? 1231 : 1237);
-        result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
+        result = prime * result + ((comprador == null) ? 0 : comprador.hashCode());
         return result;
     }
 
@@ -227,10 +227,10 @@ public class Endereco {
             return false;
         if (principal != other.principal)
             return false;
-        if (usuario == null) {
-            if (other.usuario != null)
+        if (comprador == null) {
+            if (other.comprador != null)
                 return false;
-        } else if (!usuario.equals(other.usuario))
+        } else if (!comprador.equals(other.comprador))
             return false;
         return true;
     }

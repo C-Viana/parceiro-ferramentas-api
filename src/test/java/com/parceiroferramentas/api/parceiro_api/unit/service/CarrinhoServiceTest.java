@@ -2,6 +2,7 @@ package com.parceiroferramentas.api.parceiro_api.unit.service;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -59,11 +60,11 @@ public class CarrinhoServiceTest {
         carrinho = CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas);
 
         Mockito.when(usuarioRepo.findUsuarioByUsername(usuario.getUsername())).thenReturn(usuario);
-        Mockito.when(repository.findItemCarrinhoByUsuarioId(comprador.getId())).thenReturn(carrinho);
+        Mockito.when(repository.findItemCarrinhoByCompradorId(comprador.getId())).thenReturn(carrinho);
 
         List<ItemCarrinho> response = service.recuperarCarrinho(usuario.getUsername());
 
-        verify(repository, times(1)).findItemCarrinhoByUsuarioId(comprador.getId());
+        verify(repository, times(1)).findItemCarrinhoByCompradorId(comprador.getId());
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(comprador, response.get(0).getComprador());
@@ -132,17 +133,22 @@ public class CarrinhoServiceTest {
     void removerItemTeste() {
         int tamanhoCarrinho = 1;
         int quantidadeDoItem = 2;
-        comprador.setId(UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"));
+        UUID testId = UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f");
+        usuario.setId(testId);
+        comprador.setId(testId);
         comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         
         ItemCarrinho item = CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas).getFirst();
         item.setId(99L);
         item.setQuantidade(quantidadeDoItem);
 
+        Assertions.assertEquals(comprador.getId(), item.getComprador().getId());
+
         Ferramenta ferramenta = item.getFerramenta();
         ferramenta.setId(1L);
 
         Mockito.when(usuarioRepo.findUsuarioByUsername(usuario.getUsername())).thenReturn(usuario);
+        Mockito.when(compradorRepo.findById(usuario.getId())).thenReturn(Optional.of(comprador));
         Mockito.when(ferramentaRepo.findById(ferramenta.getId())).thenReturn(Optional.of(ferramenta));
         Mockito.when(repository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(item));
 
@@ -155,12 +161,15 @@ public class CarrinhoServiceTest {
     @DisplayName("Deve remover todos itens do carrinho")
     void removerTodosTeste() {
         int tamanhoCarrinho = 3;
-        comprador.setId(UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f"));
+        UUID testId = UUID.fromString("76ea733f-617a-4a17-b425-bba6cfd5a21f");
+        usuario.setId(testId);
+        comprador.setId(testId);
         comprador.setCarrinhoItens(new ArrayList<>(CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas)));
         carrinho = CreateMockedData.getInstance().getCarrinho(tamanhoCarrinho, false, comprador, ferramentas);
 
         Mockito.when(usuarioRepo.findUsuarioByUsername(usuario.getUsername())).thenReturn(usuario);
-        Mockito.when(repository.findItemCarrinhoByUsuarioId(usuario.getId())).thenReturn(carrinho);
+        Mockito.when(compradorRepo.findById(usuario.getId())).thenReturn(Optional.of(comprador));
+        Mockito.when(repository.findItemCarrinhoByCompradorId(usuario.getId())).thenReturn(carrinho);
 
         service.removerTodos(usuario.getUsername());
 

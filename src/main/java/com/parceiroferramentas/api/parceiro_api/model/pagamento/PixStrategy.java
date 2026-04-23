@@ -21,7 +21,12 @@ import tools.jackson.databind.ObjectMapper;
 @Slf4j
 @Component
 public class PixStrategy implements PagamentoStrategy {
-    private final SimurPaymentService simurClient = new SimurPaymentService();
+    
+    private final SimurPaymentService simurClient;
+
+    public PixStrategy(SimurPaymentService simurClient) {
+        this.simurClient = simurClient;
+    }
 
     @Override
     public Pagamento processar(Pedido pedido, String detalhesPagamento) {
@@ -41,10 +46,8 @@ public class PixStrategy implements PagamentoStrategy {
         SimurPaymentResponse response;
         String detalhesJsonString = "";
         try {
-            log.info("PAYMENT REQUEST PAYLOAD: " + new ObjectMapper().writeValueAsString(request));
             response = simurClient.criarPagamento(request);
             detalhesJsonString = new ObjectMapper().writeValueAsString(response.getPaymentDetails());
-            log.info("PAYMENT RESPONSE PAYLOAD: " + detalhesJsonString);
 
             Pagamento pagamento = new Pagamento();
             pagamento.setFormaPagamento(TipoPagamento.PIX_DYNAMIC);

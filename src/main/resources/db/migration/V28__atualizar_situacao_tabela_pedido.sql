@@ -1,0 +1,1 @@
+UPDATE pedido SET situacao = 'PROCESSANDO' WHERE id = 3;

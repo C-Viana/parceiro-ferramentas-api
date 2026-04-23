@@ -20,7 +20,12 @@ import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class CreditoStrategy implements PagamentoStrategy {
-    private final SimurPaymentService simurClient = new SimurPaymentService();
+    
+    private final SimurPaymentService simurClient;
+
+    public CreditoStrategy(SimurPaymentService simurClient) {
+        this.simurClient = simurClient;
+    }
 
     @Override
     public Pagamento processar(Pedido pedido, String detalhesPagamento) {

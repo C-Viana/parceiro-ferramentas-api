@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import com.parceiroferramentas.api.parceiro_api.config.DatabaseConfig;
 import com.parceiroferramentas.api.parceiro_api.data.CreateMockedData;
@@ -25,6 +26,8 @@ import com.parceiroferramentas.api.parceiro_api.model.Permissao;
 import com.parceiroferramentas.api.parceiro_api.repository.AcessoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.PermissaoRepository;
 import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurAuthenticationService;
+import com.parceiroferramentas.api.parceiro_api.service.clients.simur.SimurPaymentService;
 
 @SpringBootTest
 @Testcontainers
@@ -33,7 +36,7 @@ import com.parceiroferramentas.api.parceiro_api.repository.UsuarioRepository;
 public class PermissaoRepositoryTest {
 
     @Container
-    static PostgreSQLContainer<?> postgres = DatabaseConfig.getDatabaseConfig();
+    static PostgreSQLContainer postgres = DatabaseConfig.getDatabaseConfig();
 
     @Autowired
     UsuarioRepository usuarioRepository;
@@ -43,6 +46,9 @@ public class PermissaoRepositoryTest {
 
     @Autowired
     PermissaoRepository permissaoRepository;
+
+    @MockitoBean private SimurPaymentService simurPaymentService;
+    @MockitoBean private SimurAuthenticationService simurAuthenticationService;
 
     private static List<Permissao> permissoesMock;
 

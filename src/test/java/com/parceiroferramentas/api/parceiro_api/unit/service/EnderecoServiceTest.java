@@ -200,14 +200,14 @@ public class EnderecoServiceTest {
         Endereco endereco2 = new Endereco(8L, logradouro, numero, bairro, cidade, estado, uf, cep, referencia, principal, mockedCompradores.get(usuarioIndex));
 
         when(compradorRepo.findById(owner.getId())).thenReturn(Optional.of(owner));
-        when(repository.findEnderecoByUsuarioId(owner.getId())).thenReturn(List.of(endereco1, endereco2));
+        when(repository.findEnderecoByCompradorId(owner.getId())).thenReturn(List.of(endereco1, endereco2));
 
         List<Endereco> resultados = service.findUsuarioEnderecos(owner.getId());
 
         Assertions.assertThat(resultados).hasSize(2);
         Assertions.assertThat(resultados.get(0).getLogradouro()).isEqualTo(endereco1.getLogradouro());
         Assertions.assertThat(resultados.get(1).getLogradouro()).isEqualTo(endereco2.getLogradouro());
-        verify(repository, times(1)).findEnderecoByUsuarioId(owner.getId());
+        verify(repository, times(1)).findEnderecoByCompradorId(owner.getId());
     }
 
 }

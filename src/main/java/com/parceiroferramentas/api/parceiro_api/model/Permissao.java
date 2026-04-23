@@ -79,4 +79,9 @@ public class Permissao implements GrantedAuthority {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Permissao [id=" + id + ", authority=" + authority + "]";
+    }
+
 }

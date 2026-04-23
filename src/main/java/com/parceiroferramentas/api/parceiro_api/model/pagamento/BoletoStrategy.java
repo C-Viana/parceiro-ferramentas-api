@@ -20,7 +20,11 @@ import com.parceiroferramentas.api.parceiro_api.service.clients.simur.models.Sim
 
 @Component
 public class BoletoStrategy implements PagamentoStrategy {
-    private final SimurPaymentService simurClient = new SimurPaymentService();
+    private final SimurPaymentService simurClient;
+
+    public BoletoStrategy(SimurPaymentService simurClient) {
+        this.simurClient = simurClient;
+    }
 
     @Override
     public Pagamento processar(Pedido pedido, String detalhesPagamento) {

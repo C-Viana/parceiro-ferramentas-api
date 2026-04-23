@@ -136,7 +136,7 @@ public class UsuarioController implements UsuarioDocumentation {
         log.info("REALIZANDO CADASTRO DE NOVO USUÁRIO");
         UUID requestId = UUID.randomUUID();
 
-        if(compradorService.findByCpf(cadastro.documento()) != null) throw new BadRequestException("O documento informado já está cadastrado");
+        if(compradorService.findByDocumento(cadastro.documento()) != null) throw new BadRequestException("O documento informado já está cadastrado");
 
         //EFETUANDO CADASTRO DE COMPRADOR COM DADOS DE IDENTIFICAÇÃO, CONTATO E ENDEREÇO
         Comprador request = mapper.toComprador(cadastro);
@@ -163,19 +163,22 @@ public class UsuarioController implements UsuarioDocumentation {
     @GetMapping(value = "/comprador/documento/{documento}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CompradorDto> buscarCompradorPorDocumento(@PathVariable String documento) {
         log.info("BUSCANDO COMPRADOR PELO DOCUMENTO "+documento);
-        Comprador res = compradorService.findByCpf(documento);
+        Comprador res = compradorService.findByDocumento(documento);
         if(res == null) ResponseEntity.notFound();
         return ResponseEntity.ok(mapper.toCompradorDto(res));
     }
     
     @Override
-    @PutMapping(value = "/comprador", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/comprador/atualizar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CompradorDto> atualizarComprador(@RequestBody CompradorDto compradorAtualizado) {
         log.info("ATUALIZANDO DADOS DO COMPRADOR DO DOCUMENTO "+compradorAtualizado.documento());
-        Comprador original = compradorService.findByCpf(compradorAtualizado.documento());
+        Comprador original = compradorService.findByDocumento(compradorAtualizado.documento());
         if(original == null) ResponseEntity.notFound();
 
         Comprador req = mapper.toComprador(compradorAtualizado);
+        req.setId(original.getId());
+        req.getEnderecos().forEach( item -> item.setComprador(req));
+        
         if(compradorService.validarAtualizacaoComprador(original, req))
             ResponseEntity.badRequest().body("Os dados de nome, nascimento, e-mail, telefone e endereço não podem ser nulos nem vazios");
 
@@ -187,7 +190,7 @@ public class UsuarioController implements UsuarioDocumentation {
     @DeleteMapping(value = "/comprador/documento/{documento}")
     public ResponseEntity<Void> deletarCompradorPorDocumento(@PathVariable String documento) {
         log.info("DELETAR DADOS DO COMPRADOR DO DOCUMENTO "+documento);
-        Comprador res = compradorService.findByCpf(documento);
+        Comprador res = compradorService.findByDocumento(documento);
         if(res == null) return ResponseEntity.noContent().build();
         compradorService.delete(documento);
         usuarioService.deletarUsuario(res.getId());
