@@ -31,6 +31,10 @@ services:
       SIMUR_HOSTNAME: http://simur:5254
       SIMUR_USERNAME: parceiroferramentas
       SIMUR_PASSWORD: parceiroferramentas
+    volumes:
+      - ./certs/simur.crt:/tmp/simur.crt
+      - ./install-cert.sh:/tmp/install-cert.sh:ro
+    entrypoint: bash /tmp/install-cert.sh
     networks:
       - default
       - shared-network

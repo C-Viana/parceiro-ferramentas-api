@@ -101,7 +101,7 @@ public class PedidoService {
         metricsService.registrarPedidoCriado("COMPRA");
         Pedido pedido = new Pedido();
         String username = extrairUsername(token);
-        Comprador comprador = compradorRepo.findById(usuarioRepo.findUsuarioByUsername(username).getId()).orElse(null);
+        Comprador comprador = compradorRepo.findById(usuarioRepo.findUsuarioByUsername(username).getId()).orElseThrow(() -> new BadRequestException("O usuário "+username+" não foi encontrado"));
         Endereco endereco = enderecoRepository.findById(enderecoId).orElseThrow(() -> new BadRequestException("Endereço não encontrado"));
 
         if(comprador.getId() != endereco.getComprador().getId()) throw new BadRequestException("Foi identificada uma inconsistência com os dados de endereço");
